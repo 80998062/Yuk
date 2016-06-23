@@ -1,0 +1,47 @@
+ext {
+    android = [
+            compileSdkVersion: 23,
+            buildToolsVersion: "24.0.0",
+            applicationId    : "com.sinyuk.yuk",
+            minSdkVersion    : 16,
+            targetSdkVersion : 23,
+            versionCode      : 1,
+            versionName      : "1.0"
+    ]
+
+    //Version
+    supportVersion = '23.4.0'
+
+    retrofitVersion = '2.1.0'
+
+    rxVersion = '1.1.6'
+
+    rxBindingVersion = '0.4.0'
+
+    daggerVersion = '2.5'
+
+    dependencies = [
+            "appcompat-v7"          : "com.android.support:appcompat-v7:${supportVersion}",
+            "support-design"        : "com.android.support:design:${supportVersion}",
+            "recyclerView"          : "com.android.support:recyclerview-v7:${supportVersion}",
+            "cardView"              : "com.android.support:cardview-v7:${supportVersion}",
+            "retrofit"              : "com.squareup.retrofit2:retrofit:${retrofitVersion}",
+            "converter-gson"        : "com.squareup.retrofit2:converter-gson:${retrofitVersion}",
+            "adapter-rxjava"        : "com.squareup.retrofit2:adapter-rxjava:${retrofitVersion}",
+            "logging-interceptor"   : "com.squareup.okhttp3:logging-interceptor:3.3.1",
+            "gson"                  : "com.google.code.gson:gson:2.6.2",
+            "timber"                : "com.jakewharton.timber:timber:4.1.2",
+            "butterknife"           : "com.jakewharton:butterknife:8.1.0",
+            "rxjava"                : "io.reactivex:rxjava:${rxVersion}",
+            "rxandroid"             : "io.reactivex:rxandroid:1.2.0",
+            "rxbinding"             : "com.jakewharton.rxbinding:rxbinding:${rxBindingVersion}",
+            "rxbinding-design"      : "com.jakewharton.rxbinding:rxbinding-design:${rxBindingVersion}",
+            "rxbinding-appcompat-v7": "com.jakewharton.rxbinding:rxbinding-appcompat-v7:${rxBindingVersion}",
+            "dagger"                : "com.google.dagger:dagger:${daggerVersion}",
+            "dagger-compiler"       : "com.google.dagger:dagger-compiler:${daggerVersion}"
+
+
+    ]
+
+
+}
