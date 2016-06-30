@@ -1,6 +1,6 @@
 package com.sinyuk.yuk.api;
 
-import com.sinyuk.yuk.entities.Shot;
+import com.sinyuk.yuk.data.feed.Feed;
 
 import java.util.List;
 
@@ -14,9 +14,9 @@ import rx.Observable;
 public interface DribbleService {
 
     @GET("shots")
-    Observable<List<Shot>> listAllShots(@Query("page") int pageIndex);
+    Observable<List<Feed>> listAllShots(@Query("page") int pageIndex);
 
     @GET("shots")
-    Observable<List<Shot>> listShots(@Query("list") String listType,@Query("page") int pageIndex);
+    Observable<List<Feed>> listShots(@Query("list") String listType, @Query("page") int pageIndex);
 
 }

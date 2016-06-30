@@ -1,4 +1,4 @@
-package com.sinyuk.yuk.dagger2;
+package com.sinyuk.yuk.scopes;
 /*
  * Copyright (C) 2013 Square, Inc.
  *

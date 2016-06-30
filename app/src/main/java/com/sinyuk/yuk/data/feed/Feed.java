@@ -1,4 +1,4 @@
-package com.sinyuk.yuk.entities;
+package com.sinyuk.yuk.data.feed;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by Sinyuk on 16.6.16.
  */
-public class Shot {
+public class Feed {
 
     /**
      * id : 471756
@@ -203,7 +203,7 @@ public class Shot {
 
     @Override
     public String toString() {
-        return "Shot{" +
+        return "Feed{" +
                 "mId=" + mId +
                 ", mTitle='" + mTitle + '\'' +
                 ", mDescription='" + mDescription + '\'' +

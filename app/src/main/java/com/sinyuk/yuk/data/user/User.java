@@ -1,4 +1,4 @@
-package com.sinyuk.yuk.entities;
+package com.sinyuk.yuk.data.user;
 
 import com.google.gson.annotations.SerializedName;
 
