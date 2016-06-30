@@ -25,9 +25,6 @@ public class RetrofitDemo extends BaseActivity {
     @Inject
     Retrofit mRetrofit;
 
-    @Inject
-    EventBus eventBus;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

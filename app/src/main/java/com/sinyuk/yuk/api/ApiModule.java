@@ -5,7 +5,6 @@ import android.app.Application;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sinyuk.yuk.BuildConfig;
-import com.sinyuk.yuk.scopes.ForApplication;
 import com.sinyuk.yuk.utils.NetWorkUtils;
 
 import java.io.File;
@@ -33,15 +32,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Module
 public class ApiModule {
 
-    private final Application application;
+  /*  private final Application application;
 
     public ApiModule(Application application){
         this.application = application;
-    }
+    }*/
 
     @Provides
     @Singleton
-    Gson provideGson() {
+    public Gson provideGson() {
         return new GsonBuilder()
                 // All timestamps are returned in ISO 8601 format:
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
@@ -53,7 +52,7 @@ public class ApiModule {
 
     @Provides
     @Singleton
-    OkHttpClient provideOkHttpClient() {
+    OkHttpClient provideOkHttpClient(Application application) {
         File cacheFile = new File(application.getExternalCacheDir(), "okhttp_cache");
 
         Cache cache = new Cache(cacheFile, 1024 * 1024 * 50);
@@ -134,7 +133,7 @@ public class ApiModule {
 
     @Provides
     @Singleton
-    public Retrofit provideRetrofit(Gson gson,OkHttpClient okHttpClient){
+    Retrofit provideRetrofit(Gson gson,OkHttpClient okHttpClient){
       return new Retrofit.Builder()
               .baseUrl(DribbleApi.END_POINT)
               .addConverterFactory(GsonConverterFactory.create(gson))

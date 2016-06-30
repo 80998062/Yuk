@@ -14,6 +14,8 @@ import timber.log.Timber;
 public class App extends Application {
 
     private ApiComponent mApiComponent = null;
+    private AppComponent mAppComponent = null;
+    private AppModule mAppModule = null;
 
     @Override
     public void onCreate() {
@@ -23,14 +25,20 @@ public class App extends Application {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         }
+
+        createAppComponent();
+    }
+
+    private void createAppComponent() {
+        if (mAppComponent == null) {
+            mAppModule = new AppModule(this) ;
+            mAppComponent = DaggerAppComponent.builder().appModule(mAppModule).build();
+        }
     }
 
     public ApiComponent getApiComponent() {
-        if (mApiComponent == null) {
-            mApiComponent = DaggerApiComponent.builder()
-                    .appModule(new AppModule(this))
-                    .apiModule(new ApiModule(this))
-                    .build();
+        if (mAppModule != null) {
+            mApiComponent = DaggerApiComponent.builder().appModule(mAppModule).build();
         }
         return mApiComponent;
     }
