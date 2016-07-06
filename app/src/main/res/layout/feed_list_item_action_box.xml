@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+
+    <ViewStub
+        android:id="@+id/rebound_stub"
+        android:layout_width="@dimen/icon_size_24"
+        android:layout_height="@dimen/icon_size_24"
+        android:layout="@layout/feed_list_item_rebound"/>
+
+    <ViewStub
+        android:id="@+id/attachment_stub"
+        android:layout_width="@dimen/icon_size_24"
+        android:layout_height="@dimen/icon_size_24"
+        android:layout_marginLeft="@dimen/content_space_4"
+        android:layout_marginStart="@dimen/content_space_4"
+        android:layout="@layout/feed_list_item_attachment"/>
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <TextView
+        android:id="@+id/view_count"
+        style="@style/slm_number"
+        android:layout_marginLeft="@dimen/content_space_8"
+        android:layout_marginStart="@dimen/content_space_8"
+        android:drawableLeft="@drawable/attention_fill"
+        android:drawableStart="@drawable/attention_fill"
+        android:src="@drawable/ic_emoticon_smile_grey"
+        tools:text="1234"/>
+
+    <TextView
+        android:id="@+id/comment"
+        style="@style/slm_number"
+        android:layout_marginLeft="@dimen/content_space_8"
+        android:layout_marginStart="@dimen/content_space_8"
+        android:drawableLeft="@drawable/comment_fill"
+        android:drawableStart="@drawable/comment_fill"
+        android:src="@drawable/ic_emoticon_smile_grey"
+        tools:text="1234"/>
+
+    <ImageView
+        android:id="@+id/like_icon"
+        style="@style/slm_button"
+        android:layout_marginLeft="@dimen/content_space_8"
+        android:layout_marginStart="@dimen/content_space_8"
+        android:src="@drawable/like"
+        />
+
+    <TextView
+        android:id="@+id/like_number"
+        style="@style/slm_number"
+        android:layout_marginLeft="@dimen/content_space_2"
+        android:layout_marginStart="@dimen/content_space_2"
+        tools:text="1234"/>
+
+</LinearLayout>

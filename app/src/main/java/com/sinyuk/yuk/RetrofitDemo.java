@@ -1,40 +1,20 @@
 package com.sinyuk.yuk;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.sinyuk.yuk.api.DribbleService;
-import com.sinyuk.yuk.data.feed.Feed;
-import com.sinyuk.yuk.mvp.BaseActivity;
-
-import org.greenrobot.eventbus.EventBus;
-
-import java.util.List;
-
-import javax.inject.Inject;
-
-import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import com.sinyuk.yuk.ui.BaseActivity;
 
 public class RetrofitDemo extends BaseActivity {
 
-    @Inject
-    Retrofit mRetrofit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_retrofit_demo);
-        // assign singleton instances to fields
-        // We need to cast to `MyApp` in order to get the right method
-        ((App)getApplication()).getApiComponent().inject(this);
 
 
-        DribbleService dribbleService = mRetrofit.create(DribbleService.class);
+
+/*        DribbleService dribbleService = mRetrofit.create(DribbleService.class);
 
         dribbleService.listAllShots(1).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -55,13 +35,23 @@ public class RetrofitDemo extends BaseActivity {
                             log(feeds.get(i).toString());
                         }
                     }
-                });
+                });*/
 
 
     }
 
     @Override
-    protected void setInjector() {
+    protected int getContentViewID() {
+        return 0;
+    }
+
+    @Override
+    protected void beforeInflating() {
+
+    }
+
+    @Override
+    protected void finishInflating() {
 
     }
 

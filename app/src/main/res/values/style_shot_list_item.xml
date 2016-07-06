@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--app:cardBackgroundColor="@android:color/white"-->
+    <!--app:cardCornerRadius=""-->
+    <!--app:cardElevation=""-->
+    <!--app:contentPadding=""-->
+    <eat-comment/>
+
+    <style name="slm_card">
+        <item name="cardBackgroundColor">@android:color/white</item>
+        <item name="cardCornerRadius">@dimen/cardView_default_corner_radius</item>
+        <item name="cardElevation">@dimen/cardView_default_elevation</item>
+        <item name="contentPaddingTop">@dimen/content_space_8</item>
+        <item name="contentPaddingLeft">@dimen/content_space_8</item>
+        <item name="contentPaddingRight">@dimen/content_space_8</item>
+        <item name="contentPaddingBottom">@dimen/content_space_4</item>
+        <item name="android:layout_marginLeft">@dimen/content_space_8</item>
+        <item name="android:layout_marginRight">@dimen/content_space_8</item>
+    </style>
+
+    <!--TextView-->
+    <style name="slm_number" parent="single_line_text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/icon_size_18</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/official_slate</item>
+        <item name="android:textSize">@dimen/material_text_caption2</item>
+        <item name="android:drawablePadding">@dimen/content_space_2</item>
+    </style>
+
+    <style name="slm_username" parent="single_line_text">
+        <item name="android:layout_height">@dimen/icon_size_18</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/official_link_blue</item>
+        <item name="android:textSize">@dimen/material_text_body1</item>
+    </style>
+
+    <style name="slm_type" parent="slm_username">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@drawable/selector_pro_badge</item>
+    </style>
+
+    <style name="slm_body">
+        <item name="android:maxLines">5</item>
+        <item name="android:ellipsize">middle</item>
+        <item name="android:textColor">@color/official_slate</item>
+        <item name="android:textSize">@dimen/material_text_body1</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+    </style>
+
+    <style name="slm_date" parent="single_line_text">
+        <item name="android:textColor">@color/official_slate</item>
+        <item name="android:textSize">@dimen/material_text_caption2</item>
+    </style>
+
+    <!--ImageView-->
+    <style name="slm_button">
+        <item name="android:layout_height">@dimen/icon_size_18</item>
+        <item name="android:layout_width">@dimen/icon_size_18</item>
+        <item name="android:tint">@color/official_slate</item>
+        <item name="android:scaleType">centerInside</item>
+    </style>
+
+    <style name="slm_avatar">
+        <item name="android:layout_height">@dimen/icon_size_18</item>
+        <item name="android:layout_width">@dimen/icon_size_18</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+
+
+</resources>

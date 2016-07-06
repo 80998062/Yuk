@@ -76,9 +76,9 @@ public class ApiModule {
             }
             Response response = chain.proceed(request);
             if (!NetWorkUtils.isNetworkConnection(application)) {
-                // 有网络时 设置缓存超时时间0个小时
+                // 有网络时 设置缓存超时时间5分钟
                 response.newBuilder()
-                        .header("Cache-Control", "public, max-age=" + 0)
+                        .header("Cache-Control", "public, max-age=" + 300)
 //                        .removeHeader("WuXiaolong")// 清除头信息，因为服务器如果不支持，会返回一些干扰信息，不清除下面无法生效
                         .build();
             } else {

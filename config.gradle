@@ -1,16 +1,16 @@
 ext {
     android = [
-            compileSdkVersion: 23,
+            compileSdkVersion: 24,
             buildToolsVersion: "24.0.0",
             applicationId    : "com.sinyuk.yuk",
             minSdkVersion    : 16,
-            targetSdkVersion : 23,
+            targetSdkVersion : 24,
             versionCode      : 1,
             versionName      : "1.0"
     ]
 
     //Version
-    supportVersion = '23.4.0'
+    supportVersion = '24.0.0'
 
     retrofitVersion = '2.1.0'
 
@@ -39,8 +39,8 @@ ext {
             "rxbinding-design"      : "com.jakewharton.rxbinding:rxbinding-design:${rxBindingVersion}",
             "rxbinding-appcompat-v7": "com.jakewharton.rxbinding:rxbinding-appcompat-v7:${rxBindingVersion}",
             "dagger"                : "com.google.dagger:dagger:${daggerVersion}",
-            "dagger-compiler"       : "com.google.dagger:dagger-compiler:${daggerVersion}"
-
+            "dagger-compiler"       : "com.google.dagger:dagger-compiler:${daggerVersion}",
+            "glide"                 : "com.github.bumptech.glide:glide:3.7.0"
 
     ]
 
