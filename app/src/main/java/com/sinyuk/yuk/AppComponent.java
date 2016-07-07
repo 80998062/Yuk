@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.sinyuk.yuk.data.local.ACache;
 import com.sinyuk.yuk.data.shot.ShotLocalDataSource;
+import com.sinyuk.yuk.utils.scopes.AppScope;
 
 import javax.inject.Singleton;
 

@@ -14,7 +14,6 @@ import rx.Observable;
 /**
  * Created by Sinyuk on 16/7/6.
  */
-@Singleton
 public class ShotLocalDataSource implements ShotDataSource {
 
     LruCache<String, List<Shot>> shotCache = null;

@@ -12,7 +12,6 @@ import rx.schedulers.Schedulers;
 /**
  * Created by Sinyuk on 16/7/6.
  */
-@Singleton
 public class ShotRemoteDataSource implements ShotDataSource {
 
     DribbleService mDribbleService;

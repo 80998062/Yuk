@@ -4,6 +4,7 @@ import android.util.Log;
 import android.widget.RelativeLayout;
 
 import com.sinyuk.yuk.ui.BaseActivity;
+
 import com.sinyuk.yuk.ui.feeds.DaggerFeedsFragmentComponent;
 import com.sinyuk.yuk.ui.feeds.FeedsFragment;
 import com.sinyuk.yuk.utils.ActivityUtils;
