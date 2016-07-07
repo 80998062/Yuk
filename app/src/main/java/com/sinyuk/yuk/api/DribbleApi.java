@@ -41,4 +41,6 @@ public class DribbleApi {
     public static final String COMMENTS = "comments";
     public static final String RECENT = "recent";
     public static final String VIEWS = "views";
+
+    public static final String DATE_FORMAT  = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 }

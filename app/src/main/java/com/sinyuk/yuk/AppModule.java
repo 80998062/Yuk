@@ -3,7 +3,7 @@ package com.sinyuk.yuk;
 import android.app.Application;
 import android.content.Context;
 
-import org.greenrobot.eventbus.EventBus;
+import com.sinyuk.yuk.data.local.ACache;
 
 import javax.inject.Singleton;
 
@@ -18,7 +18,7 @@ public final class AppModule {
 
     private Application application;
 
-    AppModule(Application application) {
+    public AppModule(Application application) {
         this.application = application;
     }
 

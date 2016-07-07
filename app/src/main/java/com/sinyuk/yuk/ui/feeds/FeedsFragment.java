@@ -1,28 +1,36 @@
 package com.sinyuk.yuk.ui.feeds;
 
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.sinyuk.yuk.R;
-import com.sinyuk.yuk.data.feed.Feed;
+import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.ui.BaseFragment;
 import com.sinyuk.yuk.utils.ListItemMarginDecoration;
 
 import java.util.ArrayList;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import butterknife.BindView;
 
 /**
  * Created by Sinyuk on 16/7/1.
  */
+@Singleton
 public class FeedsFragment extends BaseFragment {
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
     private FeedsAdapter mAdapter;
-    private ArrayList<Feed> mFeedList = new ArrayList<>();
+    private ArrayList<Shot> mShotList = new ArrayList<>();
+    private int mPage;
 
+    @Inject
+    public FeedsFragment(){
+        // need a default constructor
+    }
 
     @Override
     protected void beforeInflate() {
@@ -40,7 +48,7 @@ public class FeedsFragment extends BaseFragment {
     }
 
     private void initRecyclerView() {
-        mAdapter = new FeedsAdapter(mContext, mFeedList);
+        mAdapter = new FeedsAdapter(mContext, mShotList);
 
         mRecyclerView.setAdapter(mAdapter);
 
@@ -54,11 +62,12 @@ public class FeedsFragment extends BaseFragment {
 
     }
 
-    public void setFilterType(){
-
+    public void setFilterType(String type){
+        mPage = 1;
+        loadFeeds(type,mPage);
     }
 
-    private void loadFeeds(int page){
+    private void loadFeeds(String type,int page){
 
     }
 }

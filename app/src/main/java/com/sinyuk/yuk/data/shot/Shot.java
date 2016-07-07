@@ -1,14 +1,17 @@
-package com.sinyuk.yuk.data.feed;
+package com.sinyuk.yuk.data.shot;
 
 import com.google.gson.annotations.SerializedName;
-import com.sinyuk.yuk.data.shots.Images;
+import com.sinyuk.yuk.api.DribbleApi;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by Sinyuk on 16.6.16.
  */
-public class Feed {
+public class Shot {
 
     /**
      * id : 471756
@@ -35,7 +38,6 @@ public class Feed {
      * animated : false
      * tags : ["fiction","sasquatch","sketch","wip"]
      */
-
     @SerializedName("id")
     private int mId;
     @SerializedName("title")
@@ -181,10 +183,9 @@ public class Feed {
 
     public void setTags(List<String> tags) { mTags = tags;}
 
-
     @Override
     public String toString() {
-        return "Feed{" +
+        return "Shot{" +
                 "mId=" + mId +
                 ", mTitle='" + mTitle + '\'' +
                 ", mDescription='" + mDescription + '\'' +
@@ -209,5 +210,47 @@ public class Feed {
                 ", mAnimated=" + mAnimated +
                 ", mTags=" + mTags +
                 '}';
+    }
+
+    Date getCreatedDate() {
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DribbleApi.DATE_FORMAT);
+        try {
+            return simpleDateFormat.parse(this.mCreatedAt);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    Date getUpdatedDate() {
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DribbleApi.DATE_FORMAT);
+        try {
+            return simpleDateFormat.parse(this.mUpdatedAt);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private class Images {
+
+        @SerializedName("hidpi")
+        private String mHidpi;
+        @SerializedName("normal")
+        private String mNormal;
+        @SerializedName("teaser")
+        private String mTeaser;
+
+        public String getHidpi() { return mHidpi;}
+
+        public void setHidpi(String hidpi) { mHidpi = hidpi;}
+
+        public String getNormal() { return mNormal;}
+
+        public void setNormal(String normal) { mNormal = normal;}
+
+        public String getTeaser() { return mTeaser;}
+
+        public void setTeaser(String teaser) { mTeaser = teaser;}
     }
 }

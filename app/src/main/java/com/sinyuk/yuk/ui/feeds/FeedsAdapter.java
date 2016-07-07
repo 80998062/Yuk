@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.data.BaseRVAdapter;
-import com.sinyuk.yuk.data.feed.Feed;
+import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.widgets.RatioImageView;
 
 import java.util.ArrayList;
@@ -21,10 +21,10 @@ import butterknife.BindView;
 /**
  * Created by Sinyuk on 16/7/6.
  */
-public class FeedsAdapter extends BaseRVAdapter<Feed> {
+public class FeedsAdapter extends BaseRVAdapter<Shot> {
 
 
-    public FeedsAdapter(Context context, ArrayList<Feed> dataSet) {
+    public FeedsAdapter(Context context, ArrayList<Shot> dataSet) {
         super(context, dataSet);
     }
 

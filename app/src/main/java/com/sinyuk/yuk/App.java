@@ -3,8 +3,8 @@ package com.sinyuk.yuk;
 import android.app.Application;
 
 import com.sinyuk.yuk.api.ApiComponent;
-import com.sinyuk.yuk.api.ApiModule;
 import com.sinyuk.yuk.api.DaggerApiComponent;
+
 
 import timber.log.Timber;
 
@@ -31,7 +31,7 @@ public class App extends Application {
 
     private void createAppComponent() {
         if (mAppComponent == null) {
-            mAppModule = new AppModule(this) ;
+            mAppModule = new AppModule(this);
             mAppComponent = DaggerAppComponent.builder().appModule(mAppModule).build();
         }
     }

@@ -24,6 +24,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         TAG = this.getClass().getSimpleName();
 
+        mCompositeSubscription = new CompositeSubscription();
+
         beforeInflating();
 
         if (getContentViewID() != 0) {

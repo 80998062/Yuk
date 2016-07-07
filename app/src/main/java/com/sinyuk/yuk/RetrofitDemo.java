@@ -18,7 +18,7 @@ public class RetrofitDemo extends BaseActivity {
 
         dribbleService.listAllShots(1).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<Feed>>() {
+                .subscribe(new Subscriber<List<Shot>>() {
                     @Override
                     public void onCompleted() {
                         log("onCompleted");
@@ -30,7 +30,7 @@ public class RetrofitDemo extends BaseActivity {
                     }
 
                     @Override
-                    public void onNext(List<Feed> feeds) {
+                    public void onNext(List<Shot> feeds) {
                         for (int i = 0; i < feeds.size(); i++) {
                             log(feeds.get(i).toString());
                         }
