@@ -2,6 +2,7 @@ package com.sinyuk.yuk.data.shot;
 
 import com.sinyuk.yuk.AppModule;
 import com.sinyuk.yuk.api.ApiModule;
+import com.sinyuk.yuk.ui.feeds.FeedsFragment;
 
 import javax.inject.Singleton;
 
@@ -19,4 +20,5 @@ public interface ShotRepositoryComponent {
 
     ShotRemoteDataSource getShotRemoteDataSource();
 
+    void inject(FeedsFragment target);
 }
