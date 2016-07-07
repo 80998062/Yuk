@@ -5,7 +5,7 @@ import android.widget.RelativeLayout;
 
 import com.sinyuk.yuk.ui.BaseActivity;
 
-import com.sinyuk.yuk.ui.feeds.DaggerFeedsFragmentComponent;
+
 import com.sinyuk.yuk.ui.feeds.FeedsFragment;
 import com.sinyuk.yuk.utils.ActivityUtils;
 
@@ -18,9 +18,7 @@ public class ShotsListDemo extends BaseActivity {
     @BindView(R.id.root_view)
     RelativeLayout mRootView;
 
-
-    @Inject
-    FeedsFragment feedsFragment;
+    FeedsFragment feedsFragment = new FeedsFragment();
 
     @Override
     protected int getContentViewID() {
@@ -29,7 +27,7 @@ public class ShotsListDemo extends BaseActivity {
 
     @Override
     protected void beforeInflating() {
-        DaggerFeedsFragmentComponent.create().inject(this);
+
     }
 
     @Override
@@ -42,6 +40,6 @@ public class ShotsListDemo extends BaseActivity {
         }
 
         Log.w("Sinyuk -> ", " haha " + getContentViewID());
-//        ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), feedsFragment, getContentViewID());
+        ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), feedsFragment, R.id.root_view);
     }
 }

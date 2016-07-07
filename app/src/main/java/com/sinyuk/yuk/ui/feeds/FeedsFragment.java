@@ -8,6 +8,7 @@ import com.sinyuk.yuk.App;
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.data.shot.DaggerShotRepositoryComponent;
 import com.sinyuk.yuk.data.shot.Shot;
+import com.sinyuk.yuk.data.shot.ShotRepository;
 import com.sinyuk.yuk.ui.BaseFragment;
 import com.sinyuk.yuk.utils.ListItemMarginDecoration;
 
@@ -21,7 +22,6 @@ import butterknife.BindView;
 /**
  * Created by Sinyuk on 16/7/1.
  */
-@Singleton
 public class FeedsFragment extends BaseFragment {
 
     @BindView(R.id.recycler_view)
@@ -33,6 +33,8 @@ public class FeedsFragment extends BaseFragment {
     private int mPage;
 
     @Inject
+    ShotRepository shotRepository;
+
     public FeedsFragment() {
         // need a default constructor
     }
@@ -57,7 +59,7 @@ public class FeedsFragment extends BaseFragment {
 
     @Override
     protected void finishInflate() {
-        initRecyclerView();
+//        initRecyclerView();
 /*        shotRepository.getShots("", 1).doOnError(new Action1<Throwable>() {
             @Override
             public void call(Throwable throwable) {
