@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.sinyuk.yuk.api.DribbleService;
 
-import javax.inject.Singleton;
+import java.util.List;
 
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -29,13 +29,13 @@ public class ShotRemoteDataSource implements ShotDataSource {
      * @return
      */
     @Override
-    public Observable getShots(@NonNull String type, @NonNull int page) {
+    public Observable<List<Shot>> getShots(@NonNull String type, @NonNull int page) {
         return mDribbleService.shots(type, page)
                 .subscribeOn(Schedulers.io())
-                .flatMap(shots -> {
+                .doOnNext(shots -> {
                     // 同时保存数据到本地 只保存第一页
                     if (page == 1) { localDataSource.saveShots(type, shots); }
-                    return Observable.from(shots);
-                }).subscribeOn(Schedulers.io());
+                })
+                .subscribeOn(Schedulers.io());
     }
 }

@@ -4,6 +4,8 @@ package com.sinyuk.yuk.data.shot;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.List;
+
 import rx.Observable;
 
 /**
@@ -11,5 +13,5 @@ import rx.Observable;
  */
 public interface ShotDataSource {
 
-    Observable getShots(@NonNull String type, @NonNull int page);
+    Observable<List<Shot>> getShots(@NonNull String type, @NonNull int page);
 }

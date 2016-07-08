@@ -3,12 +3,11 @@ package com.sinyuk.yuk.data.shot;
 import android.support.annotation.NonNull;
 import android.support.v4.util.LruCache;
 
+import java.util.Collections;
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 
 /**
@@ -17,13 +16,14 @@ import rx.Observable;
 public class ShotLocalDataSource implements ShotDataSource {
 
     LruCache<String, List<Shot>> shotCache = null;
+    List<Shot> emptyList = Collections.emptyList();
 
     public ShotLocalDataSource() {
         final int fakeCacheSize = 100 * 10;
         shotCache = new LruCache<String, List<Shot>>(fakeCacheSize) {
             @Override
             protected int sizeOf(String key, List<Shot> value) {
-                return 100;
+                return 10;
             }
 
             @Override
@@ -35,11 +35,16 @@ public class ShotLocalDataSource implements ShotDataSource {
     }
 
     @Override
-    public Observable getShots(@NonNull String type, @NonNull int page) {
-        return Observable.from(shotCache.get(type))
-                .toSortedList((shot1, shot2) -> {
-                    return shot1.getCreatedDate().compareTo(shot2.getCreatedDate());
-                });
+    public Observable<List<Shot>> getShots(@NonNull String type, @NonNull int page) {
+        if (shotCache.get(type) != null && !shotCache.get(type).isEmpty()) {
+            return Observable.from(shotCache.get(type))
+                    .subscribeOn(Schedulers.io())
+                    .toSortedList((shot, shot2) -> {
+                        return shot.getCreatedDate().compareTo(shot2.getCreatedDate());
+                    }).subscribeOn(Schedulers.computation());
+        } else {
+            return Observable.just(emptyList);
+        }
     }
 
     public void saveShots(@NonNull String type, @NonNull List<Shot> data) {

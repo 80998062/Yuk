@@ -3,6 +3,7 @@ package com.sinyuk.yuk.ui.feeds;
 import android.app.Activity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.sinyuk.yuk.App;
 import com.sinyuk.yuk.R;
@@ -13,11 +14,14 @@ import com.sinyuk.yuk.ui.BaseFragment;
 import com.sinyuk.yuk.utils.ListItemMarginDecoration;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import butterknife.BindView;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 
 /**
  * Created by Sinyuk on 16/7/1.
@@ -26,8 +30,6 @@ public class FeedsFragment extends BaseFragment {
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
-    //    @Inject
-//    ShotRepository shotRepository;
     private FeedsAdapter mAdapter;
     private ArrayList<Shot> mShotList = new ArrayList<>();
     private int mPage;
@@ -60,12 +62,14 @@ public class FeedsFragment extends BaseFragment {
     @Override
     protected void finishInflate() {
 //        initRecyclerView();
-/*        shotRepository.getShots("", 1).doOnError(new Action1<Throwable>() {
-            @Override
-            public void call(Throwable throwable) {
-                Log.w("Sinyuk -> ", throwable.getLocalizedMessage());
-            }
-        }).observeOn(AndroidSchedulers.mainThread())
+        shotRepository.getShots("", 1)
+                .doOnError(new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        throwable.getLocalizedMessage();
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<Shot>>() {
                     @Override
                     public void call(List<Shot> shots) {
@@ -73,7 +77,7 @@ public class FeedsFragment extends BaseFragment {
                             Log.w("Sinyuk -> ", shot.toString());
                         }
                     }
-                });*/
+                });
     }
 
     private void initRecyclerView() {

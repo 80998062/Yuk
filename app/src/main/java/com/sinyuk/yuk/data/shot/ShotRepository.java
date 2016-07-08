@@ -22,7 +22,7 @@ public class ShotRepository {
         this.remoteDataSource = remoteDataSource;
     }
 
-    public Observable<List<Shot>> getShots(@NonNull String type, @NonNull int page) {
+    public Observable getShots(@NonNull String type, @NonNull int page) {
         Observable<List<Shot>> localObservable = localDataSource.getShots(type, page);
         Observable<List<Shot>> remoteObservable = remoteDataSource.getShots(type, page);
         return Observable
