@@ -1,10 +1,14 @@
 package com.sinyuk.yuk.data.user;
 
 import com.google.gson.annotations.SerializedName;
+import com.litesuits.orm.db.annotation.PrimaryKey;
+import com.litesuits.orm.db.annotation.Table;
+import com.litesuits.orm.db.enums.AssignType;
 
 /**
  * Created by Sinyuk on 16.6.17.
  */
+@Table("user")
 public class User {
 
     /**
@@ -38,7 +42,7 @@ public class User {
      * created_at : 2009-07-08T02:51:22Z
      * updated_at : 2014-02-22T17:10:33Z
      */
-
+    @PrimaryKey(AssignType.BY_MYSELF)
     @SerializedName("id")
     private int mId;
     @SerializedName("name")

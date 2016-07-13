@@ -32,14 +32,6 @@ public class ShotsListDemo extends BaseActivity {
 
     @Override
     protected void finishInflating() {
-        if (getSupportFragmentManager() == null) {
-            Log.w("Sinyuk -> ", "1");
-        }
-        if (feedsFragment == null) {
-            Log.w("Sinyuk -> ", "2");
-        }
-
-        Log.w("Sinyuk -> ", " haha " + getContentViewID());
         ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), feedsFragment, R.id.root_view);
     }
 }

@@ -20,6 +20,8 @@ ext {
 
     daggerVersion = '2.5'
 
+    butterknifeVersion = '8.2.1'
+
     dependencies = [
             "appcompat-v7"          : "com.android.support:appcompat-v7:${supportVersion}",
             "support-design"        : "com.android.support:design:${supportVersion}",
@@ -32,16 +34,17 @@ ext {
             "gson"                  : "com.google.code.gson:gson:2.6.2",
             "eventbus"              : "org.greenrobot:eventbus:3.0.0",
             "timber"                : "com.jakewharton.timber:timber:4.1.2",
-            "butterknife"           : "com.jakewharton:butterknife:8.1.0",
+            "butterknife"           : "com.jakewharton:butterknife:${butterknifeVersion}",
+            "butterknife-compiler"  : "com.jakewharton:butterknife-compiler:${butterknifeVersion}",
             "rxjava"                : "io.reactivex:rxjava:${rxVersion}",
             "rxandroid"             : "io.reactivex:rxandroid:1.2.0",
             "rxbinding"             : "com.jakewharton.rxbinding:rxbinding:${rxBindingVersion}",
             "rxbinding-design"      : "com.jakewharton.rxbinding:rxbinding-design:${rxBindingVersion}",
             "rxbinding-appcompat-v7": "com.jakewharton.rxbinding:rxbinding-appcompat-v7:${rxBindingVersion}",
+            "rx-preferences"          : "com.f2prateek.rx.preferences:rx-preferences:1.0.2",
             "dagger"                : "com.google.dagger:dagger:${daggerVersion}",
             "dagger-compiler"       : "com.google.dagger:dagger-compiler:${daggerVersion}",
-            "glide"                 : "com.github.bumptech.glide:glide:3.7.0"
-
+            "glide"                 : "com.github.bumptech.glide:glide:3.7.0",
     ]
 
 

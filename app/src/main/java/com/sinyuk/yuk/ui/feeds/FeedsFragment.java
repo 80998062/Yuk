@@ -3,10 +3,11 @@ package com.sinyuk.yuk.ui.feeds;
 import android.app.Activity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.widget.TextView;
 
-import com.sinyuk.yuk.App;
+import com.sinyuk.yuk.AppModule;
 import com.sinyuk.yuk.R;
+import com.sinyuk.yuk.api.DribbleApi;
 import com.sinyuk.yuk.data.shot.DaggerShotRepositoryComponent;
 import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.data.shot.ShotRepository;
@@ -17,11 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import butterknife.BindView;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import timber.log.Timber;
 
 /**
  * Created by Sinyuk on 16/7/1.
@@ -30,12 +30,13 @@ public class FeedsFragment extends BaseFragment {
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
+    @BindView(R.id.data)
+    TextView mData;
+    @Inject
+    ShotRepository shotRepository;
     private FeedsAdapter mAdapter;
     private ArrayList<Shot> mShotList = new ArrayList<>();
     private int mPage;
-
-    @Inject
-    ShotRepository shotRepository;
 
     public FeedsFragment() {
         // need a default constructor
@@ -43,14 +44,14 @@ public class FeedsFragment extends BaseFragment {
 
     @Override
     protected void beforeInflate() {
-
+        Timber.tag("FeedsFragment");
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         DaggerShotRepositoryComponent.builder()
-                .apiComponent(((App) activity.getApplication()).getApiComponent())
+                .appModule(new AppModule(activity.getApplication()))
                 .build().inject(this);
     }
 
@@ -62,20 +63,11 @@ public class FeedsFragment extends BaseFragment {
     @Override
     protected void finishInflate() {
 //        initRecyclerView();
-        shotRepository.getShots("", 1)
-                .doOnError(new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        throwable.getLocalizedMessage();
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
+        shotRepository.getShots(DribbleApi.PLAYOFFS, 1)
                 .subscribe(new Action1<List<Shot>>() {
                     @Override
                     public void call(List<Shot> shots) {
-                        for (Shot shot : shots) {
-                            Log.w("Sinyuk -> ", shot.toString());
-                        }
+                        mData.setText(shots.toString());
                     }
                 });
     }
@@ -103,4 +95,5 @@ public class FeedsFragment extends BaseFragment {
     private void loadFeeds(String type, int page) {
 
     }
+
 }

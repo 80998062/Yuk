@@ -1,5 +1,6 @@
 package com.sinyuk.yuk.data.shot;
 
+import com.litesuits.orm.LiteOrm;
 import com.sinyuk.yuk.api.DribbleService;
 import com.sinyuk.yuk.utils.scopes.PerActivity;
 
@@ -13,19 +14,19 @@ import dagger.Provides;
  */
 @Module
 public class ShotRepositoryModule {
-    @PerActivity
+    @Singleton
     @Provides
-    public ShotLocalDataSource provideShotLocalDataSource() {
-        return new ShotLocalDataSource();
+    public ShotLocalDataSource provideShotLocalDataSource(LiteOrm liteOrm) {
+        return ShotLocalDataSource.getInstance(liteOrm);
     }
 
-    @PerActivity
+    @Singleton
     @Provides
     public ShotRemoteDataSource provideShotRemoteDataSource(DribbleService dribbleService, ShotLocalDataSource shotLocalDataSource) {
         return new ShotRemoteDataSource(dribbleService, shotLocalDataSource);
     }
 
-    @PerActivity
+    @Singleton
     @Provides
     public ShotRepository provideShotRepository(ShotLocalDataSource localDataSource, ShotRemoteDataSource remoteDataSource) {
         return new ShotRepository(localDataSource, remoteDataSource);

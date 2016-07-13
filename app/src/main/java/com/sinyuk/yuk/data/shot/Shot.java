@@ -1,6 +1,13 @@
 package com.sinyuk.yuk.data.shot;
 
 import com.google.gson.annotations.SerializedName;
+import com.litesuits.orm.db.annotation.Column;
+import com.litesuits.orm.db.annotation.Default;
+import com.litesuits.orm.db.annotation.NotNull;
+import com.litesuits.orm.db.annotation.PrimaryKey;
+import com.litesuits.orm.db.annotation.Table;
+import com.litesuits.orm.db.assit.WhereBuilder;
+import com.litesuits.orm.db.enums.AssignType;
 import com.sinyuk.yuk.api.DribbleApi;
 
 import java.text.ParseException;
@@ -11,8 +18,10 @@ import java.util.List;
 /**
  * Created by Sinyuk on 16.6.16.
  */
+@Table("shot")
 public class Shot {
 
+    public static final String COL_TYPE = "type";
     /**
      * id : 471756
      * title : Sasquatch
@@ -38,6 +47,19 @@ public class Shot {
      * animated : false
      * tags : ["fiction","sasquatch","sketch","wip"]
      */
+    @Default("")
+    @Column(COL_TYPE)
+    private String mType;
+
+    public String getType() {
+        return mType;
+    }
+
+    public void setType(String type) {
+        this.mType = type;
+    }
+
+    @PrimaryKey(AssignType.BY_MYSELF)
     @SerializedName("id")
     private int mId;
     @SerializedName("title")

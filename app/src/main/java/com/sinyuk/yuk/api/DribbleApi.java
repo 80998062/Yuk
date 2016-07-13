@@ -13,6 +13,7 @@ public class DribbleApi {
      * List Types
      * Default: Results of any type.
      */
+    public static final String ALL = "";
     public static final String ANIMATED = "animated";
     public static final String ATTACHMENTS = "attachments";
     public static final String DEBUTS = "debuts";

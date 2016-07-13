@@ -2,7 +2,11 @@ package com.sinyuk.yuk;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
+import com.f2prateek.rx.preferences.RxSharedPreferences;
+import com.litesuits.orm.LiteOrm;
 import com.sinyuk.yuk.data.local.ACache;
 
 import javax.inject.Singleton;
@@ -33,5 +37,24 @@ public final class AppModule {
     public Context provideContext() {
         return application;
     }
+
+    @Singleton
+    @Provides
+    public LiteOrm provideLiteOrm(){
+
+        LiteOrm liteOrm = LiteOrm.newSingleInstance(application, "yuk.db");
+
+        liteOrm.setDebugged(true); // open the log
+
+        return liteOrm;
+    }
+
+    @Provides
+    @Singleton
+    public RxSharedPreferences providePreferences(){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(application);
+        return RxSharedPreferences.create(preferences);
+    }
+
 
 }

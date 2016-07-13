@@ -67,7 +67,7 @@ public class ApiModule {
             builder.addInterceptor(loggingInterceptor);
         }
 
-        Interceptor cacheInterceptor = chain -> {
+/*        Interceptor cacheInterceptor = chain -> {
             Request request = chain.request();
             if (!NetWorkUtils.isNetworkConnection(application)) {
                 request = request.newBuilder()
@@ -91,7 +91,7 @@ public class ApiModule {
             }
             return response;
         };
-        builder.cache(cache).addInterceptor(cacheInterceptor);
+        builder.cache(cache).addInterceptor(cacheInterceptor);*/
 
         // 请求头
         Interceptor authorization = chain -> {
