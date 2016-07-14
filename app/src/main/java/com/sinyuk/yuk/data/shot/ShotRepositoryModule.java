@@ -1,8 +1,8 @@
 package com.sinyuk.yuk.data.shot;
 
+import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.litesuits.orm.LiteOrm;
 import com.sinyuk.yuk.api.DribbleService;
-import com.sinyuk.yuk.utils.scopes.PerActivity;
 
 import javax.inject.Singleton;
 
@@ -28,7 +28,9 @@ public class ShotRepositoryModule {
 
     @Singleton
     @Provides
-    public ShotRepository provideShotRepository(ShotLocalDataSource localDataSource, ShotRemoteDataSource remoteDataSource) {
-        return new ShotRepository(localDataSource, remoteDataSource);
+    public ShotRepository provideShotRepository(ShotLocalDataSource localDataSource,
+                                                ShotRemoteDataSource remoteDataSource,
+                                                RxSharedPreferences preferences) {
+        return new ShotRepository(localDataSource, remoteDataSource, preferences);
     }
 }
