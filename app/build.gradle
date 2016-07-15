@@ -42,6 +42,7 @@ dependencies {
     compile rootProject.ext.dependencies["rxbinding"]
     compile rootProject.ext.dependencies["rxbinding"]
     compile rootProject.ext.dependencies["rx-preferences"]
+    compile rootProject.ext.dependencies["rx-lifecycle"]
     compile rootProject.ext.dependencies["eventbus"]
     compile rootProject.ext.dependencies["butterknife"]
     apt rootProject.ext.dependencies["butterknife-compiler"]
@@ -49,4 +50,8 @@ dependencies {
     apt rootProject.ext.dependencies["dagger-compiler"]
     debugCompile rootProject.ext.dependencies["timber"]
     compile project(':lite-orm-1.9.1')
+    compile ('com.github.ozodrukh:CircularReveal:2.0.1@aar') {
+        transitive = true;
+    }
+
 }

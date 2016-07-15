@@ -13,6 +13,8 @@ import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.data.shot.ShotRepository;
 import com.sinyuk.yuk.ui.BaseFragment;
 import com.sinyuk.yuk.utils.ListItemMarginDecoration;
+import com.trello.rxlifecycle.ActivityEvent;
+import com.trello.rxlifecycle.RxLifecycle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,13 +65,9 @@ public class FeedsFragment extends BaseFragment {
     @Override
     protected void finishInflate() {
 //        initRecyclerView();
-        shotRepository.getShots(DribbleApi.PLAYOFFS, 1)
-                .subscribe(new Action1<List<Shot>>() {
-                    @Override
-                    public void call(List<Shot> shots) {
-                        mData.setText(shots.toString());
-                    }
-                });
+
+        loadFeeds(DribbleApi.PLAYOFFS, 1);
+
     }
 
     private void initRecyclerView() {
@@ -93,7 +91,13 @@ public class FeedsFragment extends BaseFragment {
     }
 
     private void loadFeeds(String type, int page) {
-
+        shotRepository.getShots(type,page)
+                .subscribe(new Action1<List<Shot>>() {
+                    @Override
+                    public void call(List<Shot> shots) {
+                        mData.setText(shots.toString());
+                    }
+                });
     }
 
 }
