@@ -12,16 +12,4 @@
         android:background="@color/official_slate">
 
     </android.support.v7.widget.RecyclerView>
-
-    <android.support.v4.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            android:id="@+id/data"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/material_text_body2"
-            android:typeface="monospace"/>
-    </android.support.v4.widget.NestedScrollView>
 </FrameLayout>

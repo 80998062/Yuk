@@ -254,7 +254,7 @@ public class Shot {
         return null;
     }
 
-    private class Images {
+    public class Images {
 
         @SerializedName("hidpi")
         private String mHidpi;

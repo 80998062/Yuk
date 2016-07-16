@@ -5,6 +5,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.sinyuk.yuk.AppModule;
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.api.DribbleApi;
@@ -13,8 +14,7 @@ import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.data.shot.ShotRepository;
 import com.sinyuk.yuk.ui.BaseFragment;
 import com.sinyuk.yuk.utils.ListItemMarginDecoration;
-import com.trello.rxlifecycle.ActivityEvent;
-import com.trello.rxlifecycle.RxLifecycle;
+import com.sinyuk.yuk.utils.glide.RecyclerViewPreloader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +32,6 @@ public class FeedsFragment extends BaseFragment {
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
-    @BindView(R.id.data)
-    TextView mData;
     @Inject
     ShotRepository shotRepository;
     private FeedsAdapter mAdapter;
@@ -64,18 +62,18 @@ public class FeedsFragment extends BaseFragment {
 
     @Override
     protected void finishInflate() {
-//        initRecyclerView();
-
-        loadFeeds(DribbleApi.PLAYOFFS, 1);
+        initRecyclerView();
+        mRecyclerView.postDelayed(() -> loadFeeds(DribbleApi.PLAYOFFS, 1), 1000);
 
     }
 
     private void initRecyclerView() {
-        mAdapter = new FeedsAdapter(mContext, mShotList);
+
+        mAdapter = new FeedsAdapter(mContext, Glide.with(this), mShotList);
 
         mRecyclerView.setAdapter(mAdapter);
 
-//        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.addOnScrollListener(new RecyclerViewPreloader<>(mAdapter, mAdapter, 10));
 
         mRecyclerView.addItemDecoration(new ListItemMarginDecoration(2, R.dimen.content_space_8, true, mContext));
 
@@ -91,11 +89,12 @@ public class FeedsFragment extends BaseFragment {
     }
 
     private void loadFeeds(String type, int page) {
-        shotRepository.getShots(type,page)
+        shotRepository.getShots(type, page)
                 .subscribe(new Action1<List<Shot>>() {
                     @Override
                     public void call(List<Shot> shots) {
-                        mData.setText(shots.toString());
+                        mShotList.addAll(shots);
+                        mAdapter.notifyDataSetChanged();
                     }
                 });
     }

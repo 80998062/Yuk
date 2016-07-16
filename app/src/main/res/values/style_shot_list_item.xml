@@ -19,8 +19,12 @@
     </style>
 
     <!--TextView-->
-    <style name="slm_number" parent="single_line_text">
+    <style name="slm_number">
+        <item name="android:ellipsize">middle</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
         <item name="android:layout_width">wrap_content</item>
+        <item name="android:maxWidth">48dp</item>
         <item name="android:layout_height">@dimen/icon_size_18</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:textStyle">bold</item>

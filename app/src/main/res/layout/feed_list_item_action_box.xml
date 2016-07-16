@@ -60,6 +60,7 @@
         style="@style/slm_number"
         android:layout_marginLeft="@dimen/content_space_2"
         android:layout_marginStart="@dimen/content_space_2"
+        android:maxWidth="32dp"
         tools:text="1234"/>
 
 </LinearLayout>
