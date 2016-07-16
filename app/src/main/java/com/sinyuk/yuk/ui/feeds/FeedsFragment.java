@@ -63,7 +63,7 @@ public class FeedsFragment extends BaseFragment {
     @Override
     protected void finishInflate() {
         initRecyclerView();
-        mRecyclerView.postDelayed(() -> loadFeeds(DribbleApi.PLAYOFFS, 1), 1000);
+        mRecyclerView.postDelayed(() -> loadFeeds(DribbleApi.ALL, 1), 1000);
 
     }
 

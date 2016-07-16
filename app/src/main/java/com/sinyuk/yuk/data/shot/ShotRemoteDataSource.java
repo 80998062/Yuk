@@ -64,7 +64,7 @@ public class ShotRemoteDataSource implements ShotDataSource {
         } else {
             shot.saveExtras("", shotUrl, "", "", false);
         }
-        
+
     }
 
 

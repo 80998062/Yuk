@@ -42,7 +42,6 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
 
     private final BitmapRequestBuilder<String, Bitmap> builder;
     private final DrawableRequestBuilder<String> avatarRequest;
-    private final RequestManager mGlide;
 
     private int[] stolenSize;
     private Context mContext;
@@ -50,7 +49,6 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
 
     public FeedsAdapter(Context context, RequestManager mGlide, ArrayList<Shot> dataSet) {
         this.mContext = context;
-        this.mGlide = mGlide;
         this.builder = mGlide.fromString().asBitmap().centerCrop();
         this.mDataSet = dataSet;
         Timber.tag("FeedsAdapter");
@@ -80,22 +78,18 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
     public void onBindViewHolder(FeedItemViewHolder holder, int position) {
         final Shot data = mDataSet.get(position);
         /* shot */
-        if (data.getImages() == null) {
-            // cache
-            mGlide.load(R.drawable.pic_fill).into(holder.mShot);
-        } else {
-            Target<?> target = builder.load(data.getImages().getNormal())
-                    .error(R.drawable.pic_fill)
-                    .into(holder.mShot);
-            if (stolenSize == null) {
-                // assuming uniform sizing among items (fixed size or match works, wrap doesn't)
-                target.getSize((width, height) -> {
-                    if (0 < width && 0 < height) {
-                        stolenSize = new int[]{width, height};
-                    }
-                });
-            }
+        Target<?> target = builder.load(data.getShotUrl())
+                .error(R.drawable.pic_fill)
+                .into(holder.mShot);
+        if (stolenSize == null) {
+            // assuming uniform sizing among items (fixed size or match works, wrap doesn't)
+            target.getSize((width, height) -> {
+                if (0 < width && 0 < height) {
+                    stolenSize = new int[]{width, height};
+                }
+            });
         }
+
         /* rebound */
         if (data.getReboundsCount() > 0) {
             if (holder.mReboundStub != null) {
@@ -128,15 +122,15 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
 
 
         /* avatar*/
-        final String username = data.getUser().getUsername();
+        final String username = data.getUsername() == null ? "" : data.getUsername();
 
         // use a TextDrawable as a placeholder
-        final char firstLetter = username.isEmpty() ? ' ' : username.charAt(0);
+        final char firstLetter = username.charAt(0);
 
         TextDrawable textDrawable = TextDrawable.builder()
                 .buildRound(firstLetter + "", mContext.getResources().getColor(R.color.official_slate));
 
-        avatarRequest.load(data.getUser().getAvatarUrl())
+        avatarRequest.load(data.getAvatarUrl())
                 .placeholder(textDrawable)
                 .error(textDrawable).into(holder.mAvatar);
 
@@ -144,14 +138,15 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
         checkText(holder.mUsername, username);
 
         /* type */
-        switch (data.getUser().getType()) {
+        switch (data.getPlayerOrTeam()) {
             case User.TEAM:
                 checkText(holder.mType, User.TEAM);
                 break;
             case User.PLAYER:
-                checkText(holder.mType, data.getUser().isPro() ? User.PRO : User.PLAYER);
+                checkText(holder.mType, data.isPro() ? User.PRO : User.PLAYER);
                 break;
             default:
+                holder.mType.setVisibility(View.GONE);
                 break;
         }
 
@@ -174,7 +169,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
 
     @Override
     public GenericRequestBuilder getPreloadRequestBuilder(Shot item) {
-        return builder.load(item.getImages().getNormal());
+        return builder.load(item.getShotUrl());
     }
 
     // ------------------------ PreloadSizeProvider -----------------------
