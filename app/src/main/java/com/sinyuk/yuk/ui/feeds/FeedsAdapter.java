@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -122,7 +123,9 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
 
 
         /* avatar*/
-        final String username = data.getUsername() == null ? "" : data.getUsername();
+        // null-check hell oh shit!!
+//        final String username = TextUtils.isEmpty(data.getUsername()) ? " " : data.getUsername();
+        final String username = data.getUsername();
 
         // use a TextDrawable as a placeholder
         final char firstLetter = username.charAt(0);
@@ -138,6 +141,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
         checkText(holder.mUsername, username);
 
         /* type */
+//        final String type = TextUtils.isEmpty(data.getPlayerOrTeam()) ? " " : data.getUsername();
         switch (data.getPlayerOrTeam()) {
             case User.TEAM:
                 checkText(holder.mType, User.TEAM);

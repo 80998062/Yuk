@@ -1,5 +1,7 @@
 package com.sinyuk.yuk.data.shot;
 
+import android.text.TextUtils;
+
 import com.google.gson.annotations.SerializedName;
 import com.litesuits.orm.db.annotation.Column;
 import com.litesuits.orm.db.annotation.Default;
@@ -284,16 +286,16 @@ public class Shot {
                            String avatarUrl,
                            String playerOrTeam,
                            boolean pro) {
-        this.username = checkNotNull(username);
-        this.shotUrl = checkNotNull(shotUrl);
-        this.avatarUrl = checkNotNull(avatarUrl);
-        this.playerOrTeam = checkNotNull(playerOrTeam);
+        this.username = checkNotNull(username, " "); // username 不能为空
+        this.shotUrl = checkNotNull(shotUrl, " ");
+        this.avatarUrl = checkNotNull(avatarUrl, " ");
+        this.playerOrTeam = checkNotNull(playerOrTeam, " ");
         this.pro = pro;
 
     }
 
-    private String checkNotNull(String str){
-        if (str == null){str = "";}
+    private String checkNotNull(String str, String def) {
+        if (TextUtils.isEmpty(str)) {str = def;}
         return str;
     }
 
