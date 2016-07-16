@@ -70,6 +70,8 @@ public class ShotLocalDataSource implements ShotDataSource {
                 .subscribe(shot -> {
                     liteOrm.insert(shot, ConflictAlgorithm.Replace);
                     Timber.d("insert %s", shot.getType());
+                    Timber.d("getUsername %s", shot.getUsername());
+                    Timber.d("getShotUrl %s", shot.getShotUrl());
                 });
     }
 

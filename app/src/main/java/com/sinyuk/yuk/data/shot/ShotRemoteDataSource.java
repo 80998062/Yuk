@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -38,6 +39,9 @@ public class ShotRemoteDataSource implements ShotDataSource {
         return mDribbleService.shots(type, page)
                 .subscribeOn(Schedulers.io())
                 .doOnError(throwable -> Timber.d(throwable.getLocalizedMessage()))
+                .flatMap(shots -> Observable.from(shots).doOnNext((Action1<Shot>) this::addExtras))
+                .doOnError(throwable -> Timber.d(throwable.getLocalizedMessage()))
+                .toList()
                 .doOnNext(shots -> {if (page == 1) { localDataSource.saveShots(type, shots); }})
                 .subscribeOn(Schedulers.io())
                 .onErrorResumeNext(throwable -> {
@@ -45,6 +49,22 @@ public class ShotRemoteDataSource implements ShotDataSource {
                     return Observable.just(Collections.emptyList());
                 });
 
+    }
+
+    private void addExtras(Shot shot) {
+        final String shotUrl = shot.getImages() == null ? "" : shot.getImages().getNormal();
+        if (shot.getUser() != null) {
+            shot.saveExtras(
+                    shot.getUser().getUsername(),
+                    shotUrl,
+                    shot.getUser().getAvatarUrl(),
+                    shot.getUser().getType(),
+                    shot.getUser().isPro()
+            );
+        } else {
+            shot.saveExtras("", shotUrl, "", "", false);
+        }
+        
     }
 
 

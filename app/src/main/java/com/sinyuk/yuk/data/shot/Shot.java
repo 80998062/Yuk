@@ -3,10 +3,9 @@ package com.sinyuk.yuk.data.shot;
 import com.google.gson.annotations.SerializedName;
 import com.litesuits.orm.db.annotation.Column;
 import com.litesuits.orm.db.annotation.Default;
-import com.litesuits.orm.db.annotation.NotNull;
+import com.litesuits.orm.db.annotation.Ignore;
 import com.litesuits.orm.db.annotation.PrimaryKey;
 import com.litesuits.orm.db.annotation.Table;
-import com.litesuits.orm.db.assit.WhereBuilder;
 import com.litesuits.orm.db.enums.AssignType;
 import com.sinyuk.yuk.api.DribbleApi;
 import com.sinyuk.yuk.data.team.Team;
@@ -52,15 +51,6 @@ public class Shot {
     @Default("")
     @Column(COL_TYPE)
     private String mType;
-
-    public String getType() {
-        return mType;
-    }
-
-    public void setType(String type) {
-        this.mType = type;
-    }
-
     @PrimaryKey(AssignType.BY_MYSELF)
     @SerializedName("id")
     private int mId;
@@ -113,7 +103,39 @@ public class Shot {
     @SerializedName("animated")
     private boolean mAnimated;
     @SerializedName("tags")
+    @Ignore
     private List<String> mTags;
+    @SerializedName("user")
+    @Ignore
+    private User user;
+    @SerializedName("team")
+    @Ignore
+    private Team team;
+    /**
+     * 保存到数据库的一些东西
+     */
+    @Default("")
+    @Column("user_name")
+    private String username;
+    @Default("")
+    @Column("shot_url")
+    private String shotUrl;
+    @Default("")
+    @Column("avatar_url")
+    private String avatarUrl;
+    @Default(User.PLAYER)
+    @Column("playerOrTeam")
+    private String playerOrTeam;
+    @Column("pro")
+    private boolean pro;
+
+    public String getType() {
+        return mType;
+    }
+
+    public void setType(String type) {
+        this.mType = type;
+    }
 
     public int getId() { return mId;}
 
@@ -207,34 +229,6 @@ public class Shot {
 
     public void setTags(List<String> tags) { mTags = tags;}
 
-    @Override
-    public String toString() {
-        return "Shot{" +
-                "mId=" + mId +
-                ", mTitle='" + mTitle + '\'' +
-                ", mDescription='" + mDescription + '\'' +
-                ", mWidth=" + mWidth +
-                ", mHeight=" + mHeight +
-                ", mImages=" + mImages +
-                ", mViewsCount=" + mViewsCount +
-                ", mLikesCount=" + mLikesCount +
-                ", mCommentsCount=" + mCommentsCount +
-                ", mAttachmentsCount=" + mAttachmentsCount +
-                ", mReboundsCount=" + mReboundsCount +
-                ", mBucketsCount=" + mBucketsCount +
-                ", mCreatedAt='" + mCreatedAt + '\'' +
-                ", mUpdatedAt='" + mUpdatedAt + '\'' +
-                ", mHtmlUrl='" + mHtmlUrl + '\'' +
-                ", mAttachmentsUrl='" + mAttachmentsUrl + '\'' +
-                ", mBucketsUrl='" + mBucketsUrl + '\'' +
-                ", mCommentsUrl='" + mCommentsUrl + '\'' +
-                ", mLikesUrl='" + mLikesUrl + '\'' +
-                ", mProjectsUrl='" + mProjectsUrl + '\'' +
-                ", mReboundsUrl='" + mReboundsUrl + '\'' +
-                ", mAnimated=" + mAnimated +
-                ", mTags=" + mTags +
-                '}';
-    }
 
     Date getCreatedDate() {
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DribbleApi.DATE_FORMAT);
@@ -256,7 +250,54 @@ public class Shot {
         return null;
     }
 
-    public class Images {
+    public User getUser() {
+        return user;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getShotUrl() {
+        return shotUrl;
+    }
+
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public boolean isPro() {
+        return pro;
+    }
+
+    public String getPlayerOrTeam() {
+        return playerOrTeam;
+    }
+
+    public void saveExtras(String username,
+                           String shotUrl,
+                           String avatarUrl,
+                           String playerOrTeam,
+                           boolean pro) {
+        this.username = checkNotNull(username);
+        this.shotUrl = checkNotNull(shotUrl);
+        this.avatarUrl = checkNotNull(avatarUrl);
+        this.playerOrTeam = checkNotNull(playerOrTeam);
+        this.pro = pro;
+
+    }
+
+    private String checkNotNull(String str){
+        if (str == null){str = "";}
+        return str;
+    }
+
+    public static class Images {
 
         @SerializedName("hidpi")
         private String mHidpi;
@@ -276,17 +317,5 @@ public class Shot {
         public String getTeaser() { return mTeaser;}
 
         public void setTeaser(String teaser) { mTeaser = teaser;}
-    }
-
-    private User user;
-
-    private Team team;
-
-    public User getUser() {
-        return user;
-    }
-
-    public Team getTeam() {
-        return team;
     }
 }
