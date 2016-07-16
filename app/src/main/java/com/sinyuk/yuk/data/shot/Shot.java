@@ -9,6 +9,8 @@ import com.litesuits.orm.db.annotation.Table;
 import com.litesuits.orm.db.assit.WhereBuilder;
 import com.litesuits.orm.db.enums.AssignType;
 import com.sinyuk.yuk.api.DribbleApi;
+import com.sinyuk.yuk.data.team.Team;
+import com.sinyuk.yuk.data.user.User;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -274,5 +276,17 @@ public class Shot {
         public String getTeaser() { return mTeaser;}
 
         public void setTeaser(String teaser) { mTeaser = teaser;}
+    }
+
+    private User user;
+
+    private Team team;
+
+    public User getUser() {
+        return user;
+    }
+
+    public Team getTeam() {
+        return team;
     }
 }

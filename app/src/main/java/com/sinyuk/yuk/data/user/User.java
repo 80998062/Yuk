@@ -10,7 +10,9 @@ import com.litesuits.orm.db.enums.AssignType;
  */
 @Table("user")
 public class User {
-
+    public static final String TEAM  = "TEAM";
+    public static final String PLAYER  = "PLAYER";
+    public static final String PRO  = "PRO";
     /**
      * id : 1
      * name : Dan Cederholm
@@ -86,6 +88,10 @@ public class User {
     private int mTeamsCount;
     @SerializedName("can_upload_shot")
     private boolean mCanUploadShot;
+    /* "type": "Team",
+    "pro": false,
+    "type": "Player",
+    "pro": true,*/
     @SerializedName("type")
     private String mType;
     @SerializedName("pro")

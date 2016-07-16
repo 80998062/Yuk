@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.sinyuk.yuk.widgets.RatioImageView
+            <com.sinyuk.yuk.widgets.FourThreeImageView
                 android:id="@+id/shot"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
