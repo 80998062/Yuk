@@ -2,6 +2,7 @@ package com.sinyuk.yuk;
 
 import android.app.Application;
 
+import com.facebook.stetho.Stetho;
 import com.sinyuk.yuk.api.ApiComponent;
 import com.sinyuk.yuk.api.DaggerApiComponent;
 
@@ -25,6 +26,7 @@ public class App extends Application {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         }
+        Stetho.initializeWithDefaults(this);
 
         createAppComponent();
     }

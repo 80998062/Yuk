@@ -7,6 +7,7 @@ import com.litesuits.orm.db.assit.QueryBuilder;
 import com.litesuits.orm.db.model.ConflictAlgorithm;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -17,7 +18,7 @@ import timber.log.Timber;
  * Created by Sinyuk on 16/7/6.
  */
 public class ShotLocalDataSource implements ShotDataSource {
-    private static final int MAX_BUFFER_SIZE = 20;
+    private static final int MAX_BUFFER_SIZE = 10;
     private static ShotLocalDataSource instance = null;
     private final LiteOrm liteOrm;
 
@@ -36,8 +37,6 @@ public class ShotLocalDataSource implements ShotDataSource {
 
     @Override
     public Observable<List<Shot>> getShots(@NonNull String type, @NonNull int page) {
-        Timber.d("getShots type %s page %d", type, page);
-
         return Observable.fromCallable(() -> doQuery(type))
                 .doOnError(throwable -> Timber.d("get cached shots: " + throwable.getLocalizedMessage()))
                 .subscribeOn(Schedulers.io())
@@ -62,16 +61,21 @@ public class ShotLocalDataSource implements ShotDataSource {
                 .doOnCompleted(() -> getShots(type, 1).map(List::size)
                         .observeOn(Schedulers.io())
                         .subscribe(size -> {
-                            if (size > MAX_BUFFER_SIZE + 1) {
-                                liteOrm.delete(Shot.class, MAX_BUFFER_SIZE, size - 1, null);
+                            if (size > MAX_BUFFER_SIZE) {
+                                liteOrm.delete(Shot.class, MAX_BUFFER_SIZE + 1, size, null);
                             }
                         }))
                 .observeOn(Schedulers.io())
                 .subscribe(shot -> {
-                    liteOrm.insert(shot, ConflictAlgorithm.Replace);
-                    Timber.d("insert %s", shot.getType());
-                    Timber.d("getUsername %s", shot.getUsername());
-                    Timber.d("getShotUrl %s", shot.getShotUrl());
+                    try {
+                        liteOrm.insert(shot, ConflictAlgorithm.Replace);
+                    }
+                    catch (Exception e){
+                        Timber.d(e.getLocalizedMessage());
+                        Timber.d(e.getLocalizedMessage());
+                        Timber.d(e.getLocalizedMessage());
+                        Timber.d(e.getLocalizedMessage());
+                    }
                 });
     }
 

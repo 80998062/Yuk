@@ -54,4 +54,9 @@ dependencies {
         transitive = true;
     }
 
+    debugCompile rootProject.ext.dependencies["stetho"]
+    debugCompile rootProject.ext.dependencies["stetho-okhttp3"]
+
+
+
 }

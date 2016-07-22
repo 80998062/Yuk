@@ -2,6 +2,7 @@ package com.sinyuk.yuk.api;
 
 import android.app.Application;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sinyuk.yuk.BuildConfig;
@@ -67,6 +68,8 @@ public class ApiModule {
             builder.addInterceptor(loggingInterceptor);
         }
 
+        builder.addNetworkInterceptor(new StethoInterceptor())
+                .build();
 /*        Interceptor cacheInterceptor = chain -> {
             Request request = chain.request();
             if (!NetWorkUtils.isNetworkConnection(application)) {

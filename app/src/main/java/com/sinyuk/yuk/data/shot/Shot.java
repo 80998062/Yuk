@@ -50,7 +50,7 @@ public class Shot {
      * animated : false
      * tags : ["fiction","sasquatch","sketch","wip"]
      */
-    @Default("")
+    @Default("others")
     @Column(COL_TYPE)
     private String mType;
     @PrimaryKey(AssignType.BY_MYSELF)
@@ -116,16 +116,12 @@ public class Shot {
     /**
      * 保存到数据库的一些东西
      */
-    @Default("")
     @Column("user_name")
     private String username;
-    @Default("")
     @Column("shot_url")
     private String shotUrl;
-    @Default("")
     @Column("avatar_url")
     private String avatarUrl;
-    @Default(User.PLAYER)
     @Column("playerOrTeam")
     private String playerOrTeam;
     @Column("pro")

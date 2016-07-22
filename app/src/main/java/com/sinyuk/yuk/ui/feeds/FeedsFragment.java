@@ -3,7 +3,6 @@ package com.sinyuk.yuk.ui.feeds;
 import android.app.Activity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.sinyuk.yuk.AppModule;
@@ -18,6 +17,7 @@ import com.sinyuk.yuk.utils.glide.RecyclerViewPreloader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -63,7 +63,7 @@ public class FeedsFragment extends BaseFragment {
     @Override
     protected void finishInflate() {
         initRecyclerView();
-        mRecyclerView.postDelayed(() -> loadFeeds(DribbleApi.ALL, 1), 1000);
+        mRecyclerView.postDelayed(() -> loadFeeds(DribbleApi.ALL, 1), 0);
 
     }
 
@@ -93,6 +93,7 @@ public class FeedsFragment extends BaseFragment {
                 .subscribe(new Action1<List<Shot>>() {
                     @Override
                     public void call(List<Shot> shots) {
+                        if (page == 1 && !mShotList.isEmpty()) { mShotList.clear(); }
                         mShotList.addAll(shots);
                         mAdapter.notifyDataSetChanged();
                     }

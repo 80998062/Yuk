@@ -41,9 +41,7 @@ public final class AppModule {
     @Singleton
     @Provides
     public LiteOrm provideLiteOrm(){
-
-        LiteOrm liteOrm = LiteOrm.newSingleInstance(application, "yuk.db");
-
+        LiteOrm liteOrm = LiteOrm.newSingleInstance(application, "sinyuk.db");
         liteOrm.setDebugged(true); // open the log
 
         return liteOrm;

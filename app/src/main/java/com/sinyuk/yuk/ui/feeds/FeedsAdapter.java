@@ -124,8 +124,8 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
 
         /* avatar*/
         // null-check hell oh shit!!
-//        final String username = TextUtils.isEmpty(data.getUsername()) ? " " : data.getUsername();
-        final String username = data.getUsername();
+        final String username = TextUtils.isEmpty(data.getUsername()) ? " " : data.getUsername();
+//        final String username = data.getUsername();
 
         // use a TextDrawable as a placeholder
         final char firstLetter = username.charAt(0);
@@ -141,8 +141,8 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
         checkText(holder.mUsername, username);
 
         /* type */
-//        final String type = TextUtils.isEmpty(data.getPlayerOrTeam()) ? " " : data.getUsername();
-        switch (data.getPlayerOrTeam()) {
+        final String type = TextUtils.isEmpty(data.getPlayerOrTeam()) ? "" : data.getPlayerOrTeam();
+        switch (type) {
             case User.TEAM:
                 checkText(holder.mType, User.TEAM);
                 break;
