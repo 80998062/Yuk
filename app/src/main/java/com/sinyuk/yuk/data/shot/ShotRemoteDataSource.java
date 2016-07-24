@@ -39,10 +39,17 @@ public class ShotRemoteDataSource implements ShotDataSource {
         return mDribbleService.shots(type, page)
                 .subscribeOn(Schedulers.io())
                 .doOnError(throwable -> Timber.d(throwable.getLocalizedMessage()))
-                .flatMap(shots -> Observable.from(shots).doOnNext((Action1<Shot>) this::addExtras))
+                .concatMap(shots -> Observable.from(shots).doOnNext((Action1<Shot>) this::addExtras))
                 .doOnError(throwable -> Timber.d(throwable.getLocalizedMessage()))
                 .toList()
-                .doOnNext(shots -> {if (page == 1) { localDataSource.saveShots(type, shots); }})
+                .doOnNext(shots -> {
+                    if (page == 1) {
+                        for (int i = 0; i < shots.size(); i++) {
+                            Timber.d("save " + shots.get(i).getId() + " & " + shots.get(i).getUsername());
+                        }
+                        localDataSource.saveShots(type, shots);
+                    }
+                })
                 .subscribeOn(Schedulers.io())
                 .onErrorResumeNext(throwable -> {
                     Timber.d(throwable.getLocalizedMessage());
@@ -52,7 +59,7 @@ public class ShotRemoteDataSource implements ShotDataSource {
     }
 
     private void addExtras(Shot shot) {
-        final String shotUrl = shot.getImages() == null ? "" : shot.getImages().getNormal();
+        final String shotUrl = shot.getImages() == null ? "" : shot.getImages().getHidpi();
         if (shot.getUser() != null) {
             shot.saveExtras(
                     shot.getUser().getUsername(),

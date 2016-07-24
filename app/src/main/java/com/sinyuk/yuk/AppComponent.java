@@ -5,7 +5,6 @@ import android.content.Context;
 
 import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.litesuits.orm.LiteOrm;
-import com.sinyuk.yuk.data.local.ACache;
 import com.sinyuk.yuk.data.shot.ShotLocalDataSource;
 import com.sinyuk.yuk.utils.scopes.AppScope;
 

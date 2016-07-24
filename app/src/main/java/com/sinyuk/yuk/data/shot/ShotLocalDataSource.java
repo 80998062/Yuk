@@ -7,7 +7,6 @@ import com.litesuits.orm.db.assit.QueryBuilder;
 import com.litesuits.orm.db.model.ConflictAlgorithm;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -26,6 +25,8 @@ public class ShotLocalDataSource implements ShotDataSource {
     private ShotLocalDataSource(LiteOrm liteOrm) {
         Timber.tag("ShotLocalDataSource");
         this.liteOrm = liteOrm;
+        /*liteOrm.deleteDatabase();
+        liteOrm.openOrCreateDatabase();*/
     }
 
     public static ShotLocalDataSource getInstance(LiteOrm liteOrm) {
@@ -40,12 +41,8 @@ public class ShotLocalDataSource implements ShotDataSource {
         return Observable.fromCallable(() -> doQuery(type))
                 .doOnError(throwable -> Timber.d("get cached shots: " + throwable.getLocalizedMessage()))
                 .subscribeOn(Schedulers.io())
-                .flatMap(Observable::from)
-                .toSortedList((shot, shot2) -> {
-                    // 按时间 降序之后再输出
-                    return -shot.getCreatedDate().compareTo(shot2.getCreatedDate());
-                })
                 .doOnError(throwable -> Timber.d("get cached shots: " + throwable.getLocalizedMessage()))
+                .subscribeOn(Schedulers.io())
                 .subscribeOn(Schedulers.computation());
 
     }
@@ -54,6 +51,7 @@ public class ShotLocalDataSource implements ShotDataSource {
         Observable.from(data)
                 .doOnError(throwable -> Timber.d(throwable.getLocalizedMessage()))
                 .map(shot -> {
+                    Timber.d("set type " + shot.getId() + " & " + shot.getUsername());
                     shot.setType(type);
                     return shot;
                 })
@@ -62,21 +60,18 @@ public class ShotLocalDataSource implements ShotDataSource {
                         .observeOn(Schedulers.io())
                         .subscribe(size -> {
                             if (size > MAX_BUFFER_SIZE) {
-                                liteOrm.delete(Shot.class, MAX_BUFFER_SIZE + 1, size, null);
+                                final int from = 0;
+                                final int to = Math.max(0, size - MAX_BUFFER_SIZE - 1);
+                                liteOrm.delete(Shot.class, from, to, null);
                             }
                         }))
+                .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(shot -> {
-                    try {
-                        liteOrm.insert(shot, ConflictAlgorithm.Replace);
-                    }
-                    catch (Exception e){
-                        Timber.d(e.getLocalizedMessage());
-                        Timber.d(e.getLocalizedMessage());
-                        Timber.d(e.getLocalizedMessage());
-                        Timber.d(e.getLocalizedMessage());
-                    }
+                    Timber.d("insert " + shot.getId() + " & " + shot.getUsername());
+                    liteOrm.insert(shot, ConflictAlgorithm.Replace);
                 });
+//        .toSortedList((shot, shot2) -> shot.getCreatedAt().compareTo(shot2.getCreatedAt()))
     }
 
 

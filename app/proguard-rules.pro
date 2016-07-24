@@ -22,3 +22,7 @@
 -keep class retrofit2.** { *; }
 -keepattributes Signature
 -keepattributes Exceptions
+
+-keep class com.facebook.stetho.** {
+  *;
+}

@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import com.litesuits.orm.db.annotation.Column;
 import com.litesuits.orm.db.annotation.Default;
 import com.litesuits.orm.db.annotation.Ignore;
+import com.litesuits.orm.db.annotation.NotNull;
 import com.litesuits.orm.db.annotation.PrimaryKey;
 import com.litesuits.orm.db.annotation.Table;
 import com.litesuits.orm.db.enums.AssignType;
@@ -53,7 +54,10 @@ public class Shot {
     @Default("others")
     @Column(COL_TYPE)
     private String mType;
-    @PrimaryKey(AssignType.BY_MYSELF)
+    @Column("fake_index")
+    @PrimaryKey(AssignType.AUTO_INCREMENT)
+    private int fakeIndex;
+    @NotNull
     @SerializedName("id")
     private int mId;
     @SerializedName("title")
@@ -71,6 +75,7 @@ public class Shot {
      */
 
     @SerializedName("images")
+    @Ignore
     private Images mImages;
     @SerializedName("views_count")
     private int mViewsCount;
@@ -87,6 +92,7 @@ public class Shot {
     @SerializedName("created_at")
     private String mCreatedAt;
     @SerializedName("updated_at")
+    @Ignore
     private String mUpdatedAt;
     @SerializedName("html_url")
     private String mHtmlUrl;
@@ -126,6 +132,7 @@ public class Shot {
     private String playerOrTeam;
     @Column("pro")
     private boolean pro;
+
 
     public String getType() {
         return mType;
@@ -228,20 +235,10 @@ public class Shot {
     public void setTags(List<String> tags) { mTags = tags;}
 
 
-    Date getCreatedDate() {
+    Date getCreatedDate(String createdAt) {
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DribbleApi.DATE_FORMAT);
         try {
-            return simpleDateFormat.parse(this.mCreatedAt);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    Date getUpdatedDate() {
-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DribbleApi.DATE_FORMAT);
-        try {
-            return simpleDateFormat.parse(this.mUpdatedAt);
+            return simpleDateFormat.parse(createdAt);
         } catch (ParseException e) {
             e.printStackTrace();
         }

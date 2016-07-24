@@ -17,6 +17,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
     }
 
     compileOptions {
@@ -54,8 +58,8 @@ dependencies {
         transitive = true;
     }
 
-    debugCompile rootProject.ext.dependencies["stetho"]
-    debugCompile rootProject.ext.dependencies["stetho-okhttp3"]
+    compile rootProject.ext.dependencies["stetho"]
+    compile rootProject.ext.dependencies["stetho-okhttp3"]
 
 
 
