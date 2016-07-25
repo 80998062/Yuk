@@ -15,13 +15,16 @@ import com.sinyuk.yuk.ui.BaseFragment;
 import com.sinyuk.yuk.utils.ListItemMarginDecoration;
 import com.sinyuk.yuk.utils.glide.RecyclerViewPreloader;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import rx.functions.Action1;
 import timber.log.Timber;
 
@@ -83,6 +86,7 @@ public class FeedsFragment extends BaseFragment {
 
     }
 
+//    @Subscribe(threadMode = ThreadMode.MAIN)
     public void setFilterType(String type) {
         mPage = 1;
         loadFeeds(type, mPage);
@@ -98,6 +102,11 @@ public class FeedsFragment extends BaseFragment {
                         mAdapter.notifyDataSetChanged();
                     }
                 });
+    }
+
+    @OnClick(R.id.fab)
+    public void onClick() {
+        loadFeeds(DribbleApi.ALL, 2);
     }
 
 }

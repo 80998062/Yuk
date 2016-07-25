@@ -35,21 +35,13 @@ public class ShotRemoteDataSource implements ShotDataSource {
      */
     @Override
     public Observable<List<Shot>> getShots(@NonNull String type, @NonNull int page) {
-        Timber.d("getShots");
         return mDribbleService.shots(type, page)
                 .subscribeOn(Schedulers.io())
                 .doOnError(throwable -> Timber.d(throwable.getLocalizedMessage()))
                 .concatMap(shots -> Observable.from(shots).doOnNext((Action1<Shot>) this::addExtras))
                 .doOnError(throwable -> Timber.d(throwable.getLocalizedMessage()))
                 .toList()
-                .doOnNext(shots -> {
-                    if (page == 1) {
-                        for (int i = 0; i < shots.size(); i++) {
-                            Timber.d("save " + shots.get(i).getId() + " & " + shots.get(i).getUsername());
-                        }
-                        localDataSource.saveShots(type, shots);
-                    }
-                })
+                .doOnNext(shots -> {if (page == 1) {localDataSource.saveShots(type, shots);}})
                 .subscribeOn(Schedulers.io())
                 .onErrorResumeNext(throwable -> {
                     Timber.d(throwable.getLocalizedMessage());

@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.litesuits.orm.LiteOrm;
 import com.litesuits.orm.db.assit.QueryBuilder;
+import com.litesuits.orm.db.assit.WhereBuilder;
 import com.litesuits.orm.db.model.ConflictAlgorithm;
 
 import java.util.List;
@@ -38,45 +39,58 @@ public class ShotLocalDataSource implements ShotDataSource {
 
     @Override
     public Observable<List<Shot>> getShots(@NonNull String type, @NonNull int page) {
-        return Observable.fromCallable(() -> doQuery(type))
+        return Observable.fromCallable(() -> queryShot(type))
                 .doOnError(throwable -> Timber.d("get cached shots: " + throwable.getLocalizedMessage()))
                 .subscribeOn(Schedulers.io())
+                .concatMap(shots -> {
+                    if (shots.size() > 10) {
+                        return Observable.just(shots).takeLast(10);
+                    } else {
+                        return Observable.just(shots);
+                    }
+                })
                 .doOnError(throwable -> Timber.d("get cached shots: " + throwable.getLocalizedMessage()))
-                .subscribeOn(Schedulers.io())
-                .subscribeOn(Schedulers.computation());
-
+                .subscribeOn(Schedulers.io());
     }
+
 
     public void saveShots(@NonNull String type, @NonNull List<Shot> data) {
         Observable.from(data)
                 .doOnError(throwable -> Timber.d(throwable.getLocalizedMessage()))
                 .map(shot -> {
-                    Timber.d("set type " + shot.getId() + " & " + shot.getUsername());
                     shot.setType(type);
                     return shot;
                 })
                 .doOnError(throwable -> Timber.d(throwable.getLocalizedMessage()))
-                .doOnCompleted(() -> getShots(type, 1).map(List::size)
-                        .observeOn(Schedulers.io())
-                        .subscribe(size -> {
-                            if (size > MAX_BUFFER_SIZE) {
-                                final int from = 0;
-                                final int to = Math.max(0, size - MAX_BUFFER_SIZE - 1);
-                                liteOrm.delete(Shot.class, from, to, null);
-                            }
-                        }))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(shot -> {
-                    Timber.d("insert " + shot.getId() + " & " + shot.getUsername());
                     liteOrm.insert(shot, ConflictAlgorithm.Replace);
                 });
-//        .toSortedList((shot, shot2) -> shot.getCreatedAt().compareTo(shot2.getCreatedAt()))
     }
 
+/*    public void checkCacheSize(String type){
+        Observable.fromCallable(() -> getShots(type, 1)
+                .map(shots -> shots.size() > MAX_BUFFER_SIZE)
+                .observeOn(Schedulers.io())
+                .subscribe(overflow -> {
+                    if (overflow) {
+                        deleteCache(type);
+                    }
+                }))
+    }*/
 
-    private List<Shot> doQuery(String type) {
+    private List<Shot> queryShot(String type) {
         return liteOrm.query(new QueryBuilder<>(Shot.class).where(
                 Shot.COL_TYPE + "=?", new String[]{type}));
+    }
+
+    private void deleteShot(String type) {
+        liteOrm.delete(new WhereBuilder(Shot.class)
+                .where(Shot.COL_TYPE + "=?", new String[]{type})
+                .and()
+                .greaterThan(Shot.COL_INDEX, 0)
+                .and()
+                .lessThan(Shot.COL_INDEX, 11));
     }
 }

@@ -20,6 +20,8 @@ public class ShotsListDemo extends BaseActivity {
 
     FeedsFragment feedsFragment = new FeedsFragment();
 
+
+
     @Override
     protected int getContentViewID() {
         return R.layout.activity_shots_list_demo;
@@ -34,4 +36,5 @@ public class ShotsListDemo extends BaseActivity {
     protected void finishInflating() {
         ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), feedsFragment, R.id.root_view);
     }
+
 }

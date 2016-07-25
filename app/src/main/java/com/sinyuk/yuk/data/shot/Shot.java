@@ -9,6 +9,7 @@ import com.litesuits.orm.db.annotation.Ignore;
 import com.litesuits.orm.db.annotation.NotNull;
 import com.litesuits.orm.db.annotation.PrimaryKey;
 import com.litesuits.orm.db.annotation.Table;
+import com.litesuits.orm.db.annotation.Unique;
 import com.litesuits.orm.db.enums.AssignType;
 import com.sinyuk.yuk.api.DribbleApi;
 import com.sinyuk.yuk.data.team.Team;
@@ -26,6 +27,7 @@ import java.util.List;
 public class Shot {
 
     public static final String COL_TYPE = "type";
+    public static final String COL_INDEX = "fake_index";
     /**
      * id : 471756
      * title : Sasquatch
@@ -54,10 +56,11 @@ public class Shot {
     @Default("others")
     @Column(COL_TYPE)
     private String mType;
-    @Column("fake_index")
+    @Column(COL_INDEX)
     @PrimaryKey(AssignType.AUTO_INCREMENT)
     private int fakeIndex;
     @NotNull
+    @Unique
     @SerializedName("id")
     private int mId;
     @SerializedName("title")
