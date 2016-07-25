@@ -55,9 +55,6 @@ dependencies {
     apt rootProject.ext.dependencies["dagger-compiler"]
     debugCompile rootProject.ext.dependencies["timber"]
     compile project(':lite-orm-1.9.1')
-    compile ('com.github.ozodrukh:CircularReveal:2.0.1@aar') {
-        transitive = true;
-    }
 
     compile rootProject.ext.dependencies["stetho"]
     compile rootProject.ext.dependencies["stetho-okhttp3"]

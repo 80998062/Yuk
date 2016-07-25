@@ -15,9 +15,6 @@ import com.sinyuk.yuk.ui.BaseFragment;
 import com.sinyuk.yuk.utils.ListItemMarginDecoration;
 import com.sinyuk.yuk.utils.glide.RecyclerViewPreloader;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +22,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import rx.functions.Action1;
 import timber.log.Timber;
 
@@ -35,6 +33,8 @@ public class FeedsFragment extends BaseFragment {
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
+    @BindView(R.id.progress_bar)
+    SmoothProgressBar mSmoothProgressBar;
     @Inject
     ShotRepository shotRepository;
     private FeedsAdapter mAdapter;
@@ -67,7 +67,7 @@ public class FeedsFragment extends BaseFragment {
     protected void finishInflate() {
         initRecyclerView();
         mRecyclerView.postDelayed(() -> loadFeeds(DribbleApi.ALL, 1), 0);
-
+        mSmoothProgressBar.progressiveStart();
     }
 
     private void initRecyclerView() {
@@ -86,7 +86,7 @@ public class FeedsFragment extends BaseFragment {
 
     }
 
-//    @Subscribe(threadMode = ThreadMode.MAIN)
+    //    @Subscribe(threadMode = ThreadMode.MAIN)
     public void setFilterType(String type) {
         mPage = 1;
         loadFeeds(type, mPage);
