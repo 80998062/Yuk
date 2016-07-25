@@ -49,6 +49,8 @@ ext {
             "stetho"                : "com.facebook.stetho:stetho:1.3.1",
             "stetho-okhttp3"        : "com.facebook.stetho:stetho-okhttp3:1.3.1",
 
+//            widgets
+            "smooth-progress-bar"   : "com.github.castorflex.smoothprogressbar:library:1.0.0",
     ]
 
 
