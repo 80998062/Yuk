@@ -1,5 +1,6 @@
 package com.sinyuk.yuk.utils.glide.okhttp3;
 
+import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 
@@ -26,7 +27,11 @@ public class SinyukGlideModule implements GlideModule {
 
     @Override
     public void applyOptions(Context context, GlideBuilder builder) {
-//        builder.setDecodeFormat(DecodeFormat.PREFER_ARGB_8888);
+        // Prefer higher quality images unless we're on a low RAM device
+        ActivityManager activityManager =
+                (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        builder.setDecodeFormat(activityManager.isLowRamDevice() ?
+                DecodeFormat.PREFER_RGB_565 : DecodeFormat.PREFER_ARGB_8888);
     }
 
     @Override
