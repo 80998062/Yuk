@@ -2,9 +2,12 @@ package com.sinyuk.yuk.ui.feeds;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -14,10 +17,12 @@ import android.widget.TextView;
 import com.bumptech.glide.BitmapRequestBuilder;
 import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.GenericRequestBuilder;
+import com.bumptech.glide.GifRequestBuilder;
 import com.bumptech.glide.ListPreloader;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.target.Target;
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.data.shot.Shot;
@@ -41,8 +46,9 @@ import timber.log.Timber;
 public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemViewHolder> implements ListPreloader.PreloadModelProvider<Shot>, ListPreloader.PreloadSizeProvider<Shot> {
 
 
-    private final BitmapRequestBuilder<String, Bitmap> builder;
+    private final BitmapRequestBuilder<String, Bitmap> bitmapBuidler;
     private final DrawableRequestBuilder<String> avatarRequest;
+    private final GifRequestBuilder<String> gifBuilder;
 
     private int[] stolenSize;
     private Context mContext;
@@ -50,7 +56,9 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
 
     public FeedsAdapter(Context context, RequestManager mGlide, ArrayList<Shot> dataSet) {
         this.mContext = context;
-        this.builder = mGlide.fromString().asBitmap().centerCrop();
+        this.bitmapBuidler = mGlide.fromString().asBitmap().centerCrop();
+        this.gifBuilder = mGlide.fromString().asGif();
+
         this.mDataSet = dataSet;
         Timber.tag("FeedsAdapter");
 
@@ -65,7 +73,51 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
 
     @Override
     public FeedItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new FeedItemViewHolder(View.inflate(mContext, R.layout.feed_list_item, null));
+        final FeedItemViewHolder holder = new FeedItemViewHolder(View.inflate(mContext, R.layout.feed_list_item, null));
+        setOnTouchListener(holder.mShot);
+        return holder;
+    }
+
+    private void setOnTouchListener(ImageView shot) {
+        Timber.d("Set shot");
+        shot.setOnTouchListener((v, event) -> {
+            // check if it's an event we care about, else bail fast
+            final int action = event.getAction();
+            if (!(action == MotionEvent.ACTION_DOWN
+                    || action == MotionEvent.ACTION_UP
+                    || action == MotionEvent.ACTION_CANCEL)) { return false; }
+            // get the image and check if it's an animated GIF
+            final Drawable drawable = shot.getDrawable();
+            if (drawable == null) { return false; }
+            GifDrawable gif = null;
+            if (drawable instanceof GifDrawable) {
+                gif = (GifDrawable) drawable;
+            } else if (drawable instanceof TransitionDrawable) {
+                // we fade in images on load which uses a TransitionDrawable; check its layers
+                TransitionDrawable fadingIn = (TransitionDrawable) drawable;
+                for (int i = 0; i < fadingIn.getNumberOfLayers(); i++) {
+                    if (fadingIn.getDrawable(i) instanceof GifDrawable) {
+                        gif = (GifDrawable) fadingIn.getDrawable(i);
+                        break;
+                    }
+                }
+            }
+            if (gif == null) { return false; }
+            Timber.d("Find GIF");
+            // GIF found, start/stop it on press/lift
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                    gif.start();
+                    Timber.d("GIF start");
+                    break;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    gif.stop();
+                    Timber.d("GIF stop");
+                    break;
+            }
+            return false;
+        });
     }
 
 
@@ -79,7 +131,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
     public void onBindViewHolder(FeedItemViewHolder holder, int position) {
         final Shot data = mDataSet.get(position);
         /* shot */
-        Target<?> target = builder.load(data.getShotUrl())
+        Target<?> target = bitmapBuidler.load(data.getShotUrl())
                 .error(R.drawable.pic_fill)
                 .into(holder.mShot);
         if (stolenSize == null) {
@@ -173,7 +225,11 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
 
     @Override
     public GenericRequestBuilder getPreloadRequestBuilder(Shot item) {
-        return builder.load(item.getShotUrl());
+        if (item.isAnimated()) {
+            return gifBuilder.load(item.getShotUrl());
+        } else {
+            return bitmapBuidler.load(item.getShotUrl());
+        }
     }
 
     // ------------------------ PreloadSizeProvider -----------------------
@@ -209,6 +265,9 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
         public FeedItemViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
         }
+
+
     }
 }

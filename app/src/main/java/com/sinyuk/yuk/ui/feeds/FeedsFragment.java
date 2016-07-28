@@ -66,7 +66,7 @@ public class FeedsFragment extends BaseFragment {
     @Override
     protected void finishInflate() {
         initRecyclerView();
-        mRecyclerView.postDelayed(() -> loadFeeds(DribbleApi.ALL, 1), 0);
+        mRecyclerView.postDelayed(() -> loadFeeds(DribbleApi.ANIMATED, 1), 0);
         mSmoothProgressBar.progressiveStart();
     }
 
@@ -106,7 +106,7 @@ public class FeedsFragment extends BaseFragment {
 
     @OnClick(R.id.fab)
     public void onClick() {
-        loadFeeds(DribbleApi.ALL, 2);
+        loadFeeds(DribbleApi.ANIMATED, 2);
     }
 
 }
