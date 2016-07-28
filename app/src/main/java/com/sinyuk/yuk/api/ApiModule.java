@@ -16,7 +16,6 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.Cache;
-import okhttp3.CacheControl;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -26,6 +25,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import timber.log.Timber;
 
 /**
  * Created by Sinyuk on 16/6/24.
@@ -53,10 +53,10 @@ public class ApiModule {
 
     @Provides
     @Singleton
-    OkHttpClient provideOkHttpClient(Application application) {
+    public OkHttpClient provideOkHttpClient(Application application) {
         File cacheFile = new File(application.getExternalCacheDir(), "okhttp_cache");
 
-        Cache cache = new Cache(cacheFile, 1024 * 1024 * 50);
+        Cache cache = new Cache(cacheFile, 1024 * 1024 * 5);
 
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
@@ -70,34 +70,40 @@ public class ApiModule {
 
         builder.addNetworkInterceptor(new StethoInterceptor())
                 .build();
-/*        Interceptor cacheInterceptor = chain -> {
-            Request request = chain.request();
-            if (!NetWorkUtils.isNetworkConnection(application)) {
-                request = request.newBuilder()
-                        .cacheControl(CacheControl.FORCE_CACHE)
-                        .build();
-            }
-            Response response = chain.proceed(request);
-            if (!NetWorkUtils.isNetworkConnection(application)) {
-                // 有网络时 设置缓存超时时间5分钟
-                response.newBuilder()
-                        .header("Cache-Control", "public, max-age=" + 300)
-//                        .removeHeader("WuXiaolong")// 清除头信息，因为服务器如果不支持，会返回一些干扰信息，不清除下面无法生效
+
+
+        final Interceptor REWRITE_RESPONSE_INTERCEPTOR = chain -> {
+            Response originalResponse = chain.proceed(chain.request());
+            String cacheControl = originalResponse.header("Cache-Control");
+            if (cacheControl == null || cacheControl.contains("no-store") || cacheControl.contains("no-cache") ||
+                    cacheControl.contains("must-revalidate") || cacheControl.contains("max-age=0")) {
+                return originalResponse.newBuilder()
+                        .header("Cache-Control", "public, max-age=" + 10)
                         .build();
             } else {
-                // 无网络时，设置超时为1周
-                int maxStale = 60 * 60 * 24 * 7;
-                response.newBuilder()
+                return originalResponse;
+            }
+        };
+
+        final Interceptor OFFLINE_INTERCEPTOR = chain -> {
+            Request request = chain.request();
+
+            if (!NetWorkUtils.isNetworkConnection(application)) {
+                Timber.d("Offline Rewriting Request");
+                int maxStale = 60 * 60 * 24 * 3;
+                request = request.newBuilder()
                         .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
-//                        .removeHeader("nyn")
                         .build();
             }
-            return response;
+            return chain.proceed(request);
         };
-        builder.cache(cache).addInterceptor(cacheInterceptor);*/
+
+        builder.cache(cache)
+                .addNetworkInterceptor(REWRITE_RESPONSE_INTERCEPTOR)
+                .addInterceptor(OFFLINE_INTERCEPTOR);
 
         // 请求头
-        Interceptor authorization = chain -> {
+        final Interceptor authorization = chain -> {
             Request originalRequest = chain.request();
             Request.Builder requestBuilder = originalRequest.newBuilder()
                     .header("Authorization", "Bearer a860827f0ea38c1db7d5512d93366499d55424dae8be1f1e0b4065ec6fbeb948")
@@ -112,8 +118,8 @@ public class ApiModule {
         builder.addInterceptor(authorization);
 
         //设置超时
-        builder.connectTimeout(60, TimeUnit.SECONDS);
-        builder.readTimeout(30, TimeUnit.SECONDS);
+        builder.connectTimeout(10, TimeUnit.SECONDS);
+        builder.readTimeout(10, TimeUnit.SECONDS);
         builder.writeTimeout(30, TimeUnit.SECONDS);
         //错误重连
         builder.retryOnConnectionFailure(true);
@@ -136,18 +142,18 @@ public class ApiModule {
 
     @Provides
     @Singleton
-    Retrofit provideRetrofit(Gson gson,OkHttpClient okHttpClient){
-      return new Retrofit.Builder()
-              .baseUrl(DribbleApi.END_POINT)
-              .addConverterFactory(GsonConverterFactory.create(gson))
-              .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-              .client(okHttpClient)
-              .build();
+    Retrofit provideRetrofit(Gson gson, OkHttpClient okHttpClient) {
+        return new Retrofit.Builder()
+                .baseUrl(DribbleApi.END_POINT)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .client(okHttpClient)
+                .build();
     }
 
     @Provides
     @Singleton
-    public DribbleService provideDribbleService(Retrofit retrofit){
+    public DribbleService provideDribbleService(Retrofit retrofit) {
         return retrofit.create(DribbleService.class);
     }
 
