@@ -37,6 +37,7 @@ dependencies {
     compile rootProject.ext.dependencies["support-design"]
     compile rootProject.ext.dependencies["cardView"]
     compile rootProject.ext.dependencies["recyclerView"]
+    compile rootProject.ext.dependencies["palette"]
     compile rootProject.ext.dependencies["retrofit"]
     compile rootProject.ext.dependencies["converter-gson"]
     compile rootProject.ext.dependencies["adapter-rxjava"]
