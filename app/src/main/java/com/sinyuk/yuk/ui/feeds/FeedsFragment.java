@@ -3,6 +3,7 @@ package com.sinyuk.yuk.ui.feeds;
 import android.app.Activity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
@@ -32,7 +33,8 @@ import timber.log.Timber;
  * Created by Sinyuk on 16/7/1.
  */
 public class FeedsFragment extends BaseFragment {
-
+@BindView(R.id.image)
+    ImageView imageView;
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
     @BindView(R.id.progress_bar)

@@ -51,19 +51,27 @@ public class ShotRemoteDataSource implements ShotDataSource {
     }
 
     private void addExtras(Shot shot) {
-        final String shotUrl = shot.getImages() == null ? "" : shot.getImages().getHidpi();
-        if (shot.getUser() != null) {
-            shot.saveExtras(
+        if (shot.getUser() != null && shot.getImages() != null) {
+            shot.addExtras(
                     shot.getUser().getUsername(),
-                    shotUrl,
+                    shot.getImages().getHidpi(),
+                    shot.getImages().getNormal(),
+                    shot.getImages().getTeaser(),
                     shot.getUser().getAvatarUrl(),
                     shot.getUser().getType(),
                     shot.getUser().isPro()
             );
+        } else if (shot.getImages() != null) {
+            shot.addExtras(null,
+                    shot.getImages().getHidpi(),
+                    shot.getImages().getNormal(),
+                    shot.getImages().getTeaser(),
+                    null,
+                    null,
+                    false);
         } else {
-            shot.saveExtras("", shotUrl, "", "", false);
+            shot.addExtras(null, null, null, null, null, null, false);
         }
-
     }
 
 

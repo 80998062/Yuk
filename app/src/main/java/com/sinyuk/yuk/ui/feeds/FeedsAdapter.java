@@ -1,7 +1,6 @@
 package com.sinyuk.yuk.ui.feeds;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.support.v7.widget.CardView;
@@ -16,13 +15,14 @@ import android.widget.TextView;
 
 import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.GenericRequestBuilder;
-import com.bumptech.glide.GifRequestBuilder;
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.ListPreloader;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.data.user.User;
@@ -47,29 +47,40 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
 
 
     private final DrawableRequestBuilder<String> avatarRequest;
-    private final GifRequestBuilder<String> gifBuilder;
     private final DrawableRequestBuilder<String> drawableRequestBuilder;
 
     private int[] stolenSize;
     private Context mContext;
     private ArrayList<Shot> mDataSet = new ArrayList<>();
-    private boolean mAutoPlayGif;
+    private boolean mAutoPlayGif = false;
+
 
     public FeedsAdapter(Context context, RequestManager mGlide, ArrayList<Shot> dataSet) {
+        Timber.tag("FeedsAdapter");
         this.mContext = context;
         this.drawableRequestBuilder = mGlide
                 .fromString()
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .dontAnimate()
-                .thumbnail()
-                .placeholder(android.R.color.white)
-                .error(R.drawable.pic_fill)
-                .centerCrop();
+                .centerCrop().listener(new RequestListener<String, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        if (e != null) {
+                            e.printStackTrace();
+                            Timber.e(e.getLocalizedMessage());
+                        }
+                        return false;
+                    }
 
-        this.gifBuilder = mGlide.fromString().asGif();
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        Timber.e("Ready");
+                        return false;
+                    }
+                });
+
 
         this.mDataSet = dataSet;
-        Timber.tag("FeedsAdapter");
 
         avatarRequest = mGlide.fromString()
                 .priority(Priority.NORMAL)
@@ -140,9 +151,10 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
     public void onBindViewHolder(FeedItemViewHolder holder, int position) {
         final Shot data = mDataSet.get(position);
         /* shot */
+        Timber.e("I will load %s", data.bestQuality());
         DribbbleTarget target = drawableRequestBuilder
-                .load(data.getShotUrl())
-                .into(new DribbbleTarget(holder.mShot, data.isAnimated(),mAutoPlayGif));
+                .load(data.bestQuality())
+                .into(new DribbbleTarget(holder.mShot, data.isAnimated(), mAutoPlayGif));
         if (stolenSize == null) {
             // assuming uniform sizing among items (fixed size or match works, wrap doesn't)
             target.getSize((width, height) -> {
@@ -232,8 +244,8 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
     }
 
     @Override
-    public GenericRequestBuilder getPreloadRequestBuilder(Shot item) {
-        return drawableRequestBuilder.load(item.getShotUrl());
+    public GenericRequestBuilder getPreloadRequestBuilder(Shot data) {
+        return drawableRequestBuilder.load(data.bestQuality());
     }
 
     // ------------------------ PreloadSizeProvider -----------------------
@@ -245,6 +257,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
     public void setAutoPlayGif(boolean autoPlayGif) {
         this.mAutoPlayGif = autoPlayGif;
     }
+
 
     public class FeedItemViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.shot)

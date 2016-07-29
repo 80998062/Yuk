@@ -36,13 +36,8 @@ public class SinyukGlideModule implements GlideModule {
         builder.setDecodeFormat(activityManager.isLowRamDevice() ?
                 DecodeFormat.PREFER_RGB_565 : DecodeFormat.PREFER_ARGB_8888);
 
-        if (!activityManager.isLowRamDevice()) {
-            builder.setDiskCacheService(new FifoPriorityThreadPoolExecutor(4));
-            // or
-            builder.setResizeService(new FifoPriorityThreadPoolExecutor(4));
-        }
-        builder.setDiskCache(
-                new InternalCacheDiskCacheFactory(context, sizeInBytes));
+        builder.setResizeService(new FifoPriorityThreadPoolExecutor(4));
+        builder.setDiskCache(new InternalCacheDiskCacheFactory(context, sizeInBytes));
     }
 
     @Override
