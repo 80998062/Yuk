@@ -5,6 +5,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.sinyuk.yuk.AppModule;
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.api.DribbleApi;
@@ -13,6 +14,7 @@ import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.data.shot.ShotRepository;
 import com.sinyuk.yuk.ui.BaseFragment;
 import com.sinyuk.yuk.utils.ListItemMarginDecoration;
+import com.sinyuk.yuk.utils.PrefsUtils;
 import com.sinyuk.yuk.utils.glide.RecyclerViewPreloader;
 
 import java.util.ArrayList;
@@ -37,9 +39,12 @@ public class FeedsFragment extends BaseFragment {
     SmoothProgressBar mSmoothProgressBar;
     @Inject
     ShotRepository shotRepository;
+    @Inject
+    RxSharedPreferences mSharedPreferences;
     private FeedsAdapter mAdapter;
     private ArrayList<Shot> mShotList = new ArrayList<>();
     private int mPage;
+
 
     public FeedsFragment() {
         // need a default constructor
@@ -83,6 +88,12 @@ public class FeedsFragment extends BaseFragment {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
 
         mRecyclerView.setLayoutManager(layoutManager);
+
+        mSharedPreferences.getBoolean(PrefsUtils.auto_play_gif, false)
+                .asObservable()
+                .subscribe(autoPlayGif -> {
+                    mAdapter.setAutoPlayGif(autoPlayGif);
+                });
 
     }
 

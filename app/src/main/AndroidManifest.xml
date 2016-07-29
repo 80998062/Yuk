@@ -14,9 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-       <!-- <meta-data
+        <meta-data
             android:name="com.sinyuk.yuk.utils.glide.okhttp3.SinyukGlideModule"
-            android:value="GlideModule"/>-->
+            android:value="GlideModule"/>
 
         <activity android:name=".ShotsListDemo">
             <intent-filter>

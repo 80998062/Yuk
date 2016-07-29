@@ -14,20 +14,20 @@ import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.BitmapRequestBuilder;
 import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.GenericRequestBuilder;
 import com.bumptech.glide.GifRequestBuilder;
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.ListPreloader;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
-import com.bumptech.glide.request.target.Target;
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.data.user.User;
 import com.sinyuk.yuk.utils.glide.CropCircleTransformation;
+import com.sinyuk.yuk.utils.glide.DribbbleTarget;
 import com.sinyuk.yuk.widgets.FourThreeImageView;
 import com.sinyuk.yuk.widgets.NumberTextView;
 import com.sinyuk.yuk.widgets.TextDrawable;
@@ -46,17 +46,26 @@ import timber.log.Timber;
 public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemViewHolder> implements ListPreloader.PreloadModelProvider<Shot>, ListPreloader.PreloadSizeProvider<Shot> {
 
 
-    private final BitmapRequestBuilder<String, Bitmap> bitmapBuidler;
     private final DrawableRequestBuilder<String> avatarRequest;
     private final GifRequestBuilder<String> gifBuilder;
+    private final DrawableRequestBuilder<String> drawableRequestBuilder;
 
     private int[] stolenSize;
     private Context mContext;
     private ArrayList<Shot> mDataSet = new ArrayList<>();
+    private boolean mAutoPlayGif;
 
     public FeedsAdapter(Context context, RequestManager mGlide, ArrayList<Shot> dataSet) {
         this.mContext = context;
-        this.bitmapBuidler = mGlide.fromString().asBitmap().centerCrop();
+        this.drawableRequestBuilder = mGlide
+                .fromString()
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .dontAnimate()
+                .thumbnail()
+                .placeholder(android.R.color.white)
+                .error(R.drawable.pic_fill)
+                .centerCrop();
+
         this.gifBuilder = mGlide.fromString().asGif();
 
         this.mDataSet = dataSet;
@@ -131,9 +140,9 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
     public void onBindViewHolder(FeedItemViewHolder holder, int position) {
         final Shot data = mDataSet.get(position);
         /* shot */
-        Target<?> target = bitmapBuidler.load(data.getShotUrl())
-                .error(R.drawable.pic_fill)
-                .into(holder.mShot);
+        DribbbleTarget target = drawableRequestBuilder
+                .load(data.getShotUrl())
+                .into(new DribbbleTarget(holder.mShot, data.isAnimated(),mAutoPlayGif));
         if (stolenSize == null) {
             // assuming uniform sizing among items (fixed size or match works, wrap doesn't)
             target.getSize((width, height) -> {
@@ -142,7 +151,6 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
                 }
             });
         }
-
         /* rebound */
         if (data.getReboundsCount() > 0) {
             if (holder.mReboundStub != null) {
@@ -225,17 +233,17 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
 
     @Override
     public GenericRequestBuilder getPreloadRequestBuilder(Shot item) {
-        if (item.isAnimated()) {
-            return gifBuilder.load(item.getShotUrl());
-        } else {
-            return bitmapBuidler.load(item.getShotUrl());
-        }
+        return drawableRequestBuilder.load(item.getShotUrl());
     }
 
     // ------------------------ PreloadSizeProvider -----------------------
     @Override
     public int[] getPreloadSize(Shot item, int adapterPosition, int perItemPosition) {
         return stolenSize;
+    }
+
+    public void setAutoPlayGif(boolean autoPlayGif) {
+        this.mAutoPlayGif = autoPlayGif;
     }
 
     public class FeedItemViewHolder extends RecyclerView.ViewHolder {
