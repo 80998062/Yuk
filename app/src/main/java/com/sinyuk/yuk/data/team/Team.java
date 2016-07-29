@@ -1,11 +1,15 @@
 package com.sinyuk.yuk.data.team;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
+import com.sinyuk.yuk.data.links.Links;
 
 /**
  * Created by Sinyuk on 16/7/16.
  */
-public class Team {
+public class Team implements Parcelable {
     @SerializedName("id")
     private int id;
     @SerializedName("name")
@@ -198,18 +202,87 @@ public class Team {
 
     public void setTeamShotsUrl(String teamShotsUrl) { this.teamShotsUrl = teamShotsUrl;}
 
-    public static class Links {
-        @SerializedName("web")
-        private String web;
-        @SerializedName("twitter")
-        private String twitter;
 
-        public String getWeb() { return web;}
 
-        public void setWeb(String web) { this.web = web;}
+    @Override
+    public int describeContents() { return 0; }
 
-        public String getTwitter() { return twitter;}
-
-        public void setTwitter(String twitter) { this.twitter = twitter;}
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeString(this.name);
+        dest.writeString(this.username);
+        dest.writeString(this.htmlUrl);
+        dest.writeString(this.avatarUrl);
+        dest.writeString(this.bio);
+        dest.writeString(this.location);
+        dest.writeParcelable(this.links, flags);
+        dest.writeInt(this.bucketsCount);
+        dest.writeInt(this.commentsReceivedCount);
+        dest.writeInt(this.followersCount);
+        dest.writeInt(this.followingsCount);
+        dest.writeInt(this.likesCount);
+        dest.writeInt(this.likesReceivedCount);
+        dest.writeInt(this.projectsCount);
+        dest.writeInt(this.reboundsReceivedCount);
+        dest.writeInt(this.shotsCount);
+        dest.writeByte(this.canUploadShot ? (byte) 1 : (byte) 0);
+        dest.writeString(this.type);
+        dest.writeByte(this.pro ? (byte) 1 : (byte) 0);
+        dest.writeString(this.bucketsUrl);
+        dest.writeString(this.followersUrl);
+        dest.writeString(this.followingUrl);
+        dest.writeString(this.likesUrl);
+        dest.writeString(this.projectsUrl);
+        dest.writeString(this.shotsUrl);
+        dest.writeString(this.createdAt);
+        dest.writeString(this.updatedAt);
+        dest.writeInt(this.membersCount);
+        dest.writeString(this.membersUrl);
+        dest.writeString(this.teamShotsUrl);
     }
+
+    public Team() {}
+
+    protected Team(Parcel in) {
+        this.id = in.readInt();
+        this.name = in.readString();
+        this.username = in.readString();
+        this.htmlUrl = in.readString();
+        this.avatarUrl = in.readString();
+        this.bio = in.readString();
+        this.location = in.readString();
+        this.links = in.readParcelable(Links.class.getClassLoader());
+        this.bucketsCount = in.readInt();
+        this.commentsReceivedCount = in.readInt();
+        this.followersCount = in.readInt();
+        this.followingsCount = in.readInt();
+        this.likesCount = in.readInt();
+        this.likesReceivedCount = in.readInt();
+        this.projectsCount = in.readInt();
+        this.reboundsReceivedCount = in.readInt();
+        this.shotsCount = in.readInt();
+        this.canUploadShot = in.readByte() != 0;
+        this.type = in.readString();
+        this.pro = in.readByte() != 0;
+        this.bucketsUrl = in.readString();
+        this.followersUrl = in.readString();
+        this.followingUrl = in.readString();
+        this.likesUrl = in.readString();
+        this.projectsUrl = in.readString();
+        this.shotsUrl = in.readString();
+        this.createdAt = in.readString();
+        this.updatedAt = in.readString();
+        this.membersCount = in.readInt();
+        this.membersUrl = in.readString();
+        this.teamShotsUrl = in.readString();
+    }
+
+    public static final Parcelable.Creator<Team> CREATOR = new Parcelable.Creator<Team>() {
+        @Override
+        public Team createFromParcel(Parcel source) {return new Team(source);}
+
+        @Override
+        public Team[] newArray(int size) {return new Team[size];}
+    };
 }
