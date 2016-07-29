@@ -118,8 +118,8 @@ public class ApiModule {
         builder.addInterceptor(authorization);
 
         //设置超时
-        builder.connectTimeout(10, TimeUnit.SECONDS);
-        builder.readTimeout(10, TimeUnit.SECONDS);
+        builder.connectTimeout(30, TimeUnit.SECONDS);
+        builder.readTimeout(30, TimeUnit.SECONDS);
         builder.writeTimeout(30, TimeUnit.SECONDS);
         //错误重连
         builder.retryOnConnectionFailure(true);
