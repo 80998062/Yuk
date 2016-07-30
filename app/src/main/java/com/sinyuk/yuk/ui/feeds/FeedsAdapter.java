@@ -99,45 +99,47 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
     }
 
     private void setOnTouchListener(ImageView shot) {
-        Timber.d("Set shot");
-        shot.setOnTouchListener((v, event) -> {
-            // check if it's an event we care about, else bail fast
-            final int action = event.getAction();
-            if (!(action == MotionEvent.ACTION_DOWN
-                    || action == MotionEvent.ACTION_UP
-                    || action == MotionEvent.ACTION_CANCEL)) { return false; }
-            // get the image and check if it's an animated GIF
-            final Drawable drawable = shot.getDrawable();
-            if (drawable == null) { return false; }
-            GifDrawable gif = null;
-            if (drawable instanceof GifDrawable) {
-                gif = (GifDrawable) drawable;
-            } else if (drawable instanceof TransitionDrawable) {
-                // we fade in images on load which uses a TransitionDrawable; check its layers
-                TransitionDrawable fadingIn = (TransitionDrawable) drawable;
-                for (int i = 0; i < fadingIn.getNumberOfLayers(); i++) {
-                    if (fadingIn.getDrawable(i) instanceof GifDrawable) {
-                        gif = (GifDrawable) fadingIn.getDrawable(i);
-                        break;
-                    }
-                }
-            }
-            if (gif == null) { return false; }
-            Timber.d("Find GIF");
-            // GIF found, start/stop it on press/lift
-            switch (action) {
-                case MotionEvent.ACTION_DOWN:
-                    gif.start();
-                    Timber.d("GIF start");
-                    break;
-                case MotionEvent.ACTION_UP:
-                case MotionEvent.ACTION_CANCEL:
-                    gif.stop();
-                    Timber.d("GIF stop");
-                    break;
+        Timber.e("setOnTouchListener");
+        shot.setClickable(true);
+        shot.setLongClickable(true);
+        shot.setOnLongClickListener(view -> {
+            final GifDrawable gif = getGifDrawableIfExisted(shot);
+            if (gif != null && gif.isAnimated() && !gif.isRunning()) {
+                gif.start();
             }
             return false;
         });
+        shot.setOnTouchListener((v, event) -> {
+                    final GifDrawable gif = getGifDrawableIfExisted(shot);
+                    if (gif == null) {
+                        return false;
+                    }
+                    if (!gif.isAnimated() || !gif.isRunning()) { return false; }
+                    if (event.getAction() == MotionEvent.ACTION_UP
+                            || event.getAction() == MotionEvent.ACTION_CANCEL) { gif.stop(); }
+                    return false;
+                }
+        );
+    }
+
+    private GifDrawable getGifDrawableIfExisted(ImageView shot) {
+        // get the image and check if it's an animated GIF
+        final Drawable drawable = shot.getDrawable();
+        if (drawable == null) { return null; }
+        GifDrawable gif = null;
+        if (drawable instanceof GifDrawable) {
+            gif = (GifDrawable) drawable;
+        } else if (drawable instanceof TransitionDrawable) {
+            // we fade in images on load which uses a TransitionDrawable; check its layers
+            TransitionDrawable fadingIn = (TransitionDrawable) drawable;
+            for (int i = 0; i < fadingIn.getNumberOfLayers(); i++) {
+                if (fadingIn.getDrawable(i) instanceof GifDrawable) {
+                    gif = (GifDrawable) fadingIn.getDrawable(i);
+                    break;
+                }
+            }
+        }
+        return gif;
     }
 
 
