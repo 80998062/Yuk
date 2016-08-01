@@ -14,7 +14,7 @@ import com.sinyuk.yuk.data.shot.DaggerShotRepositoryComponent;
 import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.data.shot.ShotRepository;
 import com.sinyuk.yuk.ui.BaseFragment;
-import com.sinyuk.yuk.utils.ListItemMarginDecoration;
+import com.sinyuk.yuk.utils.lists.ListItemMarginDecoration;
 import com.sinyuk.yuk.utils.PrefsUtils;
 import com.sinyuk.yuk.utils.glide.RecyclerViewPreloader;
 

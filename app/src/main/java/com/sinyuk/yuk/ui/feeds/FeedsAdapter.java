@@ -86,7 +86,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
                 .priority(Priority.NORMAL)
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .centerCrop()
-                .dontAnimate()
+                .crossFade(1000)
                 .bitmapTransform(new CropCircleTransformation(mContext));
     }
 

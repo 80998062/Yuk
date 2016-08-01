@@ -1,4 +1,4 @@
-package com.sinyuk.yuk.utils;
+package com.sinyuk.yuk.utils.lists;
 
 import android.content.Context;
 import android.graphics.Rect;
