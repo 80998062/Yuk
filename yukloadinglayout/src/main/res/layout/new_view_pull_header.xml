@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.sinyuk.yukloadinglayout.JellyViewFrameLayout
+    android:id="@+id/jelly"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="120dp">
+
+    <ImageView
+        android:id="@+id/loading_iv"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="44dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="animated_bicycle"
+        android:scaleType="centerInside"
+        android:src="@drawable/animated_bicycle"
+        android:visibility="visible"/>
+
+    <TextView
+        android:id="@+id/loading_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="20dp"
+        android:paddingLeft="8dp"
+        android:paddingStart="8dp"
+        android:text="@string/loading"
+        android:textColor="#1b4061"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:visibility="visible"/>
+</com.sinyuk.yukloadinglayout.JellyViewFrameLayout>

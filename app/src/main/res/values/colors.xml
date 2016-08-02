@@ -20,6 +20,6 @@
 
 
     <color name="white_75pct">#b1ffffff</color>
-
+    <color name="window_background">#f5f5f5</color>
 
 </resources>

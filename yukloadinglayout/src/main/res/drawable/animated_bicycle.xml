@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+                 android:drawable="@drawable/bicycle_vector">
+    <target
+        android:name="left_tire"
+        android:animation="@anim/left_tire_rotation"/>
+    <target
+        android:name="right_tire"
+        android:animation="@anim/right_tire_rotation"/>
+    <target
+        android:name="right_fender"
+        android:animation="@anim/fender_float"/>
+    <target
+        android:name="left_fender"
+        android:animation="@anim/fender_float"/>
+
+    <target
+        android:name="mud"
+        android:animation="@anim/mud_float"/>
+
+</animated-vector>

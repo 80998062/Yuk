@@ -6,12 +6,12 @@
     android:layout_height="match_parent">
 
     <ImageView
-        android:visibility="gone"
         android:id="@+id/image"
-        android:background="#ccc"
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:scaleType="centerCrop"/>
+        android:background="#ccc"
+        android:scaleType="centerCrop"
+        android:visibility="gone"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
@@ -28,6 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/content_space_16"
+        android:visibility="gone"
         app:fabSize="auto"/>
 
     <fr.castorflex.android.smoothprogressbar.SmoothProgressBar

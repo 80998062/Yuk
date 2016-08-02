@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/Yuk.iml" filepath="$PROJECT_DIR$/Yuk.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/lite-orm-1.9.1/lite-orm-1.9.1.iml" filepath="$PROJECT_DIR$/lite-orm-1.9.1/lite-orm-1.9.1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/yukloadinglayout/yukloadinglayout.iml" filepath="$PROJECT_DIR$/yukloadinglayout/yukloadinglayout.iml" />
     </modules>
   </component>
 </project>

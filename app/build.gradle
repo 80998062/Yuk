@@ -56,13 +56,8 @@ dependencies {
     apt rootProject.ext.dependencies["dagger-compiler"]
     debugCompile rootProject.ext.dependencies["timber"]
     compile project(':lite-orm-1.9.1')
-
     compile rootProject.ext.dependencies["stetho"]
     compile rootProject.ext.dependencies["stetho-okhttp3"]
-
     compile rootProject.ext.dependencies["smooth-progress-bar"]
-
-
-
-
+    compile project(':yukloadinglayout')
 }

@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">JellyRefresh</string>
+    <string name="loading">loading...</string>
+    <string name="loading_trim">loading...</string>
+</resources>

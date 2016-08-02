@@ -1,16 +1,16 @@
 ext {
     android = [
             compileSdkVersion: 24,
-            buildToolsVersion: "24.0.0",
+            buildToolsVersion: "24.0.1",
             applicationId    : "com.sinyuk.yuk",
-            minSdkVersion    : 21,
+            minSdkVersion    : 16,
             targetSdkVersion : 24,
             versionCode      : 1,
             versionName      : "1.0"
     ]
 
     //Version
-    supportVersion = '24.0.0'
+    supportVersion = '24.1.1'
 
     retrofitVersion = '2.1.0'
 

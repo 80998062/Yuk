@@ -8,5 +8,29 @@
     android:layout_height="match_parent"
     tools:context="com.sinyuk.yuk.ShotsListDemo">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:background="@android:color/white">
 
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:src="@drawable/dribbble_logo"/>
+    </android.support.v7.widget.Toolbar>
+
+    <com.sinyuk.yukloadinglayout.YukLoadingLayout
+        android:id="@+id/yuk_loading_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tool_bar"
+        app:jellyColor="@android:color/white">
+
+        <FrameLayout
+            android:id="@+id/list_view_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </com.sinyuk.yukloadinglayout.YukLoadingLayout>
 </RelativeLayout>
