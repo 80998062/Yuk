@@ -15,6 +15,13 @@ class MathUtils {
         return result;
     }
 
+    /**
+     *
+     * @param input 0
+     * @param a pullHeight 100
+     * @param b mCurrentY - mTouchStartY -50
+     * @return
+     */
     public static float constrains(float input, float a, float b) {
         float result = input;
         final float min = Math.min(a, b);

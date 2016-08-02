@@ -41,14 +41,11 @@ public class YukLoadingLayout extends PullToRefreshLayout {
     private ValueAnimator dotsAnimator;
 
     public YukLoadingLayout(Context context) {
-        super(context);
-        setupHeader();
+        this(context,null);
     }
 
     public YukLoadingLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        setAttributes(attrs);
-        setupHeader();
+        this(context, attrs,0);
     }
 
     public YukLoadingLayout(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -57,11 +54,6 @@ public class YukLoadingLayout extends PullToRefreshLayout {
         setupHeader();
     }
 
-    public YukLoadingLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        setAttributes(attrs);
-        setupHeader();
-    }
 
     private void setAttributes(AttributeSet attrs) {
         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.YukLoadingLayout);
