@@ -10,6 +10,9 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
+import com.sinyuk.yuk.R;
+import com.sinyuk.yuk.utils.ColorUtils;
+import com.sinyuk.yuk.widgets.BadgedFourThreeImageView;
 
 
 /**
@@ -37,28 +40,33 @@ public class DribbbleTarget extends GlideDrawableImageViewTarget implements
             resource.stop();
         }
 
-        ImageView badgedImageView = (ImageView) getView();
-        if (!isAnimated && resource instanceof GlideBitmapDrawable) {
+        BadgedFourThreeImageView badgedImageView = (BadgedFourThreeImageView) getView();
+        if (!isAnimated || resource instanceof GlideBitmapDrawable) {
             Palette.from(((GlideBitmapDrawable) resource).getBitmap())
                     .clearFilters()
                     .generate(this);
-//            badgedImageView.showBadge(false);
-        } else if (isAnimated && resource instanceof GifDrawable) {
-            Bitmap image = ((GifDrawable) resource).getFirstFrame();
-            Palette.from(image).clearFilters().generate(this);
-//            badgedImageView.showBadge(true);
+            badgedImageView.showBadge(false);
+        } else if (resource instanceof GifDrawable) {
+            Bitmap corner = null;
+            try {
+                Bitmap image = ((GifDrawable) resource).getFirstFrame();
+                Palette.from(image).clearFilters().generate(this);
+                badgedImageView.showBadge(true);
 
-            // look at the corner to determine the gif badge color
-            int cornerSize = (int) (56 * getView().getContext().getResources().getDisplayMetrics
-                    ().scaledDensity);
-            Bitmap corner = Bitmap.createBitmap(image,
-                    image.getWidth() - cornerSize,
-                    image.getHeight() - cornerSize,
-                    cornerSize, cornerSize);
-//            boolean isDark = ColorUtils.isDark(corner);
-//            corner.recycle();
-//            badgedImageView.setBadgeColor(ContextCompat.getColor(getView().getContext(),
-//                    isDark ? R.color.gif_badge_dark_image : R.color.gif_badge_light_image));
+                // look at the corner to determine the gif badge color
+                int cornerSize = (int) (56 * getView().getContext().getResources().getDisplayMetrics
+                        ().scaledDensity);
+                corner = Bitmap.createBitmap(image, image.getWidth() - cornerSize, cornerSize, cornerSize, cornerSize);
+                boolean isDark = ColorUtils.isDark(corner);
+                badgedImageView.setBadgeColor(ContextCompat.getColor(getView().getContext(),
+                        isDark ? R.color.gif_badge_light : R.color.gif_badge_dark));
+            }finally {
+                if (corner != null) {
+                    corner.recycle();
+                }
+            }
+
+
         }
     }
 
