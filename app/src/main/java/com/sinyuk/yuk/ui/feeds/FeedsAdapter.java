@@ -36,6 +36,7 @@ import com.sinyuk.yuk.data.user.User;
 import com.sinyuk.yuk.utils.glide.CropCircleTransformation;
 import com.sinyuk.yuk.utils.glide.DribbbleTarget;
 import com.sinyuk.yuk.utils.glide.ObservableColorMatrix;
+import com.sinyuk.yuk.widgets.BadgedFourThreeImageView;
 import com.sinyuk.yuk.widgets.FourThreeImageView;
 import com.sinyuk.yuk.widgets.NumberTextView;
 import com.sinyuk.yuk.widgets.TextDrawable;
@@ -303,7 +304,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
 
     public class FeedItemViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.shot)
-        FourThreeImageView mShot;
+        BadgedFourThreeImageView mShot;
         @BindView(R.id.rebound_stub)
         ViewStub mReboundStub;
         @BindView(R.id.attachment_stub)
