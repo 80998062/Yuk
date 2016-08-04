@@ -21,8 +21,7 @@ public class ShotsListDemo extends BaseActivity {
     Toolbar mToolBar;
     @BindView(R.id.list_view_container)
     FrameLayout mListViewContainer;
-    @BindView(R.id.yuk_loading_layout)
-    YukLoadingLayout mYukLoadingLayout;
+
 
 
     @Override
@@ -38,7 +37,7 @@ public class ShotsListDemo extends BaseActivity {
     @Override
     protected void finishInflating() {
         ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), feedsFragment, R.id.list_view_container);
-        mYukLoadingLayout.setRefreshListener(jellyRefreshLayout -> jellyRefreshLayout.postDelayed((Runnable) jellyRefreshLayout::finishRefreshing, 6000));
+//        mYukLoadingLayout.setRefreshListener(jellyRefreshLayout -> jellyRefreshLayout.postDelayed((Runnable) jellyRefreshLayout::finishRefreshing, 6000));
     }
 
 }
