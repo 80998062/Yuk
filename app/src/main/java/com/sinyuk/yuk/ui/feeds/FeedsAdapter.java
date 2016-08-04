@@ -1,8 +1,14 @@
 package com.sinyuk.yuk.ui.feeds;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -10,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,6 +35,7 @@ import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.data.user.User;
 import com.sinyuk.yuk.utils.glide.CropCircleTransformation;
 import com.sinyuk.yuk.utils.glide.DribbbleTarget;
+import com.sinyuk.yuk.utils.glide.ObservableColorMatrix;
 import com.sinyuk.yuk.widgets.FourThreeImageView;
 import com.sinyuk.yuk.widgets.NumberTextView;
 import com.sinyuk.yuk.widgets.TextDrawable;
@@ -47,6 +55,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
 
 
     private final DrawableRequestBuilder<String> avatarRequest;
+    private final DrawableRequestBuilder<String> gifRequestBuilder;
     private final DrawableRequestBuilder<String> drawableRequestBuilder;
 
     private int[] stolenSize;
@@ -58,27 +67,18 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
     public FeedsAdapter(Context context, RequestManager mGlide, ArrayList<Shot> dataSet) {
         Timber.tag("FeedsAdapter");
         this.mContext = context;
-        this.drawableRequestBuilder = mGlide
+
+        this.gifRequestBuilder = mGlide
                 .fromString()
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .dontAnimate()
-                .centerCrop().listener(new RequestListener<String, GlideDrawable>() {
-                    @Override
-                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                        if (e != null) {
-                            e.printStackTrace();
-                            Timber.e(e.getLocalizedMessage());
-                        }
-                        return false;
-                    }
+                .centerCrop();
 
-                    @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                        Timber.e("Ready");
-                        return false;
-                    }
-                });
-
+        this.drawableRequestBuilder = mGlide
+                .fromString()
+                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                .dontAnimate()
+                .centerCrop();
 
         this.mDataSet = dataSet;
 
@@ -86,7 +86,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
                 .priority(Priority.NORMAL)
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .centerCrop()
-                .crossFade(1000)
+                .dontAnimate()
                 .bitmapTransform(new CropCircleTransformation(mContext));
     }
 
@@ -153,10 +153,50 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
     public void onBindViewHolder(FeedItemViewHolder holder, int position) {
         final Shot data = mDataSet.get(position);
         /* shot */
-        Timber.e("I will load %s", data.bestQuality());
-        DribbbleTarget target = drawableRequestBuilder
+        final DrawableRequestBuilder<String> builder =
+                data.isAnimated() ? gifRequestBuilder : drawableRequestBuilder;
+        DribbbleTarget target = builder
                 .load(data.bestQuality())
+                .listener(new RequestListener<String, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        if (!data.isHasFadedIn()) {
+                            holder.mShot.setHasTransientState(true);
+                            final ObservableColorMatrix cm = new ObservableColorMatrix();
+                            ObjectAnimator saturation = ObjectAnimator.ofFloat(cm,
+                                    ObservableColorMatrix.SATURATION, 0f, 1f);
+                            saturation.addUpdateListener(valueAnimator -> {
+                                // just animating the color matrix does not invalidate the
+                                // drawable so need this update listener.  Also have to create a
+                                // new CMCF as the matrix is immutable :(
+                                if (holder.mShot.getDrawable() != null) {
+                                    holder.mShot.getDrawable().setColorFilter(
+                                            new ColorMatrixColorFilter(cm));
+                                }
+                            });
+                            saturation.setDuration(2000);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                saturation.setInterpolator(AnimationUtils.loadInterpolator(mContext,
+                                        android.R.interpolator.fast_out_slow_in));
+                            }
+                            saturation.addListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    holder.mShot.setHasTransientState(false);
+                                }
+                            });
+                            saturation.start();
+                            data.setHasFadedIn(true);
+                        }
+                        return false;
+                    }
+                })
                 .into(new DribbbleTarget(holder.mShot, data.isAnimated(), mAutoPlayGif));
+
         if (stolenSize == null) {
             // assuming uniform sizing among items (fixed size or match works, wrap doesn't)
             target.getSize((width, height) -> {
@@ -247,7 +287,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
 
     @Override
     public GenericRequestBuilder getPreloadRequestBuilder(Shot data) {
-        return drawableRequestBuilder.load(data.bestQuality());
+        return gifRequestBuilder.load(data.bestQuality());
     }
 
     // ------------------------ PreloadSizeProvider -----------------------
