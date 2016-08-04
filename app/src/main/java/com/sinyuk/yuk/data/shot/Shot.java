@@ -443,6 +443,10 @@ public class Shot implements Parcelable {
         return hasFadedIn;
     }
 
+    public void setHasFadedIn(boolean hasFadedIn) {
+        this.hasFadedIn = hasFadedIn;
+    }
+
     public Spanned getParsedDescription() {
         return parsedDescription;
     }
