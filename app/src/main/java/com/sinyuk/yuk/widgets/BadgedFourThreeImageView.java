@@ -97,7 +97,6 @@ public class BadgedFourThreeImageView extends FourThreeImageView {
         private static int width;
         private static int height;
         private final Paint paint;
-        private boolean isLoading;
 
         GifBadge(Context context) {
             if (bitmap == null) {
@@ -123,13 +122,10 @@ public class BadgedFourThreeImageView extends FourThreeImageView {
                 canvas.drawRoundRect(0, 0, width, height, cornerRadius, cornerRadius,
                         backgroundPaint);
 
-                if (!isLoading) {
-                    // punch out the word 'GIF', leaving transparency
-                    textPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-                    canvas.drawText(GIF, padding, height - padding, textPaint);
-                } else {
+                // punch out the word 'GIF', leaving transparency
+                textPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+                canvas.drawText(GIF, padding, height - padding, textPaint);
 
-                }
             }
             paint = new Paint();
         }

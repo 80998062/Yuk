@@ -102,25 +102,31 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
     private void setOnTouchListener(ImageView shot) {
         Timber.e("setOnTouchListener");
         shot.setClickable(true);
-        shot.setLongClickable(true);
-        shot.setOnLongClickListener(view -> {
+        // play animated GIFs whilst touched
+        shot.setOnTouchListener((v, event) -> {
+            // check if it's an event we care about, else bail fast
+            final int action = event.getAction();
+            if (!(action == MotionEvent.ACTION_DOWN
+                    || action == MotionEvent.ACTION_UP
+                    || action == MotionEvent.ACTION_CANCEL)) return false;
+
+            // get the image and check if it's an animated GIF
             final GifDrawable gif = getGifDrawableIfExisted(shot);
-            if (gif != null && gif.isAnimated() && !gif.isRunning()) {
-                gif.start();
+            if (gif == null) {
+                return false;
+            }
+            // GIF found, start/stop it on press/lift
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                    gif.start();
+                    break;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    gif.stop();
+                    break;
             }
             return false;
         });
-        shot.setOnTouchListener((v, event) -> {
-                    final GifDrawable gif = getGifDrawableIfExisted(shot);
-                    if (gif == null) {
-                        return false;
-                    }
-                    if (!gif.isAnimated() || !gif.isRunning()) { return false; }
-                    if (event.getAction() == MotionEvent.ACTION_UP
-                            || event.getAction() == MotionEvent.ACTION_CANCEL) { gif.stop(); }
-                    return false;
-                }
-        );
     }
 
     private GifDrawable getGifDrawableIfExisted(ImageView shot) {
