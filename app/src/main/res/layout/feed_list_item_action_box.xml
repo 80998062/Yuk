@@ -27,7 +27,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"/>
 
-    <com.sinyuk.yuk.widgets.NumberTextView
+    <TextView
         android:id="@+id/view_count"
         style="@style/slm_number"
         android:layout_marginLeft="@dimen/content_space_8"
@@ -35,9 +35,9 @@
         android:drawableLeft="@drawable/attention_fill"
         android:drawableStart="@drawable/attention_fill"
         android:src="@drawable/ic_emoticon_smile_grey"
-        tools:text="1234"/>
+        tools:text="443"/>
 
-    <com.sinyuk.yuk.widgets.NumberTextView
+    <TextView
         android:id="@+id/comment"
         style="@style/slm_number"
         android:layout_marginLeft="@dimen/content_space_8"
@@ -45,7 +45,7 @@
         android:drawableLeft="@drawable/comment_fill"
         android:drawableStart="@drawable/comment_fill"
         android:src="@drawable/ic_emoticon_smile_grey"
-        tools:text="1234"/>
+        tools:text="124353434"/>
 
     <ImageView
         android:id="@+id/like_icon"
@@ -55,12 +55,11 @@
         android:src="@drawable/like"
         />
 
-    <com.sinyuk.yuk.widgets.NumberTextView
+    <TextView
         android:id="@+id/like_number"
         style="@style/slm_number"
         android:layout_marginLeft="@dimen/content_space_2"
         android:layout_marginStart="@dimen/content_space_2"
-        android:maxWidth="32dp"
         tools:text="1234"/>
 
 </LinearLayout>

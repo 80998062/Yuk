@@ -3,7 +3,6 @@ package com.sinyuk.yuk.ui.feeds;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
@@ -33,12 +32,11 @@ import com.bumptech.glide.request.target.Target;
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.data.user.User;
+import com.sinyuk.yuk.utils.FormatUtils;
 import com.sinyuk.yuk.utils.glide.CropCircleTransformation;
 import com.sinyuk.yuk.utils.glide.DribbbleTarget;
 import com.sinyuk.yuk.utils.glide.ObservableColorMatrix;
 import com.sinyuk.yuk.widgets.BadgedFourThreeImageView;
-import com.sinyuk.yuk.widgets.FourThreeImageView;
-import com.sinyuk.yuk.widgets.NumberTextView;
 import com.sinyuk.yuk.widgets.TextDrawable;
 
 import java.util.ArrayList;
@@ -108,21 +106,24 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
             final int action = event.getAction();
             if (!(action == MotionEvent.ACTION_DOWN
                     || action == MotionEvent.ACTION_UP
-                    || action == MotionEvent.ACTION_CANCEL)) return false;
+                    || action == MotionEvent.ACTION_CANCEL)) { return false; }
 
             // get the image and check if it's an animated GIF
             final GifDrawable gif = getGifDrawableIfExisted(shot);
             if (gif == null) {
                 return false;
             }
+            final int originLayerType = shot.getLayerType();
             // GIF found, start/stop it on press/lift
             switch (action) {
                 case MotionEvent.ACTION_DOWN:
+                    shot.setLayerType(View.LAYER_TYPE_HARDWARE, null);
                     gif.start();
                     break;
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_CANCEL:
                     gif.stop();
+                    shot.setLayerType(originLayerType, null);
                     break;
             }
             return false;
@@ -169,6 +170,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
                     public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
                         return false;
                     }
+
                     @Override
                     public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                         if (!data.isHasFadedIn()) {
@@ -231,14 +233,14 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
 
         }
         /* view count */
-        checkText(holder.mViewCount, data.getViewsCount() + "");
+        checkText(holder.mViewCount, FormatUtils.shortenNumber(data.getViewsCount() + ""));
 
         /* comments */
 
-        checkText(holder.mComment, data.getCommentsCount() + "");
+        checkText(holder.mComment, FormatUtils.shortenNumber(data.getCommentsCount() + ""));
 
         /* like */
-        checkText(holder.mLikeNumber, data.getLikesCount() + "");
+        checkText(holder.mLikeNumber, FormatUtils.shortenNumber(data.getLikesCount() + ""));
 
         // TODO: 是否已经收藏
 
@@ -278,7 +280,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
     }
 
     private void checkText(TextView textView, String text) {
-        if (textView != null && text != null) {textView.setText(text);}
+        if (textView != null && !TextUtils.isEmpty(text)) {textView.setText(text);}
     }
 
     // ------------------------ PreloadModelProvider -----------------------
@@ -316,13 +318,13 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
         @BindView(R.id.attachment_stub)
         ViewStub mAttachmentStub;
         @BindView(R.id.view_count)
-        NumberTextView mViewCount;
+        TextView mViewCount;
         @BindView(R.id.comment)
-        NumberTextView mComment;
+        TextView mComment;
         @BindView(R.id.like_icon)
         ImageView mLikeIcon;
         @BindView(R.id.like_number)
-        NumberTextView mLikeNumber;
+        TextView mLikeNumber;
         @BindView(R.id.card_view)
         CardView mCardView;
         @BindView(R.id.avatar)
