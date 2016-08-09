@@ -22,6 +22,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Sinyuk on 16.6.16.
@@ -186,15 +187,15 @@ public class Shot implements Parcelable {
     }
 
     public String bestQuality() {
-        return !TextUtils.isEmpty(hidpi) ? hidpi : normal;
+        return TextUtils.isEmpty(hidpi) || PLACE_HOLDER.equals(hidpi) ? normal : hidpi;
     }
 
     public String normalQuality() {
-        return !TextUtils.isEmpty(normal) ? normal : teaser;
+        return !TextUtils.isEmpty(normal) || PLACE_HOLDER.equals(normal) ? normal : teaser;
     }
 
     Date getCreatedDate(String createdAt) {
-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DribbleApi.DATE_FORMAT);
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DribbleApi.DATE_FORMAT, Locale.CHINA);
         try {
             return simpleDateFormat.parse(createdAt);
         } catch (ParseException e) {

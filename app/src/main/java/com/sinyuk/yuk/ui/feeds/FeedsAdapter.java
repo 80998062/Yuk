@@ -168,6 +168,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+
                         return false;
                     }
 
@@ -265,15 +266,16 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
 
         /* type */
         final String type = TextUtils.isEmpty(data.getPlayerOrTeam()) ? "" : data.getPlayerOrTeam();
+        Timber.e("Type is %s", type);
         switch (type) {
             case User.TEAM:
                 checkText(holder.mType, User.TEAM);
+                holder.mType.setVisibility(View.VISIBLE);
                 break;
             case User.PLAYER:
-                checkText(holder.mType, data.isPro() ? User.PRO : User.PLAYER);
-                break;
             default:
-                holder.mType.setVisibility(View.GONE);
+                checkText(holder.mType, data.isPro() ? User.PRO : User.PLAYER);
+                if (data.isPro()) {holder.mType.setVisibility(View.VISIBLE);}
                 break;
         }
 
