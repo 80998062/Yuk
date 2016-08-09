@@ -14,9 +14,9 @@ import com.sinyuk.yuk.data.links.Links;
  */
 @Table("user")
 public class User implements Parcelable {
-    public static final String TEAM  = "TEAM";
-    public static final String PLAYER  = "PLAYER";
-    public static final String PRO  = "PRO";
+    public static final String TEAM  = "Team";
+    public static final String PLAYER  = "Player";
+    public static final String PRO  = "Pro";
     /**
      * id : 1
      * name : Dan Cederholm
