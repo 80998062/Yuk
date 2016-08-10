@@ -20,14 +20,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.DrawableRequestBuilder;
-import com.bumptech.glide.GenericRequestBuilder;
-import com.bumptech.glide.ListPreloader;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.bumptech.glide.request.target.Target;
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.data.shot.Shot;
@@ -40,8 +39,6 @@ import com.sinyuk.yuk.widgets.BadgedFourThreeImageView;
 import com.sinyuk.yuk.widgets.TextDrawable;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,9 +47,7 @@ import timber.log.Timber;
 /**
  * Created by Sinyuk on 16/7/6.
  */
-public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemViewHolder> implements ListPreloader.PreloadModelProvider<Shot>, ListPreloader.PreloadSizeProvider<Shot> {
-
-
+public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemViewHolder> {
     private final DrawableRequestBuilder<String> avatarRequest;
     private final DrawableRequestBuilder<String> gifRequestBuilder;
     private final DrawableRequestBuilder<String> drawableRequestBuilder;
@@ -151,7 +146,6 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
     }
 
 
-    // ------------------------ RecyclerView.Adapter -----------------------
     @Override
     public int getItemCount() {
         return mDataSet.size();
@@ -283,28 +277,6 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
 
     private void checkText(TextView textView, String text) {
         if (textView != null && !TextUtils.isEmpty(text)) {textView.setText(text);}
-    }
-
-    // ------------------------ PreloadModelProvider -----------------------
-
-    public Shot getItem(int position) {
-        return mDataSet.get(position);
-    }
-
-    @Override
-    public List<Shot> getPreloadItems(int position) {
-        return Collections.singletonList(getItem(position));
-    }
-
-    @Override
-    public GenericRequestBuilder getPreloadRequestBuilder(Shot data) {
-        return gifRequestBuilder.load(data.bestQuality());
-    }
-
-    // ------------------------ PreloadSizeProvider -----------------------
-    @Override
-    public int[] getPreloadSize(Shot item, int adapterPosition, int perItemPosition) {
-        return stolenSize;
     }
 
     public void setAutoPlayGif(boolean autoPlayGif) {

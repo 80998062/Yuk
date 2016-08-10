@@ -10,6 +10,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
+import com.bumptech.glide.request.target.SizeReadyCallback;
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.utils.ColorUtils;
 import com.sinyuk.yuk.widgets.BadgedFourThreeImageView;

@@ -78,8 +78,6 @@ public class FeedsFragment extends BaseFragment {
 
         mRecyclerView.setAdapter(mAdapter);
 
-        mRecyclerView.addOnScrollListener(new RecyclerViewPreloader<>(mAdapter, mAdapter, 10));
-
         mRecyclerView.addItemDecoration(new ListItemMarginDecoration(2, R.dimen.content_space_8, true, mContext));
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
