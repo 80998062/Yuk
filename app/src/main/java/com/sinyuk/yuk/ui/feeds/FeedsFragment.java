@@ -33,8 +33,6 @@ import timber.log.Timber;
  * Created by Sinyuk on 16/7/1.
  */
 public class FeedsFragment extends BaseFragment {
-@BindView(R.id.image)
-    ImageView imageView;
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
     @BindView(R.id.progress_bar)
@@ -116,10 +114,4 @@ public class FeedsFragment extends BaseFragment {
                     }
                 });
     }
-
-    @OnClick(R.id.fab)
-    public void onClick() {
-        loadFeeds(DribbleApi.ANIMATED, 2);
-    }
-
 }

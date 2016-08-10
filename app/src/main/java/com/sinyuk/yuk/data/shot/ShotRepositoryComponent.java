@@ -1,10 +1,8 @@
 package com.sinyuk.yuk.data.shot;
 
 import com.sinyuk.yuk.AppModule;
-import com.sinyuk.yuk.api.ApiComponent;
 import com.sinyuk.yuk.api.ApiModule;
 import com.sinyuk.yuk.ui.feeds.FeedsFragment;
-import com.sinyuk.yuk.utils.scopes.PerActivity;
 
 import javax.inject.Singleton;
 
