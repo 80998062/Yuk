@@ -3,7 +3,6 @@ package com.sinyuk.yuk.ui.feeds;
 import android.app.Activity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
@@ -16,7 +15,6 @@ import com.sinyuk.yuk.data.shot.ShotRepository;
 import com.sinyuk.yuk.ui.BaseFragment;
 import com.sinyuk.yuk.utils.lists.ListItemMarginDecoration;
 import com.sinyuk.yuk.utils.PrefsUtils;
-import com.sinyuk.yuk.utils.glide.RecyclerViewPreloader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +22,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import rx.functions.Action1;
 import timber.log.Timber;
