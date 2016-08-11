@@ -137,24 +137,22 @@ public class FeedItemView extends RelativeLayout {
         setText(mUsername, username);
 
         /* type */
-        final String type = StringUtils.valueOrDefault(data.getPlayerOrTeam(), " ");
-        switch (type) {
-            case User.TEAM:
-                setText(mType, User.TEAM);
-                mType.setVisibility(View.VISIBLE);
-                break;
-            case User.PLAYER:
-                if (data.isPro()) {
-                    setText(mType, User.PRO);
-                    mType.setVisibility(View.VISIBLE);
-                }
-                break;
-            default:
-                break;
+        final String type = StringUtils.valueOrDefault(data.getPlayerOrTeam(), User.PLAYER);
+
+        if (data.isPro() || User.TEAM.equals(type)) {
+            mType.setVisibility(View.VISIBLE);
+        } else if (User.PLAYER.equals(type)) {
+            mType.setVisibility(View.GONE);
+        }
+
+        if (data.isPro()) {
+            setText(mType, User.PRO);
+        } else {
+            setText(mType, type);
         }
 
         Preconditions.checkNotNull(mShot);
-        
+
         /*加载图片*/
         shotBuilder.load(data.bestQuality())
                 .listener(new ShotRequestListener(data))
