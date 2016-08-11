@@ -30,14 +30,6 @@ public class Images implements Parcelable{
         teaser = in.readString();
     }
 
-    public String bestQuality() {
-        return !TextUtils.isEmpty(hidpi) ? hidpi : normal;
-    }
-
-    public String normalQuality() {
-        return !TextUtils.isEmpty(normal) ? normal : teaser;
-    }
-
     @Override
     public int describeContents() {
         return 0;

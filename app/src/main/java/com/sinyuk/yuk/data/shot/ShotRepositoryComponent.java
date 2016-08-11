@@ -16,8 +16,6 @@ import dagger.Component;
 public interface ShotRepositoryComponent {
     ShotRepository getShotRepository();
 
-    ShotLocalDataSource getShotLocalDataSource();
-
     ShotRemoteDataSource getShotRemoteDataSource();
 
     void inject(FeedsFragment target);

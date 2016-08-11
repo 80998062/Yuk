@@ -21,30 +21,19 @@ public class ShotRepository {
 
     private final ShotRemoteDataSource remoteDataSource;
 
-    private final ShotLocalDataSource localDataSource;
-
-    public ShotRepository(ShotLocalDataSource localDataSource,
-                          ShotRemoteDataSource remoteDataSource,
+    public ShotRepository(ShotRemoteDataSource remoteDataSource,
                           RxSharedPreferences preferences) {
-        this.localDataSource = localDataSource;
         this.remoteDataSource = remoteDataSource;
         this.prefs = preferences;
         Timber.tag("ShotRepository");
     }
 
-    public Observable getShots(@NonNull String type, @NonNull int page) {
-        Observable<List<Shot>> localObservable = localDataSource.getShots(type, page);
+    public Observable getShots(@NonNull String type,int page) {
         Observable<List<Shot>> remoteObservable = remoteDataSource.getShots(type, page);
         return prefs.getBoolean(PrefsUtils.auto_refresh, true).asObservable()
-                .flatMap(autoRefresh -> {
-                    Observable<List<Shot>> observable = autoRefresh
-                            ? Observable.concat(remoteObservable, localObservable)
-                            : Observable.concat(localObservable, remoteObservable);
-
-                    return observable.doOnError(throwable -> Timber.d(throwable.getLocalizedMessage()))
-                            .firstOrDefault(Collections.emptyList(), shots -> !shots.isEmpty())
-                            .observeOn(AndroidSchedulers.mainThread());
-                });
+                .flatMap(autoRefresh -> remoteObservable.doOnError(throwable -> Timber.d(throwable.getLocalizedMessage()))
+                        .onErrorResumeNext(Observable.just(Collections.emptyList()))
+                        .observeOn(AndroidSchedulers.mainThread()));
 
 
     }
