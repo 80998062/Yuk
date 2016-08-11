@@ -88,69 +88,10 @@ public class FeedItemView extends RelativeLayout {
         ButterKnife.bind(this);
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        // check if it's an event we care about, else bail fast
-        final int action = event.getAction();
-        if (!(action == MotionEvent.ACTION_DOWN
-                || action == MotionEvent.ACTION_UP
-                || action == MotionEvent.ACTION_CANCEL)) { return false; }
-
-        // get the image and check if it's an animated GIF
-        final GifDrawable gif = getGifDrawableIfExisted(mShot);
-        if (gif == null) {
-            return false;
-        }
-        final int originLayerType = mShot.getLayerType();
-        // GIF found, start/stop it on press/lift
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                mShot.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-                gif.start();
-                break;
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL:
-                gif.stop();
-                mShot.setLayerType(originLayerType, null);
-                break;
-        }
-        return false;
-    }
-
-    /**
-     * 如果imageView里面是GIF的话
-     *
-     * @param shot
-     * @return
-     */
-    private GifDrawable getGifDrawableIfExisted(ImageView shot) {
-        // get the image and check if it's an animated GIF
-        final Drawable drawable = shot.getDrawable();
-        if (drawable == null) { return null; }
-        GifDrawable gif = null;
-        if (drawable instanceof GifDrawable) {
-            gif = (GifDrawable) drawable;
-        } else if (drawable instanceof TransitionDrawable) {
-            // we fade in images on load which uses a TransitionDrawable; check its layers
-            TransitionDrawable fadingIn = (TransitionDrawable) drawable;
-            for (int i = 0; i < fadingIn.getNumberOfLayers(); i++) {
-                if (fadingIn.getDrawable(i) instanceof GifDrawable) {
-                    gif = (GifDrawable) fadingIn.getDrawable(i);
-                    break;
-                }
-            }
-        }
-        return gif;
-    }
-
     public void bindTo(Shot data,
                        DrawableRequestBuilder<String> shotBuilder,
                        boolean isAutoPlayGif,
                        DrawableRequestBuilder<String> avatarBuilder) {
-        /*加载图片*/
-        shotBuilder.load(data.bestQuality())
-                .listener(new ShotRequestListener(data))
-                .into(new DribbbleTarget(mShot, isAutoPlayGif));
         /* rebound */
         if (data.getReboundsCount() > 0) {
             if (mReboundStub != null) {
@@ -211,6 +152,41 @@ public class FeedItemView extends RelativeLayout {
             default:
                 break;
         }
+
+        Preconditions.checkNotNull(mShot);
+        
+        /*加载图片*/
+        shotBuilder.load(data.bestQuality())
+                .listener(new ShotRequestListener(data))
+                .into(new DribbbleTarget(mShot, isAutoPlayGif));
+
+        mShot.setOnTouchListener((view, motionEvent) -> {
+            // check if it's an event we care about, else bail fast
+            final int action = motionEvent.getAction();
+            if (!(action == MotionEvent.ACTION_DOWN
+                    || action == MotionEvent.ACTION_UP
+                    || action == MotionEvent.ACTION_CANCEL)) { return false; }
+
+            // get the image and check if it's an animated GIF
+            final GifDrawable gif = getGifDrawableIfExisted(mShot);
+            if (gif == null) {
+                return false;
+            }
+            final int originLayerType = mShot.getLayerType();
+            // GIF found, start/stop it on press/lift
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                    mShot.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+                    gif.start();
+                    break;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    gif.stop();
+                    mShot.setLayerType(originLayerType, null);
+                    break;
+            }
+            return false;
+        });
     }
 
     /**
@@ -227,6 +203,32 @@ public class FeedItemView extends RelativeLayout {
 
     private String getNumberToString(int number) {
         return FormatUtils.shortenNumber(String.valueOf(number));
+    }
+
+    /**
+     * 如果imageView里面是GIF的话
+     *
+     * @param shot
+     * @return
+     */
+    private GifDrawable getGifDrawableIfExisted(ImageView shot) {
+        // get the image and check if it's an animated GIF
+        final Drawable drawable = shot.getDrawable();
+        if (drawable == null) { return null; }
+        GifDrawable gif = null;
+        if (drawable instanceof GifDrawable) {
+            gif = (GifDrawable) drawable;
+        } else if (drawable instanceof TransitionDrawable) {
+            // we fade in images on load which uses a TransitionDrawable; check its layers
+            TransitionDrawable fadingIn = (TransitionDrawable) drawable;
+            for (int i = 0; i < fadingIn.getNumberOfLayers(); i++) {
+                if (fadingIn.getDrawable(i) instanceof GifDrawable) {
+                    gif = (GifDrawable) fadingIn.getDrawable(i);
+                    break;
+                }
+            }
+        }
+        return gif;
     }
 
     private class ShotRequestListener implements RequestListener<String, GlideDrawable> {
