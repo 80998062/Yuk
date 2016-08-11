@@ -158,7 +158,7 @@ public class FeedItemView extends RelativeLayout {
                 .listener(new ShotRequestListener(data))
                 .into(new DribbbleTarget(mShot, isAutoPlayGif));
 
-        mShot.setOnTouchListener((view, motionEvent) -> {
+      /*  mShot.setOnTouchListener((view, motionEvent) -> {
             // check if it's an event we care about, else bail fast
             final int action = motionEvent.getAction();
             if (!(action == MotionEvent.ACTION_DOWN
@@ -184,7 +184,7 @@ public class FeedItemView extends RelativeLayout {
                     break;
             }
             return false;
-        });
+        });*/
     }
 
     /**
