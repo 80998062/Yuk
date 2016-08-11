@@ -2,7 +2,7 @@ package com.sinyuk.yuk.ui.feeds;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.DrawableRequestBuilder;
@@ -15,27 +15,22 @@ import com.sinyuk.yuk.utils.glide.CropCircleTransformation;
 
 import java.util.ArrayList;
 
-import butterknife.ButterKnife;
 import timber.log.Timber;
 
 /**
  * Created by Sinyuk on 16/7/6.
+ * 尽量减少这里的逻辑
  */
 public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemViewHolder> {
     private final DrawableRequestBuilder<String> avatarBuilder;
-    private final DrawableRequestBuilder<String> shotBuilder;
+    private final DrawableRequestBuilder<String> GIFBuilder;
     private final DrawableRequestBuilder<String> PNGBuilder;
 
-    private Context mContext;
     private ArrayList<Shot> mDataSet = new ArrayList<>();
-    private boolean mAutoPlayGif = false;
-
-
+    private boolean isAutoPlayGif = false;
     public FeedsAdapter(Context context, RequestManager requestManager, ArrayList<Shot> dataSet) {
         Timber.tag("FeedsAdapter");
-        this.mContext = context;
-
-        this.shotBuilder = requestManager
+        this.GIFBuilder = requestManager
                 .fromString()
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .dontAnimate()
@@ -54,13 +49,14 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .centerCrop()
                 .dontAnimate()
-                .bitmapTransform(new CropCircleTransformation(mContext));
+                .bitmapTransform(new CropCircleTransformation(context));
     }
 
 
     @Override
     public FeedItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new FeedItemViewHolder((FeedItemView) View.inflate(mContext, R.layout.feed_list_item, null));
+        return new FeedItemViewHolder((FeedItemView) LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.feed_list_item, parent, false));
     }
 
     @Override
@@ -72,16 +68,15 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
     public void onBindViewHolder(FeedItemViewHolder holder, int position) {
         final Shot data = mDataSet.get(position);
         if (data.isAnimated()) {
-            holder.bindTo(data, shotBuilder, mAutoPlayGif, avatarBuilder);
-        }else {
-            holder.bindTo(data, PNGBuilder, mAutoPlayGif, avatarBuilder);
+            holder.bindTo(data, GIFBuilder, isAutoPlayGif, avatarBuilder);
+        } else {
+            holder.bindTo(data, PNGBuilder, isAutoPlayGif, avatarBuilder);
         }
     }
 
 
-
     public void setAutoPlayGif(boolean autoPlayGif) {
-        this.mAutoPlayGif = autoPlayGif;
+        this.isAutoPlayGif = autoPlayGif;
     }
 
 
