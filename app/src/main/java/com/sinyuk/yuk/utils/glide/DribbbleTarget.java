@@ -24,11 +24,9 @@ public class DribbbleTarget extends GlideDrawableImageViewTarget implements
         Palette.PaletteAsyncListener {
 
     private final boolean autoplayGifs;
-    private final boolean isAnimated;
 
-    public DribbbleTarget(ImageView view, boolean animated, boolean autoPlayGifs) {
+    public DribbbleTarget(ImageView view, boolean autoPlayGifs) {
         super(view);
-        this.isAnimated = animated;
         this.autoplayGifs = autoPlayGifs;
 
     }
@@ -42,7 +40,7 @@ public class DribbbleTarget extends GlideDrawableImageViewTarget implements
         }
 
         BadgedFourThreeImageView badgedImageView = (BadgedFourThreeImageView) getView();
-        if (!isAnimated || resource instanceof GlideBitmapDrawable) {
+        if (resource instanceof GlideBitmapDrawable) {
             Palette.from(((GlideBitmapDrawable) resource).getBitmap())
                     .clearFilters()
                     .generate(this);
