@@ -33,12 +33,6 @@ import timber.log.Timber;
 @Module
 public class ApiModule {
 
-  /*  private final Application application;
-
-    public ApiModule(Application application){
-        this.application = application;
-    }*/
-
     @Provides
     @Singleton
     public Gson provideGson() {
@@ -56,7 +50,7 @@ public class ApiModule {
     public OkHttpClient provideOkHttpClient(Application application) {
         File cacheFile = new File(application.getExternalCacheDir(), "okhttp_cache");
 
-        Cache cache = new Cache(cacheFile, 1024 * 1024 * 5);
+        Cache cache = new Cache(cacheFile, 1024 * 1024 * 50);
 
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
