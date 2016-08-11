@@ -4,19 +4,22 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
-import com.litesuits.orm.db.annotation.PrimaryKey;
-import com.litesuits.orm.db.annotation.Table;
-import com.litesuits.orm.db.enums.AssignType;
 import com.sinyuk.yuk.data.links.Links;
 
 /**
  * Created by Sinyuk on 16.6.17.
  */
-@Table("user")
 public class User implements Parcelable {
-    public static final String TEAM  = "Team";
-    public static final String PLAYER  = "Player";
-    public static final String PRO  = "Pro";
+    public static final String TEAM = "Team";
+    public static final String PLAYER = "Player";
+    public static final String PRO = "Pro";
+    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel source) {return new User(source);}
+
+        @Override
+        public User[] newArray(int size) {return new User[size];}
+    };
     /**
      * id : 1
      * name : Dan Cederholm
@@ -48,7 +51,6 @@ public class User implements Parcelable {
      * created_at : 2009-07-08T02:51:22Z
      * updated_at : 2014-02-22T17:10:33Z
      */
-    @PrimaryKey(AssignType.BY_MYSELF)
     @SerializedName("id")
     private int mId;
     @SerializedName("name")
@@ -112,6 +114,40 @@ public class User implements Parcelable {
     private String mCreatedAt;
     @SerializedName("updated_at")
     private String mUpdatedAt;
+
+    public User() {}
+
+    protected User(Parcel in) {
+        this.mId = in.readInt();
+        this.mName = in.readString();
+        this.mUsername = in.readString();
+        this.mHtmlUrl = in.readString();
+        this.mAvatarUrl = in.readString();
+        this.mBio = in.readString();
+        this.mLocation = in.readString();
+        this.mLinks = in.readParcelable(Links.class.getClassLoader());
+        this.mBucketsCount = in.readInt();
+        this.mCommentsReceivedCount = in.readInt();
+        this.mFollowersCount = in.readInt();
+        this.mFollowingsCount = in.readInt();
+        this.mLikesCount = in.readInt();
+        this.mLikesReceivedCount = in.readInt();
+        this.mProjectsCount = in.readInt();
+        this.mReboundsReceivedCount = in.readInt();
+        this.mShotsCount = in.readInt();
+        this.mTeamsCount = in.readInt();
+        this.mCanUploadShot = in.readByte() != 0;
+        this.mType = in.readString();
+        this.mPro = in.readByte() != 0;
+        this.mBucketsUrl = in.readString();
+        this.mFollowersUrl = in.readString();
+        this.mFollowingUrl = in.readString();
+        this.mLikesUrl = in.readString();
+        this.mShotsUrl = in.readString();
+        this.mTeamsUrl = in.readString();
+        this.mCreatedAt = in.readString();
+        this.mUpdatedAt = in.readString();
+    }
 
     public int getId() { return mId;}
 
@@ -264,46 +300,4 @@ public class User implements Parcelable {
         dest.writeString(this.mCreatedAt);
         dest.writeString(this.mUpdatedAt);
     }
-
-    public User() {}
-
-    protected User(Parcel in) {
-        this.mId = in.readInt();
-        this.mName = in.readString();
-        this.mUsername = in.readString();
-        this.mHtmlUrl = in.readString();
-        this.mAvatarUrl = in.readString();
-        this.mBio = in.readString();
-        this.mLocation = in.readString();
-        this.mLinks = in.readParcelable(Links.class.getClassLoader());
-        this.mBucketsCount = in.readInt();
-        this.mCommentsReceivedCount = in.readInt();
-        this.mFollowersCount = in.readInt();
-        this.mFollowingsCount = in.readInt();
-        this.mLikesCount = in.readInt();
-        this.mLikesReceivedCount = in.readInt();
-        this.mProjectsCount = in.readInt();
-        this.mReboundsReceivedCount = in.readInt();
-        this.mShotsCount = in.readInt();
-        this.mTeamsCount = in.readInt();
-        this.mCanUploadShot = in.readByte() != 0;
-        this.mType = in.readString();
-        this.mPro = in.readByte() != 0;
-        this.mBucketsUrl = in.readString();
-        this.mFollowersUrl = in.readString();
-        this.mFollowingUrl = in.readString();
-        this.mLikesUrl = in.readString();
-        this.mShotsUrl = in.readString();
-        this.mTeamsUrl = in.readString();
-        this.mCreatedAt = in.readString();
-        this.mUpdatedAt = in.readString();
-    }
-
-    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
-        @Override
-        public User createFromParcel(Parcel source) {return new User(source);}
-
-        @Override
-        public User[] newArray(int size) {return new User[size];}
-    };
 }

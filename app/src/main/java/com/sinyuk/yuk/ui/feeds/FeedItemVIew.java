@@ -92,6 +92,13 @@ public class FeedItemView extends RelativeLayout {
                        DrawableRequestBuilder<String> shotBuilder,
                        boolean isAutoPlayGif,
                        DrawableRequestBuilder<String> avatarBuilder) {
+        Preconditions.checkNotNull(mShot);
+
+        /*加载图片*/
+        shotBuilder.load(data.bestQuality())
+                .listener(new ShotRequestListener(data))
+                .into(new DribbbleTarget(mShot, isAutoPlayGif));
+
         /* rebound */
         if (data.getReboundsCount() > 0) {
             if (mReboundStub != null) {
@@ -119,8 +126,11 @@ public class FeedItemView extends RelativeLayout {
         /* like */        // TODO: 是否已经收藏
         setText(mLikeNumber, getNumberToString(data.getLikesCount()));
 
+        final User user = data.getUser();
+
+        Preconditions.checkNotNull(user,"Can't bind to a null user");
          /* avatar*/
-        final String username = StringUtils.valueOrDefault(data.getUsername(), " ");
+        final String username = StringUtils.valueOrDefault(user.getUsername(), " ");
 
         // use a TextDrawable as a placeholder
         final char firstLetter = username.charAt(0);
@@ -128,7 +138,7 @@ public class FeedItemView extends RelativeLayout {
         final TextDrawable textDrawable = TextDrawable.builder()
                 .buildRound(firstLetter + "", COLOR_SLATE);
 
-        avatarBuilder.load(data.getAvatarUrl())
+        avatarBuilder.load(user.getAvatarUrl())
                 .placeholder(textDrawable)
                 .error(textDrawable)
                 .into(mAvatar);
@@ -137,26 +147,21 @@ public class FeedItemView extends RelativeLayout {
         setText(mUsername, username);
 
         /* type */
-        final String type = StringUtils.valueOrDefault(data.getPlayerOrTeam(), User.PLAYER);
+        final String type = StringUtils.valueOrDefault(user.getType(), User.PLAYER);
 
-        if (data.isPro() || User.TEAM.equals(type)) {
+        if (user.isPro() || User.TEAM.equals(type)) {
             mType.setVisibility(View.VISIBLE);
         } else if (User.PLAYER.equals(type)) {
             mType.setVisibility(View.GONE);
         }
 
-        if (data.isPro()) {
+        if (user.isPro()) {
             setText(mType, User.PRO);
         } else {
             setText(mType, type);
         }
 
-        Preconditions.checkNotNull(mShot);
 
-        /*加载图片*/
-        shotBuilder.load(data.bestQuality())
-                .listener(new ShotRequestListener(data))
-                .into(new DribbbleTarget(mShot, isAutoPlayGif));
 
       /*  mShot.setOnTouchListener((view, motionEvent) -> {
             // check if it's an event we care about, else bail fast

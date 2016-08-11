@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.Context;
 
 import com.f2prateek.rx.preferences.RxSharedPreferences;
-import com.litesuits.orm.LiteOrm;
 
 import javax.inject.Singleton;
 
@@ -18,7 +17,5 @@ import dagger.Component;
 public interface AppComponent {
     Context getContext();
     Application getApplication();
-    LiteOrm getLiteOrm();
     RxSharedPreferences getPreferences();
-    void inject(ShotLocalDataSource target);
 }

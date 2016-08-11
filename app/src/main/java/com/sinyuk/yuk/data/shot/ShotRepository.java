@@ -30,11 +30,12 @@ public class ShotRepository {
 
     public Observable getShots(@NonNull String type,int page) {
         Observable<List<Shot>> remoteObservable = remoteDataSource.getShots(type, page);
-        return prefs.getBoolean(PrefsUtils.auto_refresh, true).asObservable()
-                .flatMap(autoRefresh -> remoteObservable.doOnError(throwable -> Timber.d(throwable.getLocalizedMessage()))
+        return prefs.getBoolean(PrefsUtils.auto_caching, true)
+                .asObservable()
+                .flatMap(autoRefresh -> remoteObservable
+                        .doOnError(throwable -> Timber.d(throwable.getLocalizedMessage()))
                         .onErrorResumeNext(Observable.just(Collections.emptyList()))
                         .observeOn(AndroidSchedulers.mainThread()));
-
 
     }
 
