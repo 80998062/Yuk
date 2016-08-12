@@ -10,7 +10,6 @@ import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewStub;
 import android.view.animation.AnimationUtils;
@@ -35,6 +34,7 @@ import com.sinyuk.yuk.utils.glide.ObservableColorMatrix;
 import com.sinyuk.yuk.widgets.BadgedFourThreeImageView;
 import com.sinyuk.yuk.widgets.TextDrawable;
 
+import butterknife.BindColor;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -43,7 +43,8 @@ import butterknife.ButterKnife;
  */
 public class FeedItemView extends RelativeLayout {
     private final Interpolator INTERPOLATOR;
-    private final int COLOR_SLATE;
+    @BindColor(R.color.official_slate)
+    int COLOR_SLATE;
     @BindView(R.id.shot)
     BadgedFourThreeImageView mShot;
     @BindView(R.id.rebound_stub)
@@ -78,8 +79,11 @@ public class FeedItemView extends RelativeLayout {
     public FeedItemView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setClickable(true);
-        COLOR_SLATE = getContext().getResources().getColor(R.color.official_slate);
-        INTERPOLATOR = AnimationUtils.loadInterpolator(getContext(), android.R.interpolator.fast_out_slow_in);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            INTERPOLATOR = AnimationUtils.loadInterpolator(context, android.R.interpolator.fast_out_slow_in);
+        } else {
+            INTERPOLATOR = AnimationUtils.loadInterpolator(context, android.R.interpolator.accelerate_decelerate);
+        }
     }
 
     @Override
@@ -128,7 +132,7 @@ public class FeedItemView extends RelativeLayout {
 
         final User user = data.getUser();
 
-        Preconditions.checkNotNull(user,"Can't bind to a null user");
+        Preconditions.checkNotNull(user, "Can't bind to a null user");
          /* avatar*/
         final String username = StringUtils.valueOrDefault(user.getUsername(), " ");
 
