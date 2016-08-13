@@ -14,17 +14,10 @@ import dagger.Provides;
 @Module
 public class ShotRepositoryModule {
 
-
     @Singleton
     @Provides
-    public ShotRemoteDataSource provideShotRemoteDataSource(DribbleService dribbleService) {
-        return new ShotRemoteDataSource(dribbleService);
-    }
-
-    @Singleton
-    @Provides
-    public ShotRepository provideShotRepository(ShotRemoteDataSource remoteDataSource,
+    public ShotRepository provideShotRepository(DribbleService dribbleService,
                                                 RxSharedPreferences preferences) {
-        return new ShotRepository(remoteDataSource, preferences);
+        return new ShotRepository(dribbleService, preferences);
     }
 }
