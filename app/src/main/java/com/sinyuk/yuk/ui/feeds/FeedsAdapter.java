@@ -14,19 +14,21 @@ import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.utils.glide.CropCircleTransformation;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import rx.functions.Action1;
 import timber.log.Timber;
 
 /**
  * Created by Sinyuk on 16/7/6.
  * 尽量减少这里的逻辑
  */
-public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemViewHolder> {
+public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemViewHolder> implements Action1<List<Shot>>{
     private final DrawableRequestBuilder<String> avatarBuilder;
     private final DrawableRequestBuilder<String> GIFBuilder;
     private final DrawableRequestBuilder<String> PNGBuilder;
 
-    private ArrayList<Shot> mDataSet = new ArrayList<>();
+    private List<Shot> mDataSet = new ArrayList<>();
     private boolean isAutoPlayGif = false;
     public FeedsAdapter(Context context, RequestManager requestManager, ArrayList<Shot> dataSet) {
         Timber.tag("FeedsAdapter");
@@ -77,6 +79,12 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
 
     public void setAutoPlayGif(boolean autoPlayGif) {
         this.isAutoPlayGif = autoPlayGif;
+    }
+
+    @Override
+    public void call(List<Shot> shots) {
+        mDataSet = shots;
+        notifyDataSetChanged();
     }
 
 
