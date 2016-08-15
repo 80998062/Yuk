@@ -1,12 +1,9 @@
 package com.sinyuk.yuk.ui.feeds;
 
 import android.app.Activity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
@@ -21,22 +18,21 @@ import com.sinyuk.yuk.ui.BaseFragment;
 import com.sinyuk.yuk.utils.BetterViewAnimator;
 import com.sinyuk.yuk.utils.PrefsUtils;
 import com.sinyuk.yuk.utils.lists.ListItemMarginDecoration;
+import com.sinyuk.yuk.utils.lists.OnLoadMoreListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
-import rx.functions.Action1;
 import timber.log.Timber;
 
 /**
  * Created by Sinyuk on 16/7/1.
  */
 public class FeedsFragment extends BaseFragment {
+    private static final int FIRST_PAGE = 1;
     @Inject
     ShotRepository shotRepository;
     @Inject
@@ -64,6 +60,7 @@ public class FeedsFragment extends BaseFragment {
     private FeedsAdapter mAdapter;
     private ArrayList<Shot> mShotList = new ArrayList<>();
     private int mPage;
+    private String mType = DribbleApi.ALL;
 
 
     public FeedsFragment() {
@@ -91,7 +88,7 @@ public class FeedsFragment extends BaseFragment {
     @Override
     protected void finishInflate() {
         initRecyclerView();
-        mRecyclerView.postDelayed(() -> loadFeeds(DribbleApi.ANIMATED, 1), 0);
+        mRecyclerView.postDelayed(() -> loadFeeds(FIRST_PAGE), 3000);
     }
 
     private void initRecyclerView() {
@@ -118,28 +115,53 @@ public class FeedsFragment extends BaseFragment {
                 mViewAnimator.setDisplayedChildId(mAdapter.getItemCount() == 0
                         ? R.id.layout_empty //
                         : R.id.layout_list);
-                /*swipeRefreshView.setRefreshing(false);*/
+            }
+        });
+
+        mRecyclerView.addOnScrollListener(new OnLoadMoreListener(layoutManager) {
+            @Override
+            public void onLoadMore() {
+                loadFeeds(mPage);
             }
         });
 
     }
 
-    //    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void setFilterType(String type) {
-        mPage = 1;
-        loadFeeds(type, mPage);
+    /**
+     * Start and show loading more progress bar
+     */
+    private void showLoadingProgress() {
+        mSmoothProgressBar.setVisibility(View.VISIBLE);
+        mSmoothProgressBar.progressiveStart();
     }
 
-    private void loadFeeds(String type, int page) {
-        shotRepository.getShots(type, page)
-                .subscribe(new Action1<List<Shot>>() {
-                    @Override
-                    public void call(List<Shot> shots) {
-                        if (page == 1 && !mShotList.isEmpty()) { mShotList.clear(); }
-                        mShotList.addAll(shots);
-                        mAdapter.notifyDataSetChanged();
-                    }
-                });
+    /**
+     * Contrary to the above method
+     */
+    private void hideLoadingProgress() {
+        mSmoothProgressBar.setVisibility(View.GONE);
+        mSmoothProgressBar.progressiveStop();
     }
-    
+
+    private void handleError(Throwable throwable) {
+        throwable.printStackTrace();
+        mViewAnimator.setDisplayedChildId(R.id.layout_error);
+    }
+
+    //    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void setFilterType(String type) {
+        loadFeeds(FIRST_PAGE);
+    }
+
+    private void loadFeeds(int page) {
+        addSubscription(
+                shotRepository.getShots(mType, page)
+                        .doOnSubscribe(this::showLoadingProgress)
+                        .doOnError(this::handleError)
+                        .doOnCompleted(() -> mPage++)
+                        .doAfterTerminate(this::hideLoadingProgress)
+                        .subscribe(mAdapter));
+    }
+
+
 }
