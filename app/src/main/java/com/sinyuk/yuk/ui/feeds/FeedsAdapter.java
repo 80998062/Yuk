@@ -23,13 +23,14 @@ import timber.log.Timber;
  * Created by Sinyuk on 16/7/6.
  * 尽量减少这里的逻辑
  */
-public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemViewHolder> implements Action1<List<Shot>>{
+public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemViewHolder> implements Action1<List<Shot>> {
     private final DrawableRequestBuilder<String> avatarBuilder;
     private final DrawableRequestBuilder<String> GIFBuilder;
     private final DrawableRequestBuilder<String> PNGBuilder;
 
     private List<Shot> mDataSet = new ArrayList<>();
     private boolean isAutoPlayGif = false;
+
     public FeedsAdapter(Context context, RequestManager requestManager, ArrayList<Shot> dataSet) {
         Timber.tag("FeedsAdapter");
         this.GIFBuilder = requestManager
@@ -85,6 +86,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
     public void call(List<Shot> shots) {
         mDataSet = shots;
         notifyDataSetChanged();
+        Timber.d("Data in adapter %s", shots.toString());
     }
 
 

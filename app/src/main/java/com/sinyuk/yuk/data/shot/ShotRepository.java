@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.sinyuk.yuk.api.DribbleService;
-import com.sinyuk.yuk.utils.PrefsUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,21 +31,13 @@ public class ShotRepository {
         Timber.tag("ShotRepository");
     }
 
-    public Observable getShots(@NonNull String type, int page) {
+    public Observable<List<Shot>> getShots(@NonNull String type, int page) {
         Observable<List<Shot>> cachingObservable = mDribbleService.shots(type, page);
-        return prefs.getBoolean(PrefsUtils.auto_caching, true)
-                .asObservable()
-                .flatMap(new Func1<Boolean, Observable<?>>() {
-                    @Override
-                    public Observable<?> call(Boolean autoCaching) {
-                        return cachingObservable
-                                .map(insertShots(page, type))
-                                .doOnError(throwable -> Timber.e(throwable.getMessage()))
-                                .subscribeOn(Schedulers.io());
-                    }
-                })
+        return cachingObservable
+                .map(insertShots(page, type))
+                .subscribeOn(Schedulers.io())
+                .doOnError(throwable -> handleError(type))
                 .observeOn(AndroidSchedulers.mainThread());
-
     }
 
     private Func1<List<Shot>, List<Shot>> insertShots(int page, String type) {
@@ -70,5 +61,9 @@ public class ShotRepository {
             mShotCache.put(type, list);
             return list;
         };
+    }
+
+    private void handleError(String type) {
+        mShotCache.remove(type);
     }
 }

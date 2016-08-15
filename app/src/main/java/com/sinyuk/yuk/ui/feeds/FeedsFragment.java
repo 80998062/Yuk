@@ -21,6 +21,7 @@ import com.sinyuk.yuk.utils.lists.ListItemMarginDecoration;
 import com.sinyuk.yuk.utils.lists.OnLoadMoreListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.inject.Inject;
 
@@ -143,9 +144,12 @@ public class FeedsFragment extends BaseFragment {
         mSmoothProgressBar.progressiveStop();
     }
 
+
     private void handleError(Throwable throwable) {
         throwable.printStackTrace();
+        Timber.e("Composite exception -> ", throwable.getLocalizedMessage());
         mViewAnimator.setDisplayedChildId(R.id.layout_error);
+        mPage = FIRST_PAGE;
     }
 
     //    @Subscribe(threadMode = ThreadMode.MAIN)
@@ -158,6 +162,7 @@ public class FeedsFragment extends BaseFragment {
                 shotRepository.getShots(mType, page)
                         .doOnSubscribe(this::showLoadingProgress)
                         .doOnError(this::handleError)
+                        .onErrorReturn(throwable -> Collections.emptyList())
                         .doOnCompleted(() -> mPage++)
                         .doAfterTerminate(this::hideLoadingProgress)
                         .subscribe(mAdapter));
