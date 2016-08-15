@@ -16,9 +16,9 @@ import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.data.shot.ShotRepository;
 import com.sinyuk.yuk.ui.BaseFragment;
 import com.sinyuk.yuk.utils.BetterViewAnimator;
+import com.sinyuk.yuk.utils.BlackMagics;
 import com.sinyuk.yuk.utils.PrefsUtils;
 import com.sinyuk.yuk.utils.lists.ListItemMarginDecoration;
-import com.sinyuk.yuk.utils.lists.OnLoadMoreListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,35 +34,31 @@ import timber.log.Timber;
  */
 public class FeedsFragment extends BaseFragment {
     private static final int FIRST_PAGE = 1;
+    private static final int PRELOAD_THRESHOLD = 2;
+
     @Inject
     ShotRepository shotRepository;
     @Inject
     RxSharedPreferences mSharedPreferences;
-
     @BindView(R.id.loading_layout)
     RelativeLayout mLoadingLayout;
-
     @BindView(R.id.layout_list)
     RelativeLayout mListLayout;
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
     @BindView(R.id.progress_bar)
     SmoothProgressBar mSmoothProgressBar;
-
     @BindView(R.id.layout_error)
     RelativeLayout mLayoutError;
-
     @BindView(R.id.layout_empty)
     RelativeLayout mLayoutEmpty;
-
     @BindView(R.id.view_animator)
     BetterViewAnimator mViewAnimator;
-
     private FeedsAdapter mAdapter;
     private ArrayList<Shot> mShotList = new ArrayList<>();
-    private int mPage;
+    private int mPage = FIRST_PAGE;
     private String mType = DribbleApi.ALL;
-
+    private boolean isLoading;
 
     public FeedsFragment() {
         // need a default constructor
@@ -89,7 +85,6 @@ public class FeedsFragment extends BaseFragment {
     @Override
     protected void finishInflate() {
         initRecyclerView();
-        mRecyclerView.postDelayed(() -> loadFeeds(FIRST_PAGE), 3000);
     }
 
     private void initRecyclerView() {
@@ -113,43 +108,63 @@ public class FeedsFragment extends BaseFragment {
         mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
-                mViewAnimator.setDisplayedChildId(mAdapter.getItemCount() == 0
-                        ? R.id.layout_empty //
-                        : R.id.layout_list);
+                mViewAnimator.setDisplayedChildId(mAdapter.getItemCount() == 0 ? R.id.layout_empty : R.id.layout_list);
             }
         });
 
-        mRecyclerView.addOnScrollListener(new OnLoadMoreListener(layoutManager) {
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onLoadMore() {
-                loadFeeds(mPage);
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (isLoading) { return; }
+                final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                boolean isBottom =
+                        linearLayoutManager.findLastCompletelyVisibleItemPosition() >= recyclerView.getAdapter().getItemCount() - PRELOAD_THRESHOLD;
+                if (isBottom) { loadFeeds(mPage); }
             }
         });
 
+        loadFeeds(mPage);//????为什么打印不出log
     }
 
     /**
      * Start and show loading more progress bar
      */
     private void showLoadingProgress() {
-        mSmoothProgressBar.setVisibility(View.VISIBLE);
-        mSmoothProgressBar.progressiveStart();
+        isLoading = true;
+        BlackMagics.scrollUp(mSmoothProgressBar).withStartAction(() -> {
+            mSmoothProgressBar.setVisibility(View.VISIBLE);
+            mSmoothProgressBar.progressiveStart();
+        });
     }
+
 
     /**
      * Contrary to the above method
      */
     private void hideLoadingProgress() {
-        mSmoothProgressBar.setVisibility(View.GONE);
-        mSmoothProgressBar.progressiveStop();
+        isLoading = false;
+        BlackMagics.scrollDown(mSmoothProgressBar).withEndAction(() -> {
+            mSmoothProgressBar.setVisibility(View.GONE);
+            mSmoothProgressBar.progressiveStop();
+        });
     }
 
-
+    /**
+     * 加载错误时
+     *
+     * @param throwable
+     */
     private void handleError(Throwable throwable) {
         throwable.printStackTrace();
-        Timber.e("Composite exception -> ", throwable.getLocalizedMessage());
         mViewAnimator.setDisplayedChildId(R.id.layout_error);
         mPage = FIRST_PAGE;
+    }
+
+    /**
+     * 加载完成时
+     */
+    private void loadCompleted() {
+        mPage = mPage + 1;
     }
 
     //    @Subscribe(threadMode = ThreadMode.MAIN)
@@ -163,7 +178,7 @@ public class FeedsFragment extends BaseFragment {
                         .doOnSubscribe(this::showLoadingProgress)
                         .doOnError(this::handleError)
                         .onErrorReturn(throwable -> Collections.emptyList())
-                        .doOnCompleted(() -> mPage++)
+                        .doOnCompleted(this::loadCompleted)
                         .doAfterTerminate(this::hideLoadingProgress)
                         .subscribe(mAdapter));
     }
