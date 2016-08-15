@@ -1,12 +1,13 @@
 package com.sinyuk.yuk.data;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Sinyuk on 16.1.4.
@@ -17,14 +18,13 @@ public abstract class BaseRVAdapter<T> extends RecyclerView.Adapter<RecyclerView
     private static final int TYPE_HEADER = Integer.MAX_VALUE;
     private static final int TYPE_FOOTER = Integer.MAX_VALUE - 1;
     private static final int ITEM_MAX_TYPE = Integer.MAX_VALUE - 2;
+
     private RecyclerView.ViewHolder headerViewHolder;
     private RecyclerView.ViewHolder footerViewHolder;
 
-    protected Context mContext;
-    private ArrayList<T> mDataSet = new ArrayList<>();
+    private List<T> mDataSet = Collections.emptyList();
 
-    public BaseRVAdapter(Context context, ArrayList<T> dataSet) {
-        this.mContext = context;
+    public BaseRVAdapter(ArrayList<T> dataSet) {
         this.mDataSet.addAll(dataSet);
     }
 
@@ -104,7 +104,7 @@ public abstract class BaseRVAdapter<T> extends RecyclerView.Adapter<RecyclerView
 
     @Override
     public int getItemCount() {
-        int itemCount = mDataSet == null ? 0 : mDataSet.size();
+        int itemCount = mDataSet.size();
         if (hasHeader()) {
             itemCount += 1;
         }
@@ -174,16 +174,16 @@ public abstract class BaseRVAdapter<T> extends RecyclerView.Adapter<RecyclerView
         return 0;
     }
 
-    public void reset(ArrayList<T> data) {
+    public void reset(List<T> data) {
         mDataSet = data;
         notifyDataSetChanged();
     }
 
-    public ArrayList<T> getAll() {
+    public List<T> getAll() {
         return mDataSet;
     }
 
-    public void append(ArrayList<T> dataSet) {
+    public void append(List<T> dataSet) {
         mDataSet.addAll(dataSet);
         notifyDataSetChanged();
     }
