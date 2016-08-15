@@ -7,6 +7,10 @@ public class DribbleApi {
 
     public static final String END_POINT = "https://api.dribbble.com/v1/";
 
+    public static final String PER_PAGE = "per_page";
+
+    public static final int PAGE_SIZE = 10;
+
     // Shots
 
     /**

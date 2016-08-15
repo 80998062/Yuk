@@ -123,7 +123,7 @@ public class ApiModule {
             Request originalRequest = chain.request();
             HttpUrl modifiedUrl = originalRequest.url().newBuilder()
                     // Provide your custom parameter here
-                    .addQueryParameter("per_page", "10")
+                    .addQueryParameter(DribbleApi.PER_PAGE, String.valueOf(DribbleApi.PAGE_SIZE))
                     .build();
             Request request = originalRequest.newBuilder().url(modifiedUrl).build();
             return chain.proceed(request);
