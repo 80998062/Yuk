@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 /**
  * Created by Sinyuk on 16.2.11.
  */
+@Deprecated
 public abstract class OnLoadMoreListener extends RecyclerView.OnScrollListener {
     private int PRELOAD_SIZE = 1;
     private StaggeredGridLayoutManager mStaggeredGridLayoutManager;
