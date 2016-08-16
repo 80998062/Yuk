@@ -20,7 +20,6 @@ import com.sinyuk.yuk.utils.BetterViewAnimator;
 import com.sinyuk.yuk.utils.BlackMagics;
 import com.sinyuk.yuk.utils.PrefsUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -194,10 +193,11 @@ public class FeedsFragment extends BaseFragment {
     };
 
     private void loadFeeds(int page) {
-        addSubscription(shotRepository.getShots(mType, page)
-                .doOnSubscribe(this::showLoadingProgress)
-                .doAfterTerminate(this::hideLoadingProgress)
-                .subscribe(addFeedsToList));
+        addSubscription(
+                shotRepository.getShots(mType, page)
+                        .doOnSubscribe(this::showLoadingProgress)
+                        .doAfterTerminate(this::hideLoadingProgress)
+                        .subscribe(addFeedsToList));
     }
 
 
