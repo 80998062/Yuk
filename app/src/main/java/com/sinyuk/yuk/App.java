@@ -5,6 +5,7 @@ import android.app.Application;
 import com.facebook.stetho.Stetho;
 import com.sinyuk.yuk.api.ApiComponent;
 import com.sinyuk.yuk.api.DaggerApiComponent;
+import com.squareup.leakcanary.LeakCanary;
 
 
 import timber.log.Timber;
@@ -27,7 +28,7 @@ public class App extends Application {
             Timber.plant(new Timber.DebugTree());
         }
         Stetho.initializeWithDefaults(this);
-
+        LeakCanary.install(this);
         createAppComponent();
     }
 
