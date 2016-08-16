@@ -29,7 +29,7 @@ public class FeedsAdapter extends BaseRVAdapter<Shot, FeedsAdapter.FeedItemViewH
         Timber.tag("FeedsAdapter");
         GIFBuilder = requestManager.fromString().diskCacheStrategy(DiskCacheStrategy.SOURCE).centerCrop();
         PNGBuilder = requestManager.fromString().diskCacheStrategy(DiskCacheStrategy.RESULT).centerCrop();
-        avatarBuilder = requestManager.fromString().diskCacheStrategy(DiskCacheStrategy.RESULT).centerCrop().bitmapTransform(new CropCircleTransformation(context));
+        avatarBuilder = requestManager.fromString().diskCacheStrategy(DiskCacheStrategy.RESULT).dontAnimate().centerCrop().bitmapTransform(new CropCircleTransformation(context));
     }
 
     @Override
