@@ -15,13 +15,14 @@ public class BlackMagics {
      * @param withLayer
      */
     public static ViewPropertyAnimator scrollUp(SmoothProgressBar progressBar) {
+        Preconditions.checkNotNull(progressBar,"progressBar is Null");
         final int offset = progressBar.getHeight();
         progressBar.setTranslationY(offset);
         progressBar.setAlpha(0.01f);
         return progressBar.animate()
                 .translationY(0)
                 .alpha(1)
-                .setDuration(600)
+                .setDuration(400)
                 .setInterpolator(new FastOutSlowInInterpolator())
                 .withLayer();
     }
@@ -32,11 +33,12 @@ public class BlackMagics {
     * @param withLayer
     */
     public static ViewPropertyAnimator scrollDown(SmoothProgressBar progressBar) {
+        Preconditions.checkNotNull(progressBar,"progressBar is Null");
         final int offset = progressBar.getHeight();
         return progressBar.animate()
                 .translationY(offset)
                 .alpha(0.01f)
-                .setDuration(600)
+                .setDuration(400)
                 .setInterpolator(new FastOutSlowInInterpolator())
                 .withLayer();
     }
