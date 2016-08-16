@@ -1,7 +1,6 @@
 package com.sinyuk.yuk.data;
 
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -13,7 +12,7 @@ import java.util.List;
  * Created by Sinyuk on 16.1.4.
  * 有header和footer的recycleView
  */
-public abstract class BaseRVAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public abstract class BaseRVAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int TYPE_HEADER = Integer.MAX_VALUE;
     private static final int TYPE_FOOTER = Integer.MAX_VALUE - 1;
@@ -24,18 +23,14 @@ public abstract class BaseRVAdapter<T> extends RecyclerView.Adapter<RecyclerView
 
     private List<T> mDataSet = Collections.emptyList();
 
-    public BaseRVAdapter(ArrayList<T> dataSet) {
-        this.mDataSet.addAll(dataSet);
-    }
-
-    public void setHeaderView(View header) {
+ /*    public void setHeaderView(View header) {
         if (headerViewHolder == null || header != headerViewHolder.itemView) {
             headerViewHolder = new MyViewHolder(header);
             notifyDataSetChanged();
         }
     }
 
-    public void setHeaderViewFullSpan(View header) {
+   public void setHeaderViewFullSpan(View header) {
         if (headerViewHolder == null || header != headerViewHolder.itemView) {
             StaggeredGridLayoutManager.LayoutParams layoutParams = new StaggeredGridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.setFullSpan(true);
@@ -44,7 +39,7 @@ public abstract class BaseRVAdapter<T> extends RecyclerView.Adapter<RecyclerView
             notifyDataSetChanged();
         }
 
-    }
+    }*/
 
     public void setFooterView(View foot) {
         if (footerViewHolder == null || foot != footerViewHolder.itemView) {
@@ -53,23 +48,13 @@ public abstract class BaseRVAdapter<T> extends RecyclerView.Adapter<RecyclerView
         }
     }
 
-    public void setFooterViewFullSpan(View foot) {
-        if (footerViewHolder == null || foot != footerViewHolder.itemView) {
-            StaggeredGridLayoutManager.LayoutParams layoutParams = new StaggeredGridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.setFullSpan(true);
-            footerViewHolder = new MyViewHolder(foot);
-            footerViewHolder.itemView.setLayoutParams(layoutParams);
-            notifyDataSetChanged();
-        }
 
-    }
-
-    public void removeHeader() {
+/*    public void removeHeader() {
         if (headerViewHolder != null) {
             headerViewHolder = null;
             notifyDataSetChanged();
         }
-    }
+    }*/
 
     public void removeFooter() {
         if (footerViewHolder != null) {
@@ -77,6 +62,7 @@ public abstract class BaseRVAdapter<T> extends RecyclerView.Adapter<RecyclerView
             notifyDataSetChanged();
         }
     }
+
 
     public boolean hasHeader() {
         return headerViewHolder != null;
@@ -91,7 +77,7 @@ public abstract class BaseRVAdapter<T> extends RecyclerView.Adapter<RecyclerView
     }
 
     private boolean isFooter(int position) {
-        return hasFooter() && position == getItemCount() + (hasHeader() ? 1 : 0);
+        return hasFooter() && position == getDataItemCount() + (hasHeader() ? 1 : 0);
     }
 
     private int itemPositionInData(int rvPosition) {
@@ -104,7 +90,8 @@ public abstract class BaseRVAdapter<T> extends RecyclerView.Adapter<RecyclerView
 
     @Override
     public int getItemCount() {
-        int itemCount = mDataSet.size();
+        int itemCount = getDataItemCount();
+
         if (hasHeader()) {
             itemCount += 1;
         }
@@ -112,6 +99,10 @@ public abstract class BaseRVAdapter<T> extends RecyclerView.Adapter<RecyclerView
             itemCount += 1;
         }
         return itemCount;
+    }
+
+    public int getDataItemCount() {
+        return mDataSet == null ? 0 : mDataSet.size();
     }
 
     public void notifyMyItemInserted(int itemPosition) {
@@ -139,15 +130,10 @@ public abstract class BaseRVAdapter<T> extends RecyclerView.Adapter<RecyclerView
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (!isHeader(position) && !isFooter(position)) {
-            onBindMyItemViewHolder(holder, itemPositionInData(position));
-        }
-
-        if (isFooter(position)) {
-            footerOnVisibleItem();
+            onBindMyItemViewHolder((VH) holder, itemPositionInData(position));
         }
     }
 
-    protected abstract void footerOnVisibleItem();
 
     @Override
     public int getItemViewType(int position) {
@@ -174,37 +160,37 @@ public abstract class BaseRVAdapter<T> extends RecyclerView.Adapter<RecyclerView
         return 0;
     }
 
-    public void reset(List<T> data) {
+    public List<T> getDataSet() {
+        return mDataSet;
+    }
+
+    public void setDataSet(List<T> data) {
         mDataSet = data;
         notifyDataSetChanged();
     }
 
-    public List<T> getAll() {
-        return mDataSet;
-    }
-
-    public void append(List<T> dataSet) {
+    public void appendData(List<T> dataSet) {
         mDataSet.addAll(dataSet);
         notifyDataSetChanged();
     }
 
-    public void add(int position, T item) {
+    public void addData(int position, T item) {
         if (mDataSet != null && position < mDataSet.size()) {
             mDataSet.add(position, item);
             notifyItemInserted(position);
         }
     }
 
-    public void remove(int position) {
+    public void removeData(int position) {
         if (mDataSet != null && position < mDataSet.size()) {
             mDataSet.remove(position);
             notifyItemRemoved(position);
         }
     }
 
-    public abstract RecyclerView.ViewHolder onCreateMyItemViewHolder(ViewGroup parent, int viewType);
+    public abstract VH onCreateMyItemViewHolder(ViewGroup parent, int viewType);
 
-    public abstract void onBindMyItemViewHolder(RecyclerView.ViewHolder holder, int position);
+    public abstract void onBindMyItemViewHolder(VH holder, int position);
 
     /**
      * ViewHolder for header and footer
