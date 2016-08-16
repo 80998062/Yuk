@@ -8,7 +8,7 @@
     android:outAnimation="@android:anim/fade_out">
 
     <include
-        layout="@layout/feed_layout_loading"/>
+        layout="@layout/feed_layout_empty"/>
 
     <include
         layout="@layout/feed_layout_list"/>
@@ -16,7 +16,5 @@
     <include
         layout="@layout/feed_layout_error"/>
 
-    <include
-        layout="@layout/feed_layout_empty"/>
 
 </com.sinyuk.yuk.utils.BetterViewAnimator>

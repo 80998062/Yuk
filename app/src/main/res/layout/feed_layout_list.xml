@@ -10,14 +10,8 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:overScrollMode="never">
+        android:overScrollMode="never"
+        android:paddingTop="@dimen/content_space_8">
     </android.support.v7.widget.RecyclerView>
 
-    <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
-        android:id="@+id/progress_bar"
-        style="@style/IrisProgressBar"
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:layout_alignParentBottom="true"
-        android:visibility="gone"/>
 </RelativeLayout>
