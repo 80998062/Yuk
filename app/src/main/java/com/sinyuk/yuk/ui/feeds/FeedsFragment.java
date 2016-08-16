@@ -3,6 +3,7 @@ package com.sinyuk.yuk.ui.feeds;
 import android.app.Activity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
 
@@ -18,15 +19,15 @@ import com.sinyuk.yuk.ui.BaseFragment;
 import com.sinyuk.yuk.utils.BetterViewAnimator;
 import com.sinyuk.yuk.utils.BlackMagics;
 import com.sinyuk.yuk.utils.PrefsUtils;
-import com.sinyuk.yuk.utils.lists.ListItemMarginDecoration;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+import rx.Observer;
 import timber.log.Timber;
 
 /**
@@ -40,14 +41,11 @@ public class FeedsFragment extends BaseFragment {
     ShotRepository shotRepository;
     @Inject
     RxSharedPreferences mSharedPreferences;
-    @BindView(R.id.loading_layout)
-    RelativeLayout mLoadingLayout;
     @BindView(R.id.layout_list)
     RelativeLayout mListLayout;
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
-    @BindView(R.id.progress_bar)
-    SmoothProgressBar mSmoothProgressBar;
+    SmoothProgressBar smoothProgressBar;
     @BindView(R.id.layout_error)
     RelativeLayout mLayoutError;
     @BindView(R.id.layout_empty)
@@ -55,7 +53,8 @@ public class FeedsFragment extends BaseFragment {
     @BindView(R.id.view_animator)
     BetterViewAnimator mViewAnimator;
     private FeedsAdapter mAdapter;
-    private ArrayList<Shot> mShotList = new ArrayList<>();
+
+
     private int mPage = FIRST_PAGE;
     private String mType = DribbleApi.ALL;
     private boolean isLoading;
@@ -85,32 +84,14 @@ public class FeedsFragment extends BaseFragment {
     @Override
     protected void finishInflate() {
         initRecyclerView();
+        initData();
     }
 
     private void initRecyclerView() {
 
-        mAdapter = new FeedsAdapter(mContext, Glide.with(this), mShotList);
-
-        mRecyclerView.setAdapter(mAdapter);
-
-        mRecyclerView.addItemDecoration(new ListItemMarginDecoration(2, R.dimen.content_space_8, true, mContext));
-
         final LinearLayoutManager layoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
 
         mRecyclerView.setLayoutManager(layoutManager);
-
-        mSharedPreferences.getBoolean(PrefsUtils.auto_play_gif, false)
-                .asObservable()
-                .subscribe(autoPlayGif -> {
-                    mAdapter.setAutoPlayGif(autoPlayGif);
-                });
-
-        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                mViewAnimator.setDisplayedChildId(mAdapter.getItemCount() == 0 ? R.id.layout_empty : R.id.layout_list);
-            }
-        });
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -123,6 +104,26 @@ public class FeedsFragment extends BaseFragment {
             }
         });
 
+    }
+
+    private void initData() {
+        mAdapter = new FeedsAdapter(mContext, Glide.with(this));
+
+        mRecyclerView.setAdapter(mAdapter);
+
+        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                mViewAnimator.setDisplayedChildId(mAdapter.getDataItemCount() == 0 ? R.id.layout_empty : R.id.layout_list);
+            }
+        });
+
+        mSharedPreferences.getBoolean(PrefsUtils.auto_play_gif, false)
+                .asObservable()
+                .subscribe(autoPlayGif -> {
+                    mAdapter.setAutoPlayGif(autoPlayGif);
+                });
+
         loadFeeds(mPage);//????为什么打印不出log
     }
 
@@ -131,10 +132,17 @@ public class FeedsFragment extends BaseFragment {
      */
     private void showLoadingProgress() {
         isLoading = true;
-        BlackMagics.scrollUp(mSmoothProgressBar).withStartAction(() -> {
-            mSmoothProgressBar.setVisibility(View.VISIBLE);
-            mSmoothProgressBar.progressiveStart();
-        });
+        if (smoothProgressBar == null) {
+            // 加载第一页的时候不用显示这个 那么做一个初始化
+            final View loadingView = LayoutInflater.from(mContext).inflate(R.layout.feed_layout_list_footer, mRecyclerView, false);
+            mAdapter.setFooterView(loadingView);
+            smoothProgressBar = (SmoothProgressBar) loadingView.findViewById(R.id.progress_bar);
+        } else {
+            BlackMagics.scrollUp(smoothProgressBar).withStartAction(() -> {
+                smoothProgressBar.setVisibility(View.VISIBLE);
+                smoothProgressBar.progressiveStart();
+            });
+        }
     }
 
 
@@ -143,9 +151,10 @@ public class FeedsFragment extends BaseFragment {
      */
     private void hideLoadingProgress() {
         isLoading = false;
-        BlackMagics.scrollDown(mSmoothProgressBar).withEndAction(() -> {
-            mSmoothProgressBar.setVisibility(View.GONE);
-            mSmoothProgressBar.progressiveStop();
+        if (mPage == FIRST_PAGE) { return; } // 当加载第一页时 什么都不做
+        BlackMagics.scrollDown(smoothProgressBar).withEndAction(() -> {
+            smoothProgressBar.setVisibility(View.GONE);
+            smoothProgressBar.progressiveStop();
         });
     }
 
@@ -160,27 +169,35 @@ public class FeedsFragment extends BaseFragment {
         mPage = FIRST_PAGE;
     }
 
-    /**
-     * 加载完成时
-     */
-    private void loadCompleted() {
-        mPage = mPage + 1;
-    }
 
     //    @Subscribe(threadMode = ThreadMode.MAIN)
     public void setFilterType(String type) {
         loadFeeds(FIRST_PAGE);
     }
 
+    private final Observer<List<Shot>> addFeedsToList = new Observer<List<Shot>>() {
+        @Override
+        public void onCompleted() {
+            mPage = mPage + 1;
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            handleError(e);
+        }
+
+        @Override
+        public void onNext(List<Shot> shots) {
+            mAdapter.setDataSet(shots);
+            Timber.d("Data in adapter %s", shots.toString());
+        }
+    };
+
     private void loadFeeds(int page) {
-        addSubscription(
-                shotRepository.getShots(mType, page)
-                        .doOnSubscribe(this::showLoadingProgress)
-                        .doOnError(this::handleError)
-                        .onErrorReturn(throwable -> Collections.emptyList())
-                        .doOnCompleted(this::loadCompleted)
-                        .doAfterTerminate(this::hideLoadingProgress)
-                        .subscribe(mAdapter));
+        addSubscription(shotRepository.getShots(mType, page)
+                .doOnSubscribe(this::showLoadingProgress)
+                .doAfterTerminate(this::hideLoadingProgress)
+                .subscribe(addFeedsToList));
     }
 
 
