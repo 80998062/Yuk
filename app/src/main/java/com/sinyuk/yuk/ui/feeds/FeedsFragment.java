@@ -19,6 +19,7 @@ import com.sinyuk.yuk.ui.BaseFragment;
 import com.sinyuk.yuk.utils.BetterViewAnimator;
 import com.sinyuk.yuk.utils.BlackMagics;
 import com.sinyuk.yuk.utils.PrefsUtils;
+import com.sinyuk.yuk.utils.lists.OnScrollStateListener;
 import com.sinyuk.yukloadinglayout.YukLoadingLayout;
 
 import java.util.List;
@@ -131,6 +132,8 @@ public class FeedsFragment extends BaseFragment {
             }
         });
 
+        mRecyclerView.addOnScrollListener(new OnScrollStateListener(mContext, (OnScrollStateListener.AppBarBehaviorListener) mContext));
+
     }
 
     private void initData() {
@@ -187,7 +190,7 @@ public class FeedsFragment extends BaseFragment {
 
     private void hideRefreshView() {
         if (mYukLoadingLayout != null && mYukLoadingLayout.isRefreshing()) {
-            mYukLoadingLayout.postDelayed(() -> mYukLoadingLayout.finishRefreshing(),3000);
+            mYukLoadingLayout.postDelayed(() -> mYukLoadingLayout.finishRefreshing(), 3000);
         }
     }
 
@@ -199,7 +202,7 @@ public class FeedsFragment extends BaseFragment {
     private void handleError(Throwable throwable) {
         throwable.printStackTrace();
         if (mYukLoadingLayout != null && mYukLoadingLayout.isRefreshing()) {
-            mYukLoadingLayout.postDelayed(() -> mYukLoadingLayout.finishRefreshing(),3000);
+            mYukLoadingLayout.postDelayed(() -> mYukLoadingLayout.finishRefreshing(), 3000);
             mYukLoadingLayout.postDelayed(() -> mViewAnimator.setDisplayedChildId(R.id.layout_error), 3500);
         } else {
             mViewAnimator.setDisplayedChildId(R.id.layout_error);

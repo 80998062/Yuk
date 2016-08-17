@@ -7,11 +7,12 @@ import android.widget.RelativeLayout;
 import com.sinyuk.yuk.ui.BaseActivity;
 import com.sinyuk.yuk.ui.feeds.FeedsFragment;
 import com.sinyuk.yuk.utils.ActivityUtils;
-import com.sinyuk.yukloadinglayout.YukLoadingLayout;
+import com.sinyuk.yuk.utils.lists.OnScrollStateListener;
 
 import butterknife.BindView;
+import timber.log.Timber;
 
-public class ShotsListDemo extends BaseActivity {
+public class ShotsListDemo extends BaseActivity implements OnScrollStateListener.AppBarBehaviorListener {
 
     @BindView(R.id.root_view)
     RelativeLayout mRootView;
@@ -31,7 +32,7 @@ public class ShotsListDemo extends BaseActivity {
 
     @Override
     protected void beforeInflating() {
-
+        Timber.tag("ShotsListDemo");
     }
 
     @Override
@@ -40,4 +41,18 @@ public class ShotsListDemo extends BaseActivity {
 //        mYukLoadingLayout.setRefreshListener(jellyRefreshLayout -> jellyRefreshLayout.postDelayed((Runnable) jellyRefreshLayout::finishRefreshing, 6000));
     }
 
+    @Override
+    public void onScrollDown() {
+        Timber.d("onScrollDown");
+    }
+
+    @Override
+    public void onScrollUp() {
+        Timber.d("onScrollUp");
+    }
+
+    @Override
+    public void onReachTop() {
+        Timber.d("onReachTop");
+    }
 }
