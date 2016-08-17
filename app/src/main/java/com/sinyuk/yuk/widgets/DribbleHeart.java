@@ -75,7 +75,7 @@ public class DribbleHeart extends View implements SpringListener {
             groundHeight = a.getDimensionPixelOffset(R.styleable.DribbleHeart_ground_height, 0);
             groundWidth = a.getDimensionPixelOffset(R.styleable.DribbleHeart_ground_width, 0);
             isStartFromTop = a.getBoolean(R.styleable.DribbleHeart_is_start_from_top, true);
-            interval = (long) a.getInt(R.styleable.DribbleHeart_interval, 500);
+            interval = (long) a.getInt(R.styleable.DribbleHeart_interval, 600);
             // 下落的时间不能小于
             interval = Math.max(interval, 2 * bounceDuration);
             ballDrawable = getResources().getDrawable(R.drawable.dribbble_ball);
@@ -120,6 +120,8 @@ public class DribbleHeart extends View implements SpringListener {
 
         totalOffset = h - topPadding - bottomPadding - groundHeight * 0.3f - ballRadius * 2;
 
+        Timber.d("TotalOffset : %f", totalOffset);
+
         transitionY = isStartFromTop ? 0 : totalOffset;
 
         updateGroundRect();
@@ -160,7 +162,6 @@ public class DribbleHeart extends View implements SpringListener {
         int ballRight = (int) (centerX + ballRadius * scaleX);
         int ballBottom = (int) (getTop() + transitionY + topPadding + 2 * ballRadius);
         int ballTop = (int) (ballBottom - 2 * ballRadius * scaleY);
-
         ballRect.set(ballLeft, ballTop, ballRight, ballBottom);
     }
 
@@ -186,6 +187,20 @@ public class DribbleHeart extends View implements SpringListener {
             decelerateRaise.start();
         }
 
+    }
+
+    public void stop() {
+        if (accelerateFall.isRunning()) { accelerateFall.cancel(); }
+        if (decelerateRaise.isRunning()) { decelerateRaise.cancel(); }
+
+        scaleX = scaleY = 1;
+        updateGroundRect();
+        updateBallRect();
+
+        if (!isInEditMode()) {
+            setLayerType(View.LAYER_TYPE_NONE, null);
+        }
+        invalidate();
     }
 
     private void createSpring() {
@@ -322,5 +337,6 @@ public class DribbleHeart extends View implements SpringListener {
     public void onSpringEndStateChange(Spring spring) {
         isUp = !isUp;
     }
+
 
 }

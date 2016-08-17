@@ -41,11 +41,11 @@ public class YukLoadingLayout extends PullToRefreshLayout {
     private ValueAnimator dotsAnimator;
 
     public YukLoadingLayout(Context context) {
-        this(context,null);
+        this(context, null);
     }
 
     public YukLoadingLayout(Context context, AttributeSet attrs) {
-        this(context, attrs,0);
+        this(context, attrs, 0);
     }
 
     public YukLoadingLayout(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -159,7 +159,7 @@ public class YukLoadingLayout extends PullToRefreshLayout {
 
 
         if (dotsAnimator == null) {
-            dotsAnimator = ValueAnimator.ofInt(0, 4).setDuration(2000);
+            dotsAnimator = ValueAnimator.ofInt(0, 3).setDuration(2000);
             dotsAnimator.setRepeatCount(ValueAnimator.INFINITE);
             dotsAnimator.addListener(new AnimatorLayerListener(loadingText));
             dotsAnimator.addUpdateListener(animation -> {
@@ -207,6 +207,9 @@ public class YukLoadingLayout extends PullToRefreshLayout {
         if (bicycleDrawable != null) { bicycleDrawable.stop(); }
         if (animatedBicycle != null) {
             animatedBicycle.setVisibility(GONE);
+        }
+        if (dotsAnimator != null) {
+            dotsAnimator.cancel();
         }
     }
 

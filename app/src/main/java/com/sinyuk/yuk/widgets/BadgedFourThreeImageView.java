@@ -10,8 +10,10 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.text.TextPaint;
 import android.util.AttributeSet;
@@ -51,6 +53,12 @@ public class BadgedFourThreeImageView extends FourThreeImageView {
     }
 
     @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        layoutBadge();
+    }
+
+    @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
         if (drawBadge) {
@@ -59,12 +67,6 @@ public class BadgedFourThreeImageView extends FourThreeImageView {
             }
             badge.draw(canvas);
         }
-    }
-
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        layoutBadge();
     }
 
     private void layoutBadge() {
@@ -119,8 +121,14 @@ public class BadgedFourThreeImageView extends FourThreeImageView {
                 final Canvas canvas = new Canvas(bitmap);
                 final Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
                 backgroundPaint.setColor(BACKGROUND_COLOR);
-                canvas.drawRoundRect(0, 0, width, height, cornerRadius, cornerRadius,
-                        backgroundPaint);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    canvas.drawRoundRect(0, 0, width, height, cornerRadius, cornerRadius,
+                            backgroundPaint);
+                } else {
+                    RectF rectF = new RectF(0, 0, width, height);
+                    canvas.drawRoundRect(rectF, cornerRadius, cornerRadius,
+                            backgroundPaint);
+                }
 
                 // punch out the word 'GIF', leaving transparency
                 textPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
@@ -128,16 +136,6 @@ public class BadgedFourThreeImageView extends FourThreeImageView {
 
             }
             paint = new Paint();
-        }
-
-        @Override
-        public int getIntrinsicWidth() {
-            return width;
-        }
-
-        @Override
-        public int getIntrinsicHeight() {
-            return height;
         }
 
         @Override
@@ -158,6 +156,16 @@ public class BadgedFourThreeImageView extends FourThreeImageView {
         @Override
         public int getOpacity() {
             return 0;
+        }
+
+        @Override
+        public int getIntrinsicWidth() {
+            return width;
+        }
+
+        @Override
+        public int getIntrinsicHeight() {
+            return height;
         }
     }
 

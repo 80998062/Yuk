@@ -19,6 +19,7 @@ import com.sinyuk.yuk.ui.BaseFragment;
 import com.sinyuk.yuk.utils.BetterViewAnimator;
 import com.sinyuk.yuk.utils.BlackMagics;
 import com.sinyuk.yuk.utils.PrefsUtils;
+import com.sinyuk.yukloadinglayout.YukLoadingLayout;
 
 import java.util.List;
 
@@ -41,20 +42,37 @@ public class FeedsFragment extends BaseFragment {
     @Inject
     RxSharedPreferences mSharedPreferences;
     @BindView(R.id.layout_list)
-    RelativeLayout mListLayout;
+    YukLoadingLayout mListLayout;
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
     SmoothProgressBar smoothProgressBar;
     @BindView(R.id.layout_error)
     RelativeLayout mLayoutError;
-    @BindView(R.id.layout_empty)
-    RelativeLayout mLayoutEmpty;
+    @BindView(R.id.layout_loading)
+    RelativeLayout mLayoutLoading;
     @BindView(R.id.view_animator)
     BetterViewAnimator mViewAnimator;
     private FeedsAdapter mAdapter;
 
 
     private int mPage = FIRST_PAGE;
+    private final Observer<List<Shot>> addFeedsToList = new Observer<List<Shot>>() {
+        @Override
+        public void onCompleted() {
+            mPage = mPage + 1;
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            handleError(e);
+        }
+
+        @Override
+        public void onNext(List<Shot> shots) {
+            mAdapter.setDataSet(shots);
+            Timber.d("Data in adapter %s", shots.toString());
+        }
+    };
     private String mType = DribbleApi.ALL;
     private boolean isLoading;
 
@@ -68,14 +86,6 @@ public class FeedsFragment extends BaseFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        DaggerShotRepositoryComponent.builder()
-                .appModule(new AppModule(activity.getApplication()))
-                .build().inject(this);
-    }
-
-    @Override
     protected int getRootViewId() {
         return R.layout.feed_list_fragment;
     }
@@ -84,6 +94,26 @@ public class FeedsFragment extends BaseFragment {
     protected void finishInflate() {
         initRecyclerView();
         initData();
+
+        mListLayout.setRefreshListener(new YukLoadingLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh(YukLoadingLayout yukLoadingLayout) {
+                yukLoadingLayout.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        yukLoadingLayout.finishRefreshing();
+                    }
+                }, 3000);
+            }
+        });
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        DaggerShotRepositoryComponent.builder()
+                .appModule(new AppModule(activity.getApplication()))
+                .build().inject(this);
     }
 
     private void initRecyclerView() {
@@ -113,7 +143,7 @@ public class FeedsFragment extends BaseFragment {
         mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
-                mViewAnimator.setDisplayedChildId(mAdapter.getDataItemCount() == 0 ? R.id.layout_empty : R.id.layout_list);
+                mViewAnimator.setDisplayedChildId(mAdapter.getDataItemCount() == 0 ? R.id.layout_loading : R.id.layout_list);
             }
         });
 
@@ -123,7 +153,9 @@ public class FeedsFragment extends BaseFragment {
                     mAdapter.setAutoPlayGif(autoPlayGif);
                 });
 
-        loadFeeds(mPage);//????为什么打印不出log
+        mRecyclerView.postDelayed(() -> {
+            loadFeeds(mPage);//????为什么打印不出log
+        }, 2000);
     }
 
     /**
@@ -143,7 +175,6 @@ public class FeedsFragment extends BaseFragment {
             });
         }
     }
-
 
     /**
      * Contrary to the above method
@@ -168,29 +199,10 @@ public class FeedsFragment extends BaseFragment {
         mPage = FIRST_PAGE;
     }
 
-
     //    @Subscribe(threadMode = ThreadMode.MAIN)
     public void setFilterType(String type) {
         loadFeeds(FIRST_PAGE);
     }
-
-    private final Observer<List<Shot>> addFeedsToList = new Observer<List<Shot>>() {
-        @Override
-        public void onCompleted() {
-            mPage = mPage + 1;
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            handleError(e);
-        }
-
-        @Override
-        public void onNext(List<Shot> shots) {
-            mAdapter.setDataSet(shots);
-            Timber.d("Data in adapter %s", shots.toString());
-        }
-    };
 
     private void loadFeeds(int page) {
         addSubscription(

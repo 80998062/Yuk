@@ -8,7 +8,7 @@
     android:outAnimation="@android:anim/fade_out">
 
     <include
-        layout="@layout/feed_layout_empty"/>
+        layout="@layout/feed_layout_loading"/>
 
     <include
         layout="@layout/feed_layout_list"/>

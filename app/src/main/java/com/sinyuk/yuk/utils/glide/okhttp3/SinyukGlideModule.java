@@ -3,6 +3,7 @@ package com.sinyuk.yuk.utils.glide.okhttp3;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
@@ -33,8 +34,12 @@ public class SinyukGlideModule implements GlideModule {
         // Prefer higher quality images unless we're on a low RAM device
         ActivityManager activityManager =
                 (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        builder.setDecodeFormat(activityManager.isLowRamDevice() ?
-                DecodeFormat.PREFER_RGB_565 : DecodeFormat.PREFER_ARGB_8888);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            builder.setDecodeFormat(activityManager.isLowRamDevice() ?
+                    DecodeFormat.PREFER_RGB_565 : DecodeFormat.PREFER_ARGB_8888);
+        }else {
+            builder.setDecodeFormat(DecodeFormat.PREFER_RGB_565);
+        }
 
         builder.setResizeService(new FifoPriorityThreadPoolExecutor(4));
         builder.setDiskCache(new InternalCacheDiskCacheFactory(context, sizeInBytes));
