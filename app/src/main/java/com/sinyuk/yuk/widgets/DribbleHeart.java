@@ -23,8 +23,6 @@ import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.utils.anim.EaseSineInInterpolator;
 import com.sinyuk.yuk.utils.anim.EaseSineOutInterpolator;
 
-import timber.log.Timber;
-
 /**
  * Created by Sinyuk on 16/7/11.
  */
@@ -74,8 +72,8 @@ public class DribbleHeart extends View implements SpringListener {
             bottomPadding = a.getDimensionPixelOffset(R.styleable.DribbleHeart_bottom_padding, 4);
             groundHeight = a.getDimensionPixelOffset(R.styleable.DribbleHeart_ground_height, 0);
             groundWidth = a.getDimensionPixelOffset(R.styleable.DribbleHeart_ground_width, 0);
-            isStartFromTop = a.getBoolean(R.styleable.DribbleHeart_is_start_from_top, true);
-            interval = (long) a.getInt(R.styleable.DribbleHeart_interval, 600);
+            isStartFromTop = a.getBoolean(R.styleable.DribbleHeart_is_start_from_top, false);
+            interval = (long) a.getInt(R.styleable.DribbleHeart_interval, 500);
             // 下落的时间不能小于
             interval = Math.max(interval, 2 * bounceDuration);
             ballDrawable = getResources().getDrawable(R.drawable.dribbble_ball);
@@ -84,16 +82,12 @@ public class DribbleHeart extends View implements SpringListener {
             a.recycle();
         }
 
-        groundPaint = new Paint();
-        groundPaint.setColor(getResources().getColor(R.color.official_slate));
-        groundPaint.setAntiAlias(true);
-        isUp = !isStartFromTop;
-        final int alpha = isStartFromTop ? 75 : 200;
-        groundPaint.setAlpha(alpha);
+        if (!isInEditMode()) {
+            setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        }
+
         // 卡的一逼
 //        groundPaint.setMaskFilter(new BlurMaskFilter(8, BlurMaskFilter.Blur.NORMAL));
-        createAnim();
-
     }
 
     @Override
@@ -116,18 +110,12 @@ public class DribbleHeart extends View implements SpringListener {
             groundHeight = ballRadius * 0.3f - ballRadius * 0.1f;
             groundWidth = ballRadius * .8f + ballRadius * 0.6f;
         }
-
-
         totalOffset = h - topPadding - bottomPadding - groundHeight * 0.3f - ballRadius * 2;
-
-        Timber.d("TotalOffset : %f", totalOffset);
 
         transitionY = isStartFromTop ? 0 : totalOffset;
 
         updateGroundRect();
         updateBallRect();
-
-
     }
 
     @Override
@@ -141,12 +129,17 @@ public class DribbleHeart extends View implements SpringListener {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         createSpring();
+        createPaint();
+        createAnim();
     }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        if (null != spring) { spring.removeListener(this); }
+    private void createPaint() {
+        groundPaint = new Paint();
+        groundPaint.setColor(getResources().getColor(R.color.official_slate));
+        groundPaint.setAntiAlias(true);
+        isUp = !isStartFromTop;
+        final int alpha = isStartFromTop ? 75 : 200;
+        groundPaint.setAlpha(alpha);
     }
 
     private void updateGroundRect() {
@@ -175,12 +168,12 @@ public class DribbleHeart extends View implements SpringListener {
     }
 
     public void dribble() {
+        spring.addListener(this);
+
         if (accelerateFall == null || decelerateRaise == null) {
             return;
         }
-        if (!isInEditMode()) {
-            setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        }
+
         if (isStartFromTop) {
             accelerateFall.start();
         } else {
@@ -192,14 +185,10 @@ public class DribbleHeart extends View implements SpringListener {
     public void stop() {
         if (accelerateFall.isRunning()) { accelerateFall.cancel(); }
         if (decelerateRaise.isRunning()) { decelerateRaise.cancel(); }
-
+        if (null != spring) { spring.removeListener(this); }
         scaleX = scaleY = 1;
         updateGroundRect();
         updateBallRect();
-
-        if (!isInEditMode()) {
-            setLayerType(View.LAYER_TYPE_NONE, null);
-        }
         invalidate();
     }
 
@@ -209,7 +198,6 @@ public class DribbleHeart extends View implements SpringListener {
         final float initValue = isStartFromTop ? 1 : 0;
         spring.setCurrentValue(initValue).setAtRest();
         spring.setOvershootClampingEnabled(true);
-        spring.addListener(this);
     }
 
     private void createAnim() {
@@ -255,23 +243,17 @@ public class DribbleHeart extends View implements SpringListener {
         {
             float fraction = animator.getAnimatedFraction();
             transitionY = totalOffset * (1 - fraction);
-           /* int newLeft = ballLeft;
-            int newTop = (int) ((ballTop + totalOffset + offset));
-            int newRight = ballRight;
-            int newBottom = (int) (ballBottom + totalOffset + offset);*/
             groundPaint.setAlpha((int) (200 - 125 * fraction * fraction));
             groundHeight = ballRadius * 0.2f + ballRadius * 0.1f * fraction * fraction;
             groundWidth = ballRadius * 1.4f - ballRadius * 0.6f * fraction * fraction;
             updateBallRect();
             updateGroundRect();
             invalidateRect();
-//            invalidateRect(ballRect, groundRect);
         });
 
     }
 
     private void invalidateRect() {
-
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) //is main thread
         {
             invalidate();
@@ -283,10 +265,7 @@ public class DribbleHeart extends View implements SpringListener {
     private void squeeze() {
         SpringConfig config = SpringConfig.fromBouncinessAndSpeed(2.8f, 0.2);
         spring.setSpringConfig(config);
-//        spring.setVelocity(ballRadius * 0.1 / bounceDuration);
         spring.setEndValue(0);
-      /*  spring.setRestDisplacementThreshold(ballRadius * 0.01);
-        spring.setRestSpeedThreshold(ballRadius * 0.01 / bounceDuration);*/
     }
 
 
@@ -299,7 +278,6 @@ public class DribbleHeart extends View implements SpringListener {
 
     @Override
     public void onSpringUpdate(Spring spring) {
-        Timber.d("onSpringUpdate");
         if (isUp) {
             scaleX = (float) SpringUtil.mapValueFromRangeToRange(
                     spring.getCurrentValue(), 0, 1, scaleFactor, 1);
@@ -310,22 +288,15 @@ public class DribbleHeart extends View implements SpringListener {
                     spring.getCurrentValue(), 1, 0, 1, scaleFactor);
             scaleY = (float) SpringUtil.mapValueFromRangeToRange(
                     spring.getCurrentValue(), 1, 0, 1, 1 / scaleFactor);
-
         }
-//        updateBallRect();
 
-        if (!accelerateFall.isRunning() && decelerateRaise.isRunning()) {
-//            invalidateRect();
-        }
     }
 
     @Override
     public void onSpringAtRest(Spring spring) {
         if (isUp) {
             decelerateRaise.start();
-        } /*else {
-            accelerateFall.start();
-        }*/
+        }
     }
 
     @Override
