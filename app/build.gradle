@@ -59,6 +59,7 @@ dependencies {
     compile rootProject.ext.dependencies["stetho-okhttp3"]
     compile rootProject.ext.dependencies["smooth-progress-bar"]
     compile project(':yukloadinglayout')
+    compile rootProject.ext.dependencies["rebound"]
 
     debugCompile rootProject.ext.dependencies["leakcanary"]
     releaseCompile rootProject.ext.dependencies["leakcanary-no-op"]

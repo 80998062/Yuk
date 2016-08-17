@@ -54,6 +54,8 @@ ext {
             "leakcanary-no-op"         : "com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2",
 //            widgets
             "smooth-progress-bar"      : "com.github.castorflex.smoothprogressbar:library:1.0.0",
+            "rebound"               : "com.facebook.rebound:rebound:0.3.8",
+
     ]
 
 
