@@ -3,7 +3,7 @@ package com.sinyuk.yuk.utils.glide;
 import android.graphics.ColorMatrix;
 import android.util.Property;
 
-import com.sinyuk.yuk.utils.AnimUtils;
+import com.sinyuk.yuk.utils.anim.AnimUtils;
 
 
 /**
