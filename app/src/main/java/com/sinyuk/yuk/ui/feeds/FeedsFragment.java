@@ -42,7 +42,7 @@ public class FeedsFragment extends BaseFragment {
     @Inject
     RxSharedPreferences mSharedPreferences;
     @BindView(R.id.layout_list)
-    YukLoadingLayout mListLayout;
+    YukLoadingLayout mYukLoadingLayout;
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
     SmoothProgressBar smoothProgressBar;
@@ -56,6 +56,7 @@ public class FeedsFragment extends BaseFragment {
 
 
     private int mPage = FIRST_PAGE;
+
     private final Observer<List<Shot>> addFeedsToList = new Observer<List<Shot>>() {
         @Override
         public void onCompleted() {
@@ -92,20 +93,9 @@ public class FeedsFragment extends BaseFragment {
 
     @Override
     protected void finishInflate() {
+        setupLoadingLayout();
         initRecyclerView();
         initData();
-
-        mListLayout.setRefreshListener(new YukLoadingLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh(YukLoadingLayout yukLoadingLayout) {
-                yukLoadingLayout.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        yukLoadingLayout.finishRefreshing();
-                    }
-                }, 3000);
-            }
-        });
     }
 
     @Override
@@ -116,11 +106,19 @@ public class FeedsFragment extends BaseFragment {
                 .build().inject(this);
     }
 
+    private void setupLoadingLayout() {
+        mYukLoadingLayout.setRefreshListener(yukLoadingLayout -> {
+            refreshFeeds();
+        });
+    }
+
     private void initRecyclerView() {
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
 
         mRecyclerView.setLayoutManager(layoutManager);
+
+        mRecyclerView.addItemDecoration(new FeedsItemDecoration(mContext));
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -153,9 +151,7 @@ public class FeedsFragment extends BaseFragment {
                     mAdapter.setAutoPlayGif(autoPlayGif);
                 });
 
-        mRecyclerView.postDelayed(() -> {
-            loadFeeds(mPage);//????为什么打印不出log
-        }, 2000);
+        mRecyclerView.postDelayed(this::refreshFeeds, 2000);
     }
 
     /**
@@ -168,12 +164,13 @@ public class FeedsFragment extends BaseFragment {
             final View loadingView = LayoutInflater.from(mContext).inflate(R.layout.feed_layout_list_footer, mRecyclerView, false);
             mAdapter.setFooterView(loadingView);
             smoothProgressBar = (SmoothProgressBar) loadingView.findViewById(R.id.progress_bar);
-        } else {
-            BlackMagics.scrollUp(smoothProgressBar).withStartAction(() -> {
-                smoothProgressBar.setVisibility(View.VISIBLE);
-                smoothProgressBar.progressiveStart();
-            });
         }
+
+        BlackMagics.scrollUp(smoothProgressBar).withStartAction(() -> {
+            smoothProgressBar.setVisibility(View.VISIBLE);
+            smoothProgressBar.progressiveStart();
+        });
+
     }
 
     /**
@@ -188,6 +185,12 @@ public class FeedsFragment extends BaseFragment {
         });
     }
 
+    private void hideRefreshView() {
+        if (mYukLoadingLayout != null && mYukLoadingLayout.isRefreshing()) {
+            mYukLoadingLayout.postDelayed(() -> mYukLoadingLayout.finishRefreshing(),3000);
+        }
+    }
+
     /**
      * 加载错误时
      *
@@ -195,8 +198,13 @@ public class FeedsFragment extends BaseFragment {
      */
     private void handleError(Throwable throwable) {
         throwable.printStackTrace();
-        mViewAnimator.setDisplayedChildId(R.id.layout_error);
-        mPage = FIRST_PAGE;
+        if (mYukLoadingLayout != null && mYukLoadingLayout.isRefreshing()) {
+            mYukLoadingLayout.postDelayed(() -> mYukLoadingLayout.finishRefreshing(),3000);
+            mYukLoadingLayout.postDelayed(() -> mViewAnimator.setDisplayedChildId(R.id.layout_error), 3500);
+        } else {
+            mViewAnimator.setDisplayedChildId(R.id.layout_error);
+        }
+
     }
 
     //    @Subscribe(threadMode = ThreadMode.MAIN)
@@ -209,6 +217,14 @@ public class FeedsFragment extends BaseFragment {
                 shotRepository.getShots(mType, page)
                         .doOnSubscribe(this::showLoadingProgress)
                         .doAfterTerminate(this::hideLoadingProgress)
+                        .subscribe(addFeedsToList));
+    }
+
+    private void refreshFeeds() {
+        addSubscription(
+                shotRepository.getShots(mType, FIRST_PAGE)
+                        .doAfterTerminate(this::hideRefreshView)
+                        .doAfterTerminate(() -> mPage = FIRST_PAGE)
                         .subscribe(addFeedsToList));
     }
 
