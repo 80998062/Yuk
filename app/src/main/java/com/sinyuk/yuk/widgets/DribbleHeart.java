@@ -27,7 +27,6 @@ import com.sinyuk.yuk.utils.anim.EaseSineOutInterpolator;
  * Created by Sinyuk on 16/7/11.
  */
 public class DribbleHeart extends View implements SpringListener {
-
     private static float scaleFactor = 1.09f;
     private static long bounceDuration = 150;
 
@@ -51,6 +50,9 @@ public class DribbleHeart extends View implements SpringListener {
     private float scaleY = 1;
     private boolean isStartFromTop;
     private float transitionY;
+    private int mWidth;
+    private int mHeight;
+    private boolean isCancelByMe;
 
 
     public DribbleHeart(Context context, AttributeSet attrs) {
@@ -93,9 +95,29 @@ public class DribbleHeart extends View implements SpringListener {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
+        mWidth = w;
+        mHeight = h;
+        reset(w, h);
+    }
 
-        // 这里我用了 w/2 而不是getLeft() + w/2
-        // which means when I draw something on the canvas it use its local coordinator
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        drawGround(canvas);
+        drawBall(canvas);
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        createSpring();
+        createPaint();
+        createAnim();
+    }
+
+    private void reset(int w, int h) {
+        scaleX = scaleY = 1;
+
         centerX = w / 2;
 
         // 计算球和地面的距离
@@ -116,21 +138,6 @@ public class DribbleHeart extends View implements SpringListener {
 
         updateGroundRect();
         updateBallRect();
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        drawGround(canvas);
-        drawBall(canvas);
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        createSpring();
-        createPaint();
-        createAnim();
     }
 
     private void createPaint() {
@@ -168,36 +175,37 @@ public class DribbleHeart extends View implements SpringListener {
     }
 
     public void dribble() {
-        spring.addListener(this);
-
+        resetSpring();
         if (accelerateFall == null || decelerateRaise == null) {
             return;
         }
-
         if (isStartFromTop) {
             accelerateFall.start();
         } else {
             decelerateRaise.start();
         }
-
     }
 
     public void stop() {
         if (accelerateFall.isRunning()) { accelerateFall.cancel(); }
         if (decelerateRaise.isRunning()) { decelerateRaise.cancel(); }
         if (null != spring) { spring.removeListener(this); }
-        scaleX = scaleY = 1;
-        updateGroundRect();
-        updateBallRect();
+        reset(mWidth, mHeight);
         invalidate();
     }
 
     private void createSpring() {
         SpringSystem springSystem = SpringSystem.create();
         spring = springSystem.createSpring();
-        final float initValue = isStartFromTop ? 1 : 0;
-        spring.setCurrentValue(initValue).setAtRest();
         spring.setOvershootClampingEnabled(true);
+    }
+
+    private void resetSpring() {
+        if (spring != null) {
+            final float initValue = isStartFromTop ? 1 : 0;
+            spring.setCurrentValue(initValue).setAtRest();
+            spring.addListener(this);
+        }
     }
 
     private void createAnim() {
@@ -217,13 +225,20 @@ public class DribbleHeart extends View implements SpringListener {
             }
         });
         decelerateRaise.addListener(new AnimatorListenerAdapter() {
+
+            @Override
+            public void onAnimationCancel(Animator animation) {isCancelByMe = true;}
+
             @Override
             public void onAnimationEnd(Animator animation) {
-                accelerateFall.start();
+                if (!isCancelByMe) {
+                    accelerateFall.start();
+                }
             }
 
             @Override
             public void onAnimationStart(Animator animation) {
+                isCancelByMe = false;
                 recover();
             }
         });
