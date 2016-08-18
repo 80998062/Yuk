@@ -40,23 +40,31 @@ public class LoadingLayout extends RelativeLayout {
     @Override
     protected void onVisibilityChanged(View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
+        Timber.d("onVisibilityChanged");
+        Timber.d("changedView %s visibility %d ", changedView.getClass().getSimpleName(), visibility);
+        if (changedView != this) { return; }
+
+        mDribbleLoadingView.setVisibility(visibility);
+
         if (View.VISIBLE != visibility) {
             if (mDribbleLoadingView != null) {
                 mDribbleLoadingView.stop();
-                Timber.d("DribbleLoadingView Stop");
             }
         } else {
             if (mDribbleLoadingView != null) {
-                mDribbleLoadingView.dribble();
-                Timber.d("DribbleLoadingView Start");
+                postDelayed(() -> mDribbleLoadingView.dribble(), 100);
             }
         }
+    }
+
+    @Override
+    protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         ensureLoadingView();
-//        postDelayed(() -> mDribbleLoadingView.dribble(),500);
     }
 }

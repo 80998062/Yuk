@@ -13,9 +13,10 @@
 
         <com.sinyuk.yuk.widgets.DribbleHeart
             android:id="@+id/dribble_loading_view"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            app:ball_radius="32dp"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:visibility="gone"
+            app:ball_radius="30dp"
             app:bottom_padding="0dp"
             app:top_padding="2dp"/>
     </FrameLayout>
