@@ -154,7 +154,7 @@ public class FeedsFragment extends BaseFragment {
                     mAdapter.setAutoPlayGif(autoPlayGif);
                 });
 
-        mRecyclerView.postDelayed(this::refreshFeeds, 2000);
+        mRecyclerView.postDelayed(this::refreshFeeds, 3000);
     }
 
     /**
