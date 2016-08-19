@@ -1,6 +1,6 @@
 package com.sinyuk.yuk.ui.feeds;
 
-import android.app.Activity;
+import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,10 +9,9 @@ import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
-import com.sinyuk.yuk.AppModule;
+import com.sinyuk.yuk.App;
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.api.DribbleApi;
-import com.sinyuk.yuk.data.shot.DaggerShotRepositoryComponent;
 import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.data.shot.ShotRepository;
 import com.sinyuk.yuk.ui.BaseFragment;
@@ -83,6 +82,12 @@ public class FeedsFragment extends BaseFragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        ((App) context.getApplicationContext()).getShotRepositoryComponent().inject(this);
+    }
+
+    @Override
     protected void beforeInflate() {
         Timber.tag("FeedsFragment");
     }
@@ -97,14 +102,6 @@ public class FeedsFragment extends BaseFragment {
         setupLoadingLayout();
         initRecyclerView();
         initData();
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        DaggerShotRepositoryComponent.builder()
-                .appModule(new AppModule(activity.getApplication()))
-                .build().inject(this);
     }
 
     private void setupLoadingLayout() {

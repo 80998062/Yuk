@@ -13,7 +13,6 @@ import dagger.Provides;
  */
 @Module
 public class ShotRepositoryModule {
-
     @Singleton
     @Provides
     public ShotRepository provideShotRepository(DribbleService dribbleService,
