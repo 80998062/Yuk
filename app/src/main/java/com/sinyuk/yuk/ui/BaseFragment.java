@@ -25,7 +25,6 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
         mContext = context;
     }
 

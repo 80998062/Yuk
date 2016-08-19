@@ -20,6 +20,7 @@ import timber.log.Timber;
  * 尽量减少这里的逻辑
  */
 public class FeedsAdapter extends BaseRVAdapter<Shot, FeedsAdapter.FeedItemViewHolder> {
+    private final static int CROSS_FADE_DURATION = 1500;
     private final DrawableRequestBuilder<String> avatarBuilder;
     private final DrawableRequestBuilder<String> GIFBuilder;
     private final DrawableRequestBuilder<String> PNGBuilder;
@@ -27,8 +28,8 @@ public class FeedsAdapter extends BaseRVAdapter<Shot, FeedsAdapter.FeedItemViewH
 
     public FeedsAdapter(Context context, RequestManager requestManager) {
         Timber.tag("FeedsAdapter");
-        GIFBuilder = requestManager.fromString().diskCacheStrategy(DiskCacheStrategy.SOURCE).centerCrop();
-        PNGBuilder = requestManager.fromString().diskCacheStrategy(DiskCacheStrategy.RESULT).centerCrop();
+        GIFBuilder = requestManager.fromString().diskCacheStrategy(DiskCacheStrategy.SOURCE).crossFade(CROSS_FADE_DURATION).centerCrop();
+        PNGBuilder = requestManager.fromString().diskCacheStrategy(DiskCacheStrategy.RESULT).crossFade(CROSS_FADE_DURATION).centerCrop();
         avatarBuilder = requestManager.fromString().diskCacheStrategy(DiskCacheStrategy.RESULT).dontAnimate().centerCrop().bitmapTransform(new CropCircleTransformation(context));
     }
 

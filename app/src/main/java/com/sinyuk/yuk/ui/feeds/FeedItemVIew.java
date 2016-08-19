@@ -29,6 +29,7 @@ import com.sinyuk.yuk.data.user.User;
 import com.sinyuk.yuk.utils.FormatUtils;
 import com.sinyuk.yuk.utils.Preconditions;
 import com.sinyuk.yuk.utils.StringUtils;
+import com.sinyuk.yuk.utils.anim.EaseSineOutInterpolator;
 import com.sinyuk.yuk.utils.glide.DribbbleTarget;
 import com.sinyuk.yuk.utils.glide.ObservableColorMatrix;
 import com.sinyuk.yuk.widgets.BadgedFourThreeImageView;
@@ -82,7 +83,7 @@ public class FeedItemView extends RelativeLayout {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             INTERPOLATOR = AnimationUtils.loadInterpolator(context, android.R.interpolator.fast_out_slow_in);
         } else {
-            INTERPOLATOR = AnimationUtils.loadInterpolator(context, android.R.interpolator.accelerate_decelerate);
+            INTERPOLATOR = new EaseSineOutInterpolator();
         }
     }
 
@@ -100,7 +101,7 @@ public class FeedItemView extends RelativeLayout {
 
         /*加载图片*/
         shotBuilder.load(data.bestQuality())
-                .listener(new ShotRequestListener(data))
+                /*.listener(new ShotRequestListener(data))*/
                 .into(new DribbbleTarget(mShot, isAutoPlayGif));
 
         /* rebound */
@@ -238,6 +239,7 @@ public class FeedItemView extends RelativeLayout {
         return gif;
     }
 
+    @Deprecated
     private class ShotRequestListener implements RequestListener<String, GlideDrawable> {
 
         private final Shot data;
@@ -268,10 +270,8 @@ public class FeedItemView extends RelativeLayout {
                                 new ColorMatrixColorFilter(cm));
                     }
                 });
-                saturation.setDuration(2000);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    saturation.setInterpolator(INTERPOLATOR);
-                }
+                saturation.setDuration(1600);
+                saturation.setInterpolator(INTERPOLATOR);
                 saturation.addListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
