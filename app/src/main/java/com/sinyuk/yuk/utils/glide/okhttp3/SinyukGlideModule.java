@@ -1,7 +1,6 @@
 package com.sinyuk.yuk.utils.glide.okhttp3;
 
 import android.app.ActivityManager;
-import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 
@@ -12,10 +11,10 @@ import com.bumptech.glide.load.engine.cache.InternalCacheDiskCacheFactory;
 import com.bumptech.glide.load.engine.executor.FifoPriorityThreadPoolExecutor;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.module.GlideModule;
-import com.sinyuk.yuk.AppModule;
-import com.sinyuk.yuk.api.DaggerApiComponent;
+import com.sinyuk.yuk.App;
 
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -26,9 +25,6 @@ import okhttp3.OkHttpClient;
  */
 public class SinyukGlideModule implements GlideModule {
     final static int sizeInBytes = 1024 * 1024 * 50;
-    @Inject
-    OkHttpClient okHttpClient;
-
     @Override
     public void applyOptions(Context context, GlideBuilder builder) {
         // Prefer higher quality images unless we're on a low RAM device
@@ -37,7 +33,7 @@ public class SinyukGlideModule implements GlideModule {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             builder.setDecodeFormat(activityManager.isLowRamDevice() ?
                     DecodeFormat.PREFER_RGB_565 : DecodeFormat.PREFER_ARGB_8888);
-        }else {
+        } else {
             builder.setDecodeFormat(DecodeFormat.PREFER_RGB_565);
         }
 
@@ -47,8 +43,11 @@ public class SinyukGlideModule implements GlideModule {
 
     @Override
     public void registerComponents(Context context, Glide glide) {
-        DaggerApiComponent.builder().appModule(new AppModule((Application) context.getApplicationContext()))
-                .build().inject(this);
-        glide.register(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(okHttpClient));
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.connectTimeout(10, TimeUnit.SECONDS);
+        builder.readTimeout(30, TimeUnit.SECONDS);
+        builder.writeTimeout(30, TimeUnit.SECONDS);
+        builder.retryOnConnectionFailure(true);
+        glide.register(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(builder.build()));
     }
 }
