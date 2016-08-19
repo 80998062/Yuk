@@ -1,1 +1,1 @@
-include ':app', ':yukloadinglayout'
+include ':app', ':yukloadinglayout', ':guillotinemenu'
