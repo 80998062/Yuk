@@ -131,10 +131,20 @@ public class FeedsFragment extends BaseFragment {
 
         mRecyclerView.addOnScrollListener(new OnScrollStateListener(mContext, (OnScrollStateListener.AppBarBehaviorListener) mContext));
 
+        setupProgressBar();
+    }
+
+    private void setupProgressBar() {
+        if (null == smoothProgressBar) {
+            final View loadingView = LayoutInflater.from(getContext()).inflate(R.layout.feed_layout_list_footer, mRecyclerView, false);
+            mAdapter.setFooterView(loadingView);
+            smoothProgressBar = (SmoothProgressBar) loadingView.findViewById(R.id.progress_bar);
+        }
     }
 
     private void initData() {
-        mAdapter = new FeedsAdapter(mContext, Glide.with(this));
+        if (null != mAdapter) { return; }
+        mAdapter = new FeedsAdapter(getContext(), Glide.with(this));
 
         mRecyclerView.setAdapter(mAdapter);
 
@@ -151,7 +161,7 @@ public class FeedsFragment extends BaseFragment {
                     mAdapter.setAutoPlayGif(autoPlayGif);
                 });
 
-        mRecyclerView.postDelayed(this::refreshFeeds, 3000);
+        refreshFeeds();
     }
 
     /**
@@ -159,13 +169,6 @@ public class FeedsFragment extends BaseFragment {
      */
     private void showLoadingProgress() {
         isLoading = true;
-        if (smoothProgressBar == null) {
-            // 加载第一页的时候不用显示这个 那么做一个初始化
-            final View loadingView = LayoutInflater.from(mContext).inflate(R.layout.feed_layout_list_footer, mRecyclerView, false);
-            mAdapter.setFooterView(loadingView);
-            smoothProgressBar = (SmoothProgressBar) loadingView.findViewById(R.id.progress_bar);
-        }
-
         BlackMagics.scrollUp(smoothProgressBar).withStartAction(() -> {
             smoothProgressBar.setVisibility(View.VISIBLE);
             smoothProgressBar.progressiveStart();
@@ -185,6 +188,10 @@ public class FeedsFragment extends BaseFragment {
         });
     }
 
+    /**
+     * 刷新的时候延迟三秒为了完整的展示动画
+     * 临时这么搞搞 有待优化
+     */
     private void hideRefreshView() {
         if (mYukLoadingLayout != null && mYukLoadingLayout.isRefreshing()) {
             mYukLoadingLayout.postDelayed(() -> mYukLoadingLayout.finishRefreshing(), 3000);
