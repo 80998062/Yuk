@@ -61,6 +61,7 @@ dependencies {
     compile project(':yukloadinglayout')
     compile rootProject.ext.dependencies["rebound"]
 
+
     debugCompile rootProject.ext.dependencies["leakcanary"]
     releaseCompile rootProject.ext.dependencies["leakcanary-no-op"]
     testCompile rootProject.ext.dependencies["leakcanary-no-op"]
