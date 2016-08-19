@@ -30,13 +30,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         if (getContentViewID() != 0) {
             setContentView(getContentViewID());
-        } else {
-            throw new IllegalArgumentException(TAG + " -> contentView can not been set");
+            unbinder = ButterKnife.bind(this);
+            finishInflating();
         }
 
-        unbinder = ButterKnife.bind(this);
-
-        finishInflating();
 
      /*   mLazyLoadRunnable = this::lazyLoad;
         if (savedInstanceState == null) {
@@ -68,7 +65,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbinder.unbind();
+        if (unbinder != null) {
+            unbinder.unbind();
+        }
         mCompositeSubscription.unsubscribe();
     }
 }
