@@ -84,7 +84,7 @@ public class FeedsFragment extends BaseFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        ((App) context.getApplicationContext()).getShotRepositoryComponent().inject(this);
+        App.get(context).getShotRepositoryComponent().inject(this);
     }
 
     @Override

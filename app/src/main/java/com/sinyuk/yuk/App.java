@@ -1,6 +1,7 @@
 package com.sinyuk.yuk;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.facebook.stetho.Stetho;
 import com.sinyuk.yuk.data.shot.ShotRepositoryComponent;
@@ -18,6 +19,9 @@ public class App extends Application {
     private AppComponent appComponent = null;
     private ShotRepositoryComponent shotRepositoryComponent = null;
 
+    public static App get(Context context) {
+        return (App) context.getApplicationContext();
+    }
 
     @Override
     public void onCreate() {
