@@ -27,7 +27,7 @@ public class SplashActivity extends AppCompatActivity{
         App.get(this).getAppComponent().plus(new SplashModule(this)).inject(this);
         mLazyLoadRunnable = this::startMainActivity;
         if (savedInstanceState == null) {
-            getWindow().getDecorView().post(() -> myHandler.postDelayed(mLazyLoadRunnable, 0));
+            getWindow().getDecorView().post(() -> myHandler.postDelayed(mLazyLoadRunnable, 2000));
         }
     }
 

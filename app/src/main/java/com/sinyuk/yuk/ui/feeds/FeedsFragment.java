@@ -112,11 +112,11 @@ public class FeedsFragment extends BaseFragment {
 
     private void initRecyclerView() {
 
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
 
         mRecyclerView.setLayoutManager(layoutManager);
 
-        mRecyclerView.addItemDecoration(new FeedsItemDecoration(mContext));
+        mRecyclerView.addItemDecoration(new FeedsItemDecoration(getContext()));
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -129,9 +129,9 @@ public class FeedsFragment extends BaseFragment {
             }
         });
 
-        mRecyclerView.addOnScrollListener(new OnScrollStateListener(mContext, (OnScrollStateListener.AppBarBehaviorListener) mContext));
+        mRecyclerView.addOnScrollListener(new OnScrollStateListener(getContext(), (OnScrollStateListener.AppBarBehaviorListener) mContext));
 
-        setupProgressBar();
+
     }
 
     private void setupProgressBar() {
@@ -143,7 +143,7 @@ public class FeedsFragment extends BaseFragment {
     }
 
     private void initData() {
-        if (null != mAdapter) { return; }
+
         mAdapter = new FeedsAdapter(getContext(), Glide.with(this));
 
         mRecyclerView.setAdapter(mAdapter);
@@ -162,6 +162,8 @@ public class FeedsFragment extends BaseFragment {
                 });
 
         refreshFeeds();
+
+        setupProgressBar();
     }
 
     /**

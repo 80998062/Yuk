@@ -7,10 +7,14 @@
         <item name="colorPrimaryDark">@color/official_pink</item>
         <item name="colorAccent">@color/official_pro</item>
         <item name="android:windowBackground">@color/window_background</item>
+
     </style>
 
+    <style name="Home" parent="AppTheme">
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
 
-    <style name="Splash" parent="AppTheme">
+    <style name="Splash" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_backdrop</item>
         <item name="android:windowFullscreen">true</item>
     </style>
