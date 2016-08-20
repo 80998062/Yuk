@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Yuk" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/official_slate</item>
         <item name="colorPrimaryDark">@color/official_pink</item>
@@ -10,12 +10,17 @@
 
     </style>
 
-    <style name="Home" parent="AppTheme">
+    <style name="Yuk.Home">
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
-    <style name="Splash" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Yuk.Splash">
         <item name="android:windowBackground">@drawable/splash_backdrop</item>
         <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="Yuk.Detail">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 </resources>
