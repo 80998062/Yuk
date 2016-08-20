@@ -21,8 +21,21 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             android:background="@android:color/white"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:navigationIcon="@drawable/hamburger_menu">
+            app:contentInsetStart="0dp"
+            app:layout_scrollFlags="scroll|enterAlways">
+
+            <ImageView
+                android:id="@+id/navigation_icon"
+                style="@style/ToolbarButton"
+                android:src="@drawable/hamburger_menu"/>
+
+            <ImageView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true"
+                android:src="@drawable/dribbble_logo"/>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 

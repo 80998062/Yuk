@@ -3,18 +3,22 @@ package com.sinyuk.yuk;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.sinyuk.yuk.ui.BaseActivity;
 import com.sinyuk.yuk.ui.feeds.FeedsFragment;
 import com.sinyuk.yuk.utils.ActivityUtils;
-import com.sinyuk.yuk.utils.ScreenUtils;
 import com.sinyuk.yuk.utils.lists.OnScrollStateListener;
+import com.yalantis.guillotine.animation.GuillotineAnimation;
 
 import butterknife.BindView;
 import timber.log.Timber;
 
 public class ShotsListDemo extends BaseActivity implements OnScrollStateListener.AppBarBehaviorListener {
+    private static final long RIPPLE_DURATION = 250;
 
     @BindView(R.id.root_view)
     CoordinatorLayout mRootView;
@@ -25,6 +29,11 @@ public class ShotsListDemo extends BaseActivity implements OnScrollStateListener
     Toolbar mToolBar;
     @BindView(R.id.list_view_container)
     FrameLayout mListViewContainer;
+    @BindView(R.id.navigation_icon)
+    ImageView mNavigationIcon;
+    @BindView(R.id.title)
+    ImageView mTitle;
+
 
     @Override
     protected int getContentViewID() {
@@ -48,10 +57,20 @@ public class ShotsListDemo extends BaseActivity implements OnScrollStateListener
         Timber.e("max %d ", max);
         mAppBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {;
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                ;
 
             }
         });
+
+        final View menuLayout = LayoutInflater.from(this).inflate(R.layout.home_menu_layout, mRootView, false);
+        mRootView.addView(menuLayout);
+
+        new GuillotineAnimation.GuillotineBuilder(menuLayout, menuLayout.findViewById(R.id.navigation_icon), mNavigationIcon)
+                .setStartDelay(RIPPLE_DURATION)
+                .setActionBarViewForAnimation(mToolBar)
+                .setClosedOnStart(true)
+                .build();
     }
 
     @Override
@@ -68,4 +87,6 @@ public class ShotsListDemo extends BaseActivity implements OnScrollStateListener
     public void onReachTop() {
         Timber.d("onReachTop");
     }
+
+
 }

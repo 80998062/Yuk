@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/menu_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/navigation_icon"
+        style="@style/ToolbarButton"
+        android:src="@drawable/hamburger_menu"/>
+
+    <fragment
+        android:id="@+id/guillotine_menu"
+        class="com.sinyuk.yuk.ui.home.GuillotineMenu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout="@layout/home_menu_fragment"/>
+</LinearLayout>
