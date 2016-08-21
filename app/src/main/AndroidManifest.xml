@@ -24,6 +24,7 @@
 
         <activity
             android:name=".ShotsListDemo"
+            android:launchMode="singleTop"
             android:theme="@style/Yuk.Home">
 
         </activity>
@@ -38,6 +39,8 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity android:name=".ui.detail.DetailActivity"/>
     </application>
 
 </manifest>

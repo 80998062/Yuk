@@ -3,6 +3,7 @@ package com.sinyuk.yuk.ui.feeds;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
@@ -26,6 +27,7 @@ import com.bumptech.glide.request.target.Target;
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.data.user.User;
+import com.sinyuk.yuk.ui.detail.DetailActivity;
 import com.sinyuk.yuk.utils.FormatUtils;
 import com.sinyuk.yuk.utils.Preconditions;
 import com.sinyuk.yuk.utils.StringUtils;
@@ -68,6 +70,7 @@ public class FeedItemView extends RelativeLayout {
     TextView mUsername;
     @BindView(R.id.type)
     TextView mType;
+
 
     public FeedItemView(Context context) {
         this(context, null);
@@ -195,6 +198,13 @@ public class FeedItemView extends RelativeLayout {
             }
             return false;
         });*/
+
+        mShot.setOnClickListener(view -> {
+            if (getContext() != null) {
+                getContext().startActivity(DetailActivity.getStartIntent(data, getContext()));
+                ((Activity) getContext()).overridePendingTransition(0, 0);
+            }
+        });
     }
 
     /**

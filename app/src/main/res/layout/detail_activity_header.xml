@@ -6,12 +6,11 @@
               android:layout_height="wrap_content"
               android:orientation="horizontal">
 
-    <com.sinyuk.yuk.widgets.MyCircleImageView
+    <ImageView
         android:id="@+id/avatar"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_gravity="center_vertical"
-        app:border_width="0dp"
         tools:src="@drawable/sample_04"/>
 
     <LinearLayout
