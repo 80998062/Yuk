@@ -42,7 +42,7 @@ import butterknife.ButterKnife;
 /**
  * Created by Sinyuk on 16/8/10.
  */
-public class FeedItemVIew extends RelativeLayout {
+public class FeedItemView extends RelativeLayout {
     private final Interpolator INTERPOLATOR;
     @BindColor(R.color.official_slate)
     int COLOR_SLATE;
