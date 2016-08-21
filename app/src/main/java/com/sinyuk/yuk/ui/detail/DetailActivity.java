@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.graphics.Palette;
-import android.support.v7.widget.ViewUtils;
 import android.util.TypedValue;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,6 +24,7 @@ import com.sinyuk.yuk.ui.BaseActivity;
 import com.sinyuk.yuk.utils.ColorUtils;
 import com.sinyuk.yuk.utils.Preconditions;
 import com.sinyuk.yuk.utils.StringUtils;
+import com.sinyuk.yuk.utils.ViewUtils;
 import com.sinyuk.yuk.utils.glide.CropCircleTransformation;
 import com.sinyuk.yuk.utils.glide.GlideUtils;
 import com.sinyuk.yuk.widgets.FourThreeImageView;
@@ -91,7 +91,6 @@ public class DetailActivity extends BaseActivity {
         Glide.with(this).load(mData.getUser().getAvatarUrl())
                 .bitmapTransform(new CropCircleTransformation(this)).placeholder(textDrawable)
                 .error(textDrawable)
-                .listener(new ShotRequestListener())
                 .into(mAvatar);
 
         /*username*/
@@ -106,7 +105,7 @@ public class DetailActivity extends BaseActivity {
         } else {
             requestBuilder.diskCacheStrategy(DiskCacheStrategy.RESULT);
         }
-        requestBuilder.load(mData.bestQuality()).into(mShot);
+        requestBuilder.load(mData.bestQuality()).listener(new ShotRequestListener(mShot)).into(mShot);
 
         //title
         mTitle.setText(StringUtils.valueOrDefault(mData.getTitle(), ""));
@@ -119,7 +118,7 @@ public class DetailActivity extends BaseActivity {
     }
 
     private class ShotRequestListener implements RequestListener<String, GlideDrawable> {
-
+        private static final float SCRIM_ADJUSTMENT = 0.075f;
         private final ImageView imageView;
 
         public ShotRequestListener(ImageView imageView) {
@@ -139,7 +138,7 @@ public class DetailActivity extends BaseActivity {
             float twentyFourDip = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24,
                     DetailActivity.this.getResources().getDisplayMetrics());
             Palette.from(bitmap)
-                    .maximumColorCount(10)
+                    .maximumColorCount(4)
                     .clearFilters()
                     .setRegion(0, 0, bitmap.getWidth() - 1, (int) (twentyFourDip / imageScale))
                     // - 1 to work around https://code.google.com/p/android/issues/detail?id=191013
@@ -159,9 +158,11 @@ public class DetailActivity extends BaseActivity {
 
                         // color the status bar. Set a complementary dark color on L,
                         // light or dark color on M (with matching status bar icons)
-                        int statusBarColor = 0;
+
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) { return; }
 
                         Palette.Swatch topColor = ColorUtils.getMostPopulousSwatch(palette);
+                        int statusBarColor = -1;
                         if (topColor != null &&
                                 (isDark || Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)) {
                             statusBarColor = ColorUtils.scrimify(topColor.getRgb(),
@@ -171,9 +172,9 @@ public class DetailActivity extends BaseActivity {
                                 ViewUtils.setLightStatusBar(imageView);
                             }
                         }
-
+                        if (statusBarColor == -1) { return; }
                         if (statusBarColor != getWindow().getStatusBarColor()) {
-//                            imageView.setScrimColor(statusBarColor);
+                            //imageView.setScrimColor(statusBarColor);
                             ValueAnimator statusBarColorAnim = ValueAnimator.ofArgb(getWindow
                                     ().getStatusBarColor(), statusBarColor);
                             statusBarColorAnim.addUpdateListener
