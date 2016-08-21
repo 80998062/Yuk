@@ -1,5 +1,6 @@
 package com.sinyuk.yuk;
 
+import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.Toolbar;
@@ -46,7 +47,7 @@ public class ShotsListDemo extends BaseActivity implements OnScrollStateListener
     }
 
     @Override
-    protected void finishInflating() {
+    protected void finishInflating(Bundle savedInstanceState) {
         ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), feedsFragment, R.id.list_view_container);
 //        mYukLoadingLayout.setRefreshListener(jellyRefreshLayout -> jellyRefreshLayout.postDelayed((Runnable) jellyRefreshLayout::finishRefreshing, 6000));
         final int max = mAppBarLayout.getTotalScrollRange();

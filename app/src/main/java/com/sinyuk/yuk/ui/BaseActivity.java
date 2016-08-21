@@ -31,7 +31,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (getContentViewID() != 0) {
             setContentView(getContentViewID());
             unbinder = ButterKnife.bind(this);
-            finishInflating();
+            finishInflating(savedInstanceState);
         }
 
 
@@ -46,7 +46,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected abstract void beforeInflating();
 
-    protected abstract void finishInflating();
+    protected abstract void finishInflating(Bundle savedInstanceState);
 
 
 

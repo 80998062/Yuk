@@ -51,7 +51,7 @@ public class RetrofitDemo extends BaseActivity {
     }
 
     @Override
-    protected void finishInflating() {
+    protected void finishInflating(Bundle savedInstanceState) {
 
     }
 
