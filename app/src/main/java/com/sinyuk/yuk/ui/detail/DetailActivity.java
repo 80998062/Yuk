@@ -1,5 +1,7 @@
 package com.sinyuk.yuk.ui.detail;
 
+import android.os.Bundle;
+
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.ui.BaseActivity;
 
@@ -19,7 +21,7 @@ public class DetailActivity extends BaseActivity {
     }
 
     @Override
-    protected void finishInflating() {
+    protected void finishInflating(Bundle savedInstanceState) {
 
     }
 }
