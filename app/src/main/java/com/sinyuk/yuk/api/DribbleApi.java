@@ -4,15 +4,20 @@ package com.sinyuk.yuk.api;
  * Created by Sinyuk on 16.6.16.
  */
 public class DribbleApi {
-    public static final String CLIENT_ID  = "c9a49d76fdded3a1d51a55396268081d12af093401bcc2730453d7a4c0f511b4";
-    public static final String CLIENT_SECRET  ="f31fa45f06cfdd3e447f5d7398e3e1693ae81ee3b2d48d4b3ce88f9134351b95";
+//    public static final String CLIENT_ID  = "c9a49d76fdded3a1d51a55396268081d12af093401bcc2730453d7a4c0f511b4";
+//    public static final String CLIENT_SECRET  ="f31fa45f06cfdd3e447f5d7398e3e1693ae81ee3b2d48d4b3ce88f9134351b95";
     public static final String REDIRECT_URI  = "http://yuk.com/redirect";
-    public static final String SCOPE  = "";
-    public static final String STATE  = "";
+
+
 
 
     public static final String END_POINT = "https://api.dribbble.com/v1/";
-
+    public static final String OAUTH_END_POINT ="https://dribbble.com/oauth/";
+    public static final String NODE_AUTHORIZE ="authorize";
+    public static final String PARAM_CLIENT_ID ="client_id";
+    public static final String PARAM_REDIRECT_URI ="redirect_uri";
+    public static final String PARAM_SCOPE ="scope";
+    public static final String PARAM_STATE ="state";
     public static final String PER_PAGE = "per_page";
 
     public static final int PAGE_SIZE = 10;
