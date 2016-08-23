@@ -14,6 +14,7 @@ public final class AccessToken {
     private String accessToken;
     @SerializedName("token_type")
     private String tokenType;
+    @SerializedName("scope")
     private String scope;
 
     public String getTokenType() {
