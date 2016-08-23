@@ -7,10 +7,10 @@ import java.lang.annotation.RetentionPolicy;
 import javax.inject.Scope;
 
 /**
- * Created by Sinyuk on 16/7/8.
+ * Created by Sinyuk on 16/8/23.
  */
 @Documented
 @Scope
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AppScope {
+public @interface ForOAuth {
 }
