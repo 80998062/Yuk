@@ -6,6 +6,7 @@ import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sinyuk.yuk.BuildConfig;
+import com.sinyuk.yuk.api.oauth.OauthInterceptor;
 import com.sinyuk.yuk.utils.NetWorkUtils;
 
 import java.io.File;
@@ -48,23 +49,21 @@ public class ApiModule {
 
     @Provides
     @Singleton
-    @Named("with_cache")
-    public OkHttpClient provideOkHttpClientWithCache(Application application) {
+    @Named("Cached")
+    public OkHttpClient provideOkHttpClientWithCache(Application application,OauthInterceptor oauthInterceptor) {
         File cacheFile = new File(application.getExternalCacheDir(), "okhttp_cache");
 
         Cache cache = new Cache(cacheFile, 1024 * 1024 * 50);
 
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
+        builder.addInterceptor(oauthInterceptor);
+
         if (BuildConfig.DEBUG) {
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
             builder.addInterceptor(loggingInterceptor);
         }
-
-        builder.addNetworkInterceptor(new StethoInterceptor())
-                .build();
-
 
         final Interceptor REWRITE_RESPONSE_INTERCEPTOR = chain -> {
             Response originalResponse = chain.proceed(chain.request());
@@ -96,21 +95,6 @@ public class ApiModule {
                 .addNetworkInterceptor(REWRITE_RESPONSE_INTERCEPTOR)
                 .addInterceptor(OFFLINE_INTERCEPTOR);
 
-        // 请求头
-        final Interceptor authorization = chain -> {
-            Request originalRequest = chain.request();
-            Request.Builder requestBuilder = originalRequest.newBuilder()
-                    .header("Authorization", "Bearer a860827f0ea38c1db7d5512d93366499d55424dae8be1f1e0b4065ec6fbeb948")
-                    .header("Content-Type", "application/x-www-form-urlencoded")
-                    .method(originalRequest.method(), originalRequest.body());
-            Request request = requestBuilder.build();
-            return chain.proceed(request);
-
-        };
-
-        //设置头
-        builder.addInterceptor(authorization);
-
         //设置超时
         builder.connectTimeout(30, TimeUnit.SECONDS);
         builder.readTimeout(30, TimeUnit.SECONDS);
@@ -118,25 +102,13 @@ public class ApiModule {
         //错误重连
         builder.retryOnConnectionFailure(true);
 
-        // 分页设置
-        Interceptor paginationInterceptor = chain -> {
-            Request originalRequest = chain.request();
-            HttpUrl modifiedUrl = originalRequest.url().newBuilder()
-                    // Provide your custom parameter here
-                    .addQueryParameter(DribbleApi.PER_PAGE, String.valueOf(DribbleApi.PAGE_SIZE))
-                    .build();
-            Request request = originalRequest.newBuilder().url(modifiedUrl).build();
-            return chain.proceed(request);
-        };
-        builder.addInterceptor(paginationInterceptor);
-
         return builder.build();
     }
 
     @Provides
     @Singleton
-    @Named("api")
-    Retrofit provideRetrofit(Gson gson, @Named("with_cache") OkHttpClient okHttpClient) {
+    @Named("Api")
+    Retrofit provideRetrofit(Gson gson, @Named("Cached") OkHttpClient okHttpClient) {
         return new Retrofit.Builder()
                 .baseUrl(DribbleApi.END_POINT)
                 .addConverterFactory(GsonConverterFactory.create(gson))
@@ -148,8 +120,9 @@ public class ApiModule {
 
     @Provides
     @Singleton
-    public DribbleService provideDribbleService(@Named("api") Retrofit retrofit) {
+    public DribbleService provideDribbleService(@Named("Api") Retrofit retrofit) {
         return retrofit.create(DribbleService.class);
     }
+
 
 }
