@@ -155,7 +155,7 @@ public class FeedsFragment extends BaseFragment {
             }
         });
 
-        mSharedPreferences.getBoolean(PrefsUtils.auto_play_gif, false)
+        mSharedPreferences.getBoolean(PrefsUtils.KEY_AUTO_PLAY_GIF, false)
                 .asObservable()
                 .subscribe(autoPlayGif -> {
                     mAdapter.setAutoPlayGif(autoPlayGif);
