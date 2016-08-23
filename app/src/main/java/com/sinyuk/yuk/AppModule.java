@@ -3,7 +3,6 @@ package com.sinyuk.yuk;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import com.f2prateek.rx.preferences.RxSharedPreferences;
 
@@ -11,6 +10,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by Sinyuk on 16.6.19.
@@ -38,8 +39,13 @@ public final class AppModule {
 
     @Provides
     @Singleton
-    public RxSharedPreferences providePreferences() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(application);
+    SharedPreferences provideSharedPreferences() {
+        return application.getSharedPreferences("Yuk", MODE_PRIVATE);
+    }
+
+    @Provides
+    @Singleton
+    public RxSharedPreferences providePreferences(SharedPreferences preferences) {
         return RxSharedPreferences.create(preferences);
     }
 
