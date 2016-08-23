@@ -2,9 +2,11 @@ package com.sinyuk.yuk;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 
 import com.f2prateek.rx.preferences.RxSharedPreferences;
+import com.sinyuk.yuk.utils.IntentFactory;
 
 import javax.inject.Singleton;
 
@@ -49,5 +51,9 @@ public final class AppModule {
         return RxSharedPreferences.create(preferences);
     }
 
-
+    @Provides
+    @Singleton
+    public IntentFactory provideIntentFactory(){
+        return IntentFactory.REAL;
+    }
 }

@@ -5,10 +5,11 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.sinyuk.yuk.api.oauth.AccessToken;
-import com.sinyuk.yuk.api.oauth.OAuthService;
+import com.sinyuk.yuk.api.oauth.ForOauth;
+import com.sinyuk.yuk.api.oauth.OauthService;
 import com.sinyuk.yuk.utils.IntentFactory;
-import com.sinyuk.yuk.utils.PrefsUtils;
 
 import javax.inject.Singleton;
 
@@ -21,21 +22,22 @@ import rx.functions.Action1;
  */
 @Singleton
 public class AccountManager {
-
-
-    private final OAuthService oAuthService;
+    private final OauthService mOauthService;
     private final IntentFactory intentFactory;
     private SharedPreferences prefs;
     private boolean isLoggedIn;
-    private String accessToken;
+    private Preference<String>  accessToken;
 
-    public AccountManager(OAuthService oAuthService, SharedPreferences preferences, IntentFactory intentFactory) {
-        this.oAuthService = oAuthService;
+    public AccountManager(OauthService oauthService,
+                          SharedPreferences preferences,
+                          IntentFactory intentFactory,
+                          @ForOauth Preference<String> accessToken) {
+        this.mOauthService = oauthService;
         this.prefs = preferences;
         this.intentFactory = intentFactory;
+        this.accessToken = accessToken;
 
-        accessToken = prefs.getString(PrefsUtils.KEY_ACCESS_TOKEN, null);
-        isLoggedIn = !TextUtils.isEmpty(accessToken);
+        isLoggedIn = accessToken.isSet();
         if (isLoggedIn) {
         /*    userId = prefs.getLong(KEY_USER_ID, 0l);
             userName = prefs.getString(KEY_USER_NAME, null);
@@ -69,7 +71,7 @@ public class AccountManager {
     }
 
     private Observable<AccessToken> exchangeAccessToken(String code) {
-        return oAuthService.getAccessToken("", "", code, "")
+        return mOauthService.getAccessToken("", "", code, "")
                 .doOnNext(new Action1<AccessToken>() {
                     @Override
                     public void call(AccessToken accessToken) {
@@ -82,22 +84,22 @@ public class AccountManager {
         return isLoggedIn;
     }
 
-    public String getAccessToken() {
-        return !TextUtils.isEmpty(accessToken) ? accessToken
-                : /*BuildConfig.DRIBBBLE_CLIENT_ACCESS_TOKEN*/"";
-    }
+//    public String getAccessToken() {
+//        return !TextUtils.isEmpty(accessToken) ? accessToken
+//                : /*BuildConfig.DRIBBBLE_CLIENT_ACCESS_TOKEN*/"";
+//    }
 
     public void setAccessToken(String accessToken) {
         if (!TextUtils.isEmpty(accessToken)) {
-            this.accessToken = accessToken;
+            /*this.accessToken = accessToken;*/
             isLoggedIn = true;
-            Preferenc
-            dispatchLoginEvent();
+           /* Preferenc
+            dispatchLoginEvent();*/
         }
     }
 
     public void logout() {
-        isLoggedIn = false;
+     /*   isLoggedIn = false;
         accessToken = null;
         userId = 0l;
         userName = null;
@@ -111,6 +113,6 @@ public class AccountManager {
         editor.putString(KEY_USER_AVATAR, null);
         editor.putString(KEY_USER_TYPE, null);
         editor.apply();
-        dispatchLogoutEvent();
+        dispatchLogoutEvent();*/
     }
 }

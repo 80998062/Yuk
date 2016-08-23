@@ -6,7 +6,6 @@ import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sinyuk.yuk.BuildConfig;
-import com.sinyuk.yuk.api.oauth.OAuthService;
 import com.sinyuk.yuk.utils.NetWorkUtils;
 
 import java.io.File;
@@ -58,10 +57,8 @@ public class ApiModule {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
         if (BuildConfig.DEBUG) {
-            // Log信息拦截器
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            //设置 Debug Log 模式
             builder.addInterceptor(loggingInterceptor);
         }
 
@@ -138,46 +135,7 @@ public class ApiModule {
 
     @Provides
     @Singleton
-    @Named("no_cache")
-    public OkHttpClient provideOkHttpClientNoCache() {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        if (BuildConfig.DEBUG) {
-            // Log信息拦截器
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            //设置 Debug Log 模式
-            builder.addInterceptor(loggingInterceptor);
-        }
-
-        // 请求头
-        final Interceptor authorization = chain -> {
-            Request originalRequest = chain.request();
-            Request.Builder requestBuilder = originalRequest.newBuilder()
-                    .header("Authorization", "Bearer a860827f0ea38c1db7d5512d93366499d55424dae8be1f1e0b4065ec6fbeb948")
-                    .header("Content-Type", "application/x-www-form-urlencoded")
-                    .method(originalRequest.method(), originalRequest.body());
-            Request request = requestBuilder.build();
-            return chain.proceed(request);
-
-        };
-
-        //设置头
-        builder.addInterceptor(authorization);
-
-        //设置超时
-        builder.connectTimeout(30, TimeUnit.SECONDS);
-        builder.readTimeout(30, TimeUnit.SECONDS);
-        builder.writeTimeout(30, TimeUnit.SECONDS);
-        //错误重连
-        builder.retryOnConnectionFailure(true);
-
-        return builder.build();
-    }
-
-
-    @Provides
-    @Singleton
-    @Named("basic")
+    @Named("api")
     Retrofit provideRetrofit(Gson gson, @Named("with_cache") OkHttpClient okHttpClient) {
         return new Retrofit.Builder()
                 .baseUrl(DribbleApi.END_POINT)
@@ -187,29 +145,11 @@ public class ApiModule {
                 .build();
     }
 
-    @Provides
-    @Singleton
-    @Named("oauth")
-    Retrofit provideRetrofitForAuthorization(Gson gson, @Named("no_cache") OkHttpClient okHttpClient) {
-        return new Retrofit.Builder()
-                .baseUrl(DribbleApi.OAUTH_END_POINT)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .client(okHttpClient)
-                .build();
-    }
 
     @Provides
     @Singleton
-    public DribbleService provideDribbleService(@Named("basic") Retrofit retrofit) {
+    public DribbleService provideDribbleService(@Named("api") Retrofit retrofit) {
         return retrofit.create(DribbleService.class);
     }
-
-    @Provides
-    @Singleton
-    public OAuthService provideAuthorizationService(@Named("oauth") Retrofit retrofit) {
-        return retrofit.create(OAuthService.class);
-    }
-
 
 }
