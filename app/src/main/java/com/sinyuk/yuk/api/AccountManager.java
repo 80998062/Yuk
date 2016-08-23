@@ -1,36 +1,38 @@
 package com.sinyuk.yuk.api;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.f2prateek.rx.preferences.RxSharedPreferences;
+import com.sinyuk.yuk.api.oauth.AccessToken;
+import com.sinyuk.yuk.api.oauth.OAuthService;
+import com.sinyuk.yuk.utils.IntentFactory;
 import com.sinyuk.yuk.utils.PrefsUtils;
 
-import java.util.prefs.Preferences;
+import javax.inject.Singleton;
 
+import okhttp3.HttpUrl;
 import rx.Observable;
 import rx.functions.Action1;
 
 /**
  * Created by Sinyuk on 16/8/22.
  */
+@Singleton
 public class AccountManager {
 
-    private final Context hostActivity;
 
     private final OAuthService oAuthService;
+    private final IntentFactory intentFactory;
     private SharedPreferences prefs;
     private boolean isLoggedIn;
     private String accessToken;
 
-    public AccountManager(Context activity, OAuthService oAuthService, SharedPreferences preferences) {
-        this.hostActivity = activity;
+    public AccountManager(OAuthService oAuthService, SharedPreferences preferences, IntentFactory intentFactory) {
         this.oAuthService = oAuthService;
         this.prefs = preferences;
+        this.intentFactory = intentFactory;
 
         accessToken = prefs.getString(PrefsUtils.KEY_ACCESS_TOKEN, null);
         isLoggedIn = !TextUtils.isEmpty(accessToken);
@@ -43,23 +45,21 @@ public class AccountManager {
         }
     }
 
-    public void requestDribbbleAccess(@NonNull String id,
-                                      @NonNull String redirect,
-                                      @NonNull String scope,
-                                      @NonNull String state) {
-        Intent intent = new Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse(DribbleApi.OAUTH_END_POINT +
-                        DribbleApi.NODE_AUTHORIZE
-                        + "?" + DribbleApi.PARAM_CLIENT_ID + "=" + id
-                        + "?" + DribbleApi.PARAM_REDIRECT_URI + "=" + redirect
-                        + "?" + DribbleApi.PARAM_SCOPE + "=" + scope
-                        + "?" + DribbleApi.PARAM_STATE + "=" + state));
 
-        hostActivity.startActivity(intent);
+    public Intent createLoginIntent(@NonNull String id, @NonNull String redirect, @NonNull String scope, @NonNull String state) {
+
+        HttpUrl authorizeUrl = HttpUrl.parse(DribbleApi.OAUTH_END_POINT + DribbleApi.NODE_AUTHORIZE) //
+                .newBuilder()
+                .addQueryParameter(DribbleApi.PARAM_CLIENT_ID, id)
+                .addQueryParameter(DribbleApi.PARAM_REDIRECT_URI, redirect)
+                .addQueryParameter(DribbleApi.PARAM_SCOPE, scope)
+                .addQueryParameter(DribbleApi.PARAM_STATE, state)
+                .build();
+
+        return intentFactory.createUrlIntent(authorizeUrl.toString());
     }
-    
-    public void getRequestCode(Intent intent){
+
+    public void getRequestCode(Intent intent) {
         if (intent != null
                 && intent.getData() != null
                 && !TextUtils.isEmpty(intent.getData().getAuthority())
@@ -69,7 +69,7 @@ public class AccountManager {
     }
 
     private Observable<AccessToken> exchangeAccessToken(String code) {
-        return oAuthService.getAccessToken("","",code,"")
+        return oAuthService.getAccessToken("", "", code, "")
                 .doOnNext(new Action1<AccessToken>() {
                     @Override
                     public void call(AccessToken accessToken) {

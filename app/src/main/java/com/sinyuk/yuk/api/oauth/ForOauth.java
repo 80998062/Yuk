@@ -1,4 +1,4 @@
-package com.sinyuk.yuk.utils.dagger2;
+package com.sinyuk.yuk.api.oauth;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -12,5 +12,5 @@ import javax.inject.Scope;
 @Documented
 @Scope
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ForOAuth {
+public @interface ForOauth {
 }

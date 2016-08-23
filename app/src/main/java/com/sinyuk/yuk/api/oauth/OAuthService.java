@@ -1,6 +1,7 @@
-package com.sinyuk.yuk.api;
+package com.sinyuk.yuk.api.oauth;
 
-import retrofit2.Call;
+import com.sinyuk.yuk.api.oauth.AccessToken;
+
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;

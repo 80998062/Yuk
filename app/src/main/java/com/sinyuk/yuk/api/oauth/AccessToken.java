@@ -1,4 +1,4 @@
-package com.sinyuk.yuk.api;
+package com.sinyuk.yuk.api.oauth;
 
 import com.google.gson.annotations.SerializedName;
 

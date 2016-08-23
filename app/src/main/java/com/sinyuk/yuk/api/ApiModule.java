@@ -6,6 +6,7 @@ import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sinyuk.yuk.BuildConfig;
+import com.sinyuk.yuk.api.oauth.OAuthService;
 import com.sinyuk.yuk.utils.NetWorkUtils;
 
 import java.io.File;
