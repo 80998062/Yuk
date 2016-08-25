@@ -8,13 +8,15 @@ import com.sinyuk.yuk.data.shot.ShotRepositoryComponent;
 import com.sinyuk.yuk.data.shot.ShotRepositoryModule;
 import com.sinyuk.yuk.utils.Preconditions;
 import com.squareup.leakcanary.LeakCanary;
+import com.tencent.smtt.sdk.QbSdk;
+import com.tencent.smtt.sdk.TbsDownloader;
 
 import timber.log.Timber;
 
 /**
  * Created by Sinyuk on 16.6.17.
  */
-public class App extends Application {
+public class App extends Application implements QbSdk.PreInitCallback {
 
     private AppComponent appComponent = null;
     private ShotRepositoryComponent shotRepositoryComponent = null;
@@ -34,6 +36,10 @@ public class App extends Application {
         Stetho.initializeWithDefaults(this);
         LeakCanary.install(this);
         initAppComponent();
+
+        QbSdk.allowThirdPartyAppDownload(true);
+        TbsDownloader.needDownload(this, false);
+        QbSdk.initX5Environment(this,QbSdk.WebviewInitType.FIRSTUSE_AND_PRELOAD,this);
     }
 
     private void initAppComponent() {
@@ -57,5 +63,15 @@ public class App extends Application {
 
     public AppComponent getAppComponent() {
         return appComponent;
+    }
+
+    @Override
+    public void onCoreInitFinished() {
+
+    }
+
+    @Override
+    public void onViewInitFinished(boolean b) {
+
     }
 }

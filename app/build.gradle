@@ -75,6 +75,6 @@ dependencies {
     debugCompile rootProject.ext.dependencies["leakcanary"]
     releaseCompile rootProject.ext.dependencies["leakcanary-no-op"]
     testCompile rootProject.ext.dependencies["leakcanary-no-op"]
-
     compile project(':guillotinemenu')
+    compile project(':tbs_sdk')
 }

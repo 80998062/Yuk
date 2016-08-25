@@ -37,6 +37,8 @@ import timber.log.Timber;
 @Module
 public class ApiModule {
 
+    private static final long MAX_OKHTTP_CACHE = 1024 * 1024 * 50;
+
     @Provides
     @Singleton
     public Gson provideGson() {
@@ -65,10 +67,9 @@ public class ApiModule {
     @Provides
     @Singleton
     @Named("Cached")
-    public OkHttpClient provideOkHttpClientWithCache(Application application, OauthInterceptor oauthInterceptor) {
-        File cacheFile = new File(application.getExternalCacheDir(), "okhttp_cache");
+    public OkHttpClient provideOkHttpClientWithCache(Application application, File cacheFile, OauthInterceptor oauthInterceptor) {
 
-        Cache cache = new Cache(cacheFile, 1024 * 1024 * 50);
+        Cache cache = new Cache(cacheFile, MAX_OKHTTP_CACHE);
 
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 

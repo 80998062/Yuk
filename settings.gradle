@@ -1,1 +1,1 @@
-include ':app', ':yukloadinglayout', ':guillotinemenu'
+include ':app', ':yukloadinglayout', ':guillotinemenu', ':tbs_sdk'

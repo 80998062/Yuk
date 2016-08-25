@@ -2,11 +2,12 @@ package com.sinyuk.yuk;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 
 import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.sinyuk.yuk.utils.IntentFactory;
+
+import java.io.File;
 
 import javax.inject.Singleton;
 
@@ -53,7 +54,13 @@ public final class AppModule {
 
     @Provides
     @Singleton
-    public IntentFactory provideIntentFactory(){
+    public IntentFactory provideIntentFactory() {
         return IntentFactory.REAL;
+    }
+
+    @Provides
+    @Singleton
+    public File provideCachePath() {
+        return new File(application.getExternalCacheDir(), "network_cache");
     }
 }

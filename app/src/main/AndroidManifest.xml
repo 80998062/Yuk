@@ -8,6 +8,9 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -43,6 +46,10 @@
         <activity android:name=".ui.detail.DetailActivity"/>
 
         <activity android:name=".ui.login.DribbbleLoginActivity"/>
+
+        <activity
+            android:name=".ui.BrowserActivity"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
     </application>
 
 </manifest>

@@ -1,6 +1,7 @@
 package com.sinyuk.yuk.ui.splash;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -8,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.sinyuk.yuk.App;
 import com.sinyuk.yuk.ShotsListDemo;
+import com.sinyuk.yuk.ui.BrowserActivity;
 
 import timber.log.Timber;
 
@@ -33,8 +35,9 @@ public class SplashActivity extends AppCompatActivity{
 
     private void startMainActivity() {
         Timber.d("Splash Finish");
-        Intent starter = new Intent(SplashActivity.this, ShotsListDemo.class);
+        Intent starter = new Intent(SplashActivity.this, BrowserActivity.class);
         starter.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        starter.setData(Uri.parse("http://square.github.io/retrofit/"));
         startActivity(starter);
         finish();
     }
