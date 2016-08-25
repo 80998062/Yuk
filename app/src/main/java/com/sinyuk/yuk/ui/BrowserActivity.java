@@ -1,11 +1,11 @@
 package com.sinyuk.yuk.ui;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.PixelFormat;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -20,31 +20,43 @@ import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebSettings.LayoutAlgorithm;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
-import com.tencent.smtt.utils.TbsLog;
 
 import java.net.URL;
 
-public class BrowserActivity extends Activity {
+import butterknife.BindView;
+import timber.log.Timber;
+
+public class BrowserActivity extends BaseActivity {
     private static final String mHomeUrl = "https://dribbble.com/shots";
-    private static final String TAG = "SdkDemo";
     private static final int MAX_LENGTH = 14;
     private static final long MAX_CACHE_SIZE = 1024 * 1024 * 50;
-    private final float disable = 0.5f;
-    private final float enable = 1f;
-    /**
-     * 作为一个浏览器的示例展示出来，采用android+web的模式
-     */
-    private WebView mWebView;
-    private ViewGroup mViewParent;
-    private boolean mNeedTestPage = false;
+
+    @BindView(R.id.root_view)
+    CoordinatorLayout mRootView;
+    @BindView(R.id.tool_bar)
+    Toolbar mToolbar;
+    @BindView(R.id.web_view)
+    WebView mWebView;
+    @BindView(R.id.title_tv)
+    TextView mTitleTv;
 
     private URL mIntentUrl;
-    private TextView mTitleTv;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected int getContentViewID() {
+        return R.layout.activity_browser;
+    }
+
+    @Override
+    protected void beforeInflating() {
         getWindow().setFormat(PixelFormat.TRANSLUCENT);
+        try {
+            getWindow().setFlags(
+                    android.view.WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+                    android.view.WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -54,20 +66,30 @@ public class BrowserActivity extends Activity {
                 e.printStackTrace();
             }
         }
-        //
-        try {
-            getWindow().setFlags(
-                    android.view.WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-                    android.view.WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    }
 
-		/*getWindow().addFlags(
-                android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN);*/
-        setContentView(R.layout.activity_browser);
-        mViewParent = (ViewGroup) findViewById(R.id.web_view_container);
-        init();
+    @Override
+    protected void finishInflating(Bundle savedInstanceState) {
+        if (savedInstanceState == null) { initWebViewSettings(); }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mWebView != null) {
+            mWebView.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
+            mWebView.clearHistory();
+
+            ((ViewGroup) mWebView.getParent()).removeView(mWebView);
+            mWebView.destroy();
+            mWebView = null;
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        if (mWebView != null) { mWebView.onPause(); }
+        super.onPause();
     }
 
     @Override
@@ -77,9 +99,9 @@ public class BrowserActivity extends Activity {
     }
 
     @Override
-    protected void onDestroy() {
-        if (mWebView != null) { mWebView.destroy(); }
-        super.onDestroy();
+    protected void onResume() {
+        super.onResume();
+        if (mWebView != null) { mWebView.onResume(); }
     }
 
     @Override
@@ -94,98 +116,12 @@ public class BrowserActivity extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
-/*    private void changGoForwardButton(WebView view) {
-        if (view.canGoBack()) { mBack.setAlpha(enable); } else { mBack.setAlpha(disable); }
-        if (view.canGoForward()) { mForward.setAlpha(enable); } else { mForward.setAlpha(disable); }
-        if (view.getUrl() != null && view.getUrl().equalsIgnoreCase(mHomeUrl)) {
-            mHome.setAlpha(disable);
-            mHome.setEnabled(false);
-        } else {
-            mHome.setAlpha(enable);
-            mHome.setEnabled(true);
-        }
-    }*/
-
-/*    private void initProgressBar() {
-        mPageLoadingProgressBar = (ProgressBar) findViewById(R.id.progressBar1);// new
-        // ProgressBar(getApplicationContext(),
-        // null,
-        // android.R.attr.progressBarStyleHorizontal);
-        mPageLoadingProgressBar.setMax(100);
-        mPageLoadingProgressBar.setProgressDrawable(this.getResources()
-                .getDrawable(R.drawable.color_progressbar));
-    }*/
-
-    private void init() {
-
-        //
-        //mWebView = new DemoWebView(this);
-        mWebView = (WebView) findViewById(R.id.web_view);
-        mTitleTv = (TextView) findViewById(R.id.title_tv);
-
-        Log.w("grass", "Current SDK_INT:" + Build.VERSION.SDK_INT);
+    @SuppressLint("SetJavaScriptEnabled")
+    private void initWebViewSettings() {
 
 //        initProgressBar();
-
-        mWebView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                return false;
-            }
-
-            /*  This method is called only for main frame.
-             *  When onPageFinished() is called,
-             *  the rendering picture may not be updated yet
-             */
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-         /*       moreMenuClose();
-                // mTestHandler.sendEmptyMessage(MSG_OPEN_TEST_URL);
-                mTestHandler.sendEmptyMessageDelayed(MSG_OPEN_TEST_URL, 5000);// 5s?
-                if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 16) {
-                    changGoForwardButton(view);
-                }
-				*//* mWebView.showLog("test Log"); */
-
-            }
-
-            @Override
-            public WebResourceResponse shouldInterceptRequest(WebView view,
-                                                              WebResourceRequest request) {
-                // TODO Auto-generated method stub
-
-                Log.e("should", "request.getUrl().toString() is " + request.getUrl().toString());
-
-                return super.shouldInterceptRequest(view, request);
-            }
-        });
-
-        mWebView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public void onProgressChanged(WebView view, int newProgress) {
-                // TODO Auto-generated method stub
-             /*   mPageLoadingProgressBar.setProgress(newProgress);
-                if (mPageLoadingProgressBar != null && newProgress != 100) {
-                    mPageLoadingProgressBar.setVisibility(View.VISIBLE);
-                } else if (mPageLoadingProgressBar != null) {
-                    mPageLoadingProgressBar.setVisibility(View.GONE);
-                }*/
-            }
-
-            @Override
-            public void onReceivedTitle(WebView view, String title) {
-                TbsLog.d(TAG, "title: " + title);
-                if (mTitleTv == null) { return; }
-                if (!mWebView.getUrl().equalsIgnoreCase(mHomeUrl)) {
-                    if (title != null && title.length() > MAX_LENGTH) {
-                        mTitleTv.setText(title.subSequence(0, MAX_LENGTH) + "...");
-                    } else { mTitleTv.setText(title); }
-                } else {
-                    mTitleTv.setText("");
-                }
-            }
-        });
+        mWebView.setWebViewClient(new MyWebViewClient());
+        mWebView.setWebChromeClient(new MyWebChromeClient());
 
         // 注入一个Cache path 跟Okhttp一起
         WebSettings webSetting = mWebView.getSettings();
@@ -225,18 +161,71 @@ public class BrowserActivity extends Activity {
         webSetting.setSaveFormData(true);
         webSetting.setSavePassword(true);
 
-        long time = System.currentTimeMillis();
-
         if (mIntentUrl == null) {
             mWebView.loadUrl(mHomeUrl);
         } else {
             mWebView.loadUrl(mIntentUrl.toString());
         }
-        TbsLog.d("time-cost", "cost time: "
-                + (System.currentTimeMillis() - time));
 
         CookieSyncManager.createInstance(this);
         CookieSyncManager.getInstance().sync();
+    }
+
+    private class MyWebViewClient extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
+        }
+
+        /*  This method is called only for main frame.
+         *  When onPageFinished() is called,
+         *  the rendering picture may not be updated yet
+         */
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+         /*       moreMenuClose();
+                // mTestHandler.sendEmptyMessage(MSG_OPEN_TEST_URL);
+                mTestHandler.sendEmptyMessageDelayed(MSG_OPEN_TEST_URL, 5000);// 5s?
+                if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 16) {
+                    changGoForwardButton(view);
+                }
+				*//* mWebView.showLog("test Log"); */
+        }
+
+        @Override
+        public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+
+            Timber.d("request.getUrl().toString() is %s", request.getUrl().toString());
+
+            return super.shouldInterceptRequest(view, request);
+        }
+    }
+
+    private class MyWebChromeClient extends WebChromeClient {
+        @Override
+        public void onProgressChanged(WebView view, int newProgress) {
+            // TODO Auto-generated method stub
+             /*   mPageLoadingProgressBar.setProgress(newProgress);
+                if (mPageLoadingProgressBar != null && newProgress != 100) {
+                    mPageLoadingProgressBar.setVisibility(View.VISIBLE);
+                } else if (mPageLoadingProgressBar != null) {
+                    mPageLoadingProgressBar.setVisibility(View.GONE);
+                }*/
+        }
+
+        @Override
+        public void onReceivedTitle(WebView view, String title) {
+            if (mTitleTv == null) { return; }
+            if (!mWebView.getUrl().equalsIgnoreCase(mHomeUrl)) {
+                if (title != null && title.length() > MAX_LENGTH) {
+                    mTitleTv.setText(title.subSequence(0, MAX_LENGTH) + "...");
+                } else { mTitleTv.setText(title); }
+            } else {
+                mTitleTv.setText("");
+            }
+        }
     }
 
 }

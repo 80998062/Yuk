@@ -37,7 +37,7 @@ public class SplashActivity extends AppCompatActivity{
         Timber.d("Splash Finish");
         Intent starter = new Intent(SplashActivity.this, BrowserActivity.class);
         starter.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        starter.setData(Uri.parse("http://square.github.io/retrofit/"));
+        starter.setData(Uri.parse("http://www.zhihu.com/"));
         startActivity(starter);
         finish();
     }
