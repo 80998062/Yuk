@@ -6,10 +6,11 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.f2prateek.rx.preferences.Preference;
+import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.sinyuk.yuk.api.oauth.AccessToken;
-import com.sinyuk.yuk.api.oauth.ForOauth;
 import com.sinyuk.yuk.api.oauth.OauthService;
 import com.sinyuk.yuk.utils.IntentFactory;
+import com.sinyuk.yuk.utils.PrefsUtils;
 
 import javax.inject.Singleton;
 
@@ -24,18 +25,19 @@ import rx.functions.Action1;
 public class AccountManager {
     private final OauthService mOauthService;
     private final IntentFactory intentFactory;
-    private SharedPreferences prefs;
+    private SharedPreferences mPreferences;
+    private RxSharedPreferences mRxSharedPreferences;
     private boolean isLoggedIn;
-    private Preference<String>  accessToken;
+    private Preference<String> accessToken;
 
     public AccountManager(OauthService oauthService,
                           SharedPreferences preferences,
-                          IntentFactory intentFactory,
-                          @ForOauth Preference<String> accessToken) {
+                          RxSharedPreferences rxSharedPreferences,
+                          IntentFactory intentFactory) {
         this.mOauthService = oauthService;
-        this.prefs = preferences;
+        this.mPreferences = preferences;
         this.intentFactory = intentFactory;
-        this.accessToken = accessToken;
+        this.accessToken = rxSharedPreferences.getString(PrefsUtils.KEY_ACCESS_TOKEN);
 
         isLoggedIn = accessToken.isSet();
         if (isLoggedIn) {

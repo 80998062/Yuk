@@ -4,13 +4,13 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import javax.inject.Scope;
+import javax.inject.Qualifier;
 
 /**
  * Created by Sinyuk on 16/8/23.
  */
+@Qualifier
 @Documented
-@Scope
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ForOauth {
+public @interface Oauth {
 }
