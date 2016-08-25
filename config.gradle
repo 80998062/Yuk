@@ -1,8 +1,8 @@
 ext {
     dribbleClient = [
-            id:"c9a49d76fdded3a1d51a55396268081d12af093401bcc2730453d7a4c0f511b4",
-            secret:"f31fa45f06cfdd3e447f5d7398e3e1693ae81ee3b2d48d4b3ce88f9134351b95",
-            accessToken:"a860827f0ea38c1db7d5512d93366499d55424dae8be1f1e0b4065ec6fbeb948"
+            id         : "c9a49d76fdded3a1d51a55396268081d12af093401bcc2730453d7a4c0f511b4",
+            secret     : "f31fa45f06cfdd3e447f5d7398e3e1693ae81ee3b2d48d4b3ce88f9134351b95",
+            accessToken: "a860827f0ea38c1db7d5512d93366499d55424dae8be1f1e0b4065ec6fbeb948"
     ]
     android = [
             compileSdkVersion: 24,
@@ -59,7 +59,7 @@ ext {
             "leakcanary-no-op"         : "com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2",
 //            widgets
             "smooth-progress-bar"      : "com.github.castorflex.smoothprogressbar:library:1.0.0",
-            "rebound"               : "com.facebook.rebound:rebound:0.3.8",
+            "rebound"                  : "com.facebook.rebound:rebound:0.3.8",
 
     ]
 
