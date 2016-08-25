@@ -1,9 +1,8 @@
 package com.sinyuk.yuk.api.oauth;
 
 import com.f2prateek.rx.preferences.Preference;
-import com.f2prateek.rx.preferences.RxSharedPreferences;
+import com.sinyuk.yuk.BuildConfig;
 import com.sinyuk.yuk.api.DribbleApi;
-import com.sinyuk.yuk.utils.PrefsUtils;
 
 import java.io.IOException;
 
@@ -16,23 +15,22 @@ import timber.log.Timber;
 
 @Singleton
 public final class OauthInterceptor implements Interceptor {
-    private  RxSharedPreferences mPreferences;
+    private Preference<String> mAccessToken;
 
-    public OauthInterceptor(RxSharedPreferences preferences) {
+    public OauthInterceptor(@Token Preference<String> accessToken) {
         Timber.tag("OauthInterceptor");
-        this.mPreferences = preferences;
+        this.mAccessToken = accessToken;
     }
 
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request.Builder builder = chain.request().newBuilder();
-        final Preference<String> accessToken = mPreferences.getString(PrefsUtils.KEY_ACCESS_TOKEN);
-        if (accessToken.isSet()) {
-            Timber.d("Add access token : %s", accessToken.get());
-            builder.header("Authorization", DribbleApi.ACCESS_TYPE + " " + accessToken.get());
+        if (mAccessToken.isSet()) {
+            Timber.d("Add access token : %s", mAccessToken.get());
+            builder.header("Authorization", DribbleApi.ACCESS_TYPE + " " + mAccessToken.get());
         } else {
             Timber.d("Default access token ");
-            builder.header("Authorization", "Bearer a860827f0ea38c1db7d5512d93366499d55424dae8be1f1e0b4065ec6fbeb948");
+            builder.header("Authorization", DribbleApi.ACCESS_TYPE + " " + BuildConfig.DRIBBBLE_CLIENT_ACCESS_TOKEN);
         }
 
         return chain.proceed(builder.build());

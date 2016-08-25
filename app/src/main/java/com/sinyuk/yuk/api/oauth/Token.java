@@ -7,10 +7,10 @@ import java.lang.annotation.RetentionPolicy;
 import javax.inject.Qualifier;
 
 /**
- * Created by Sinyuk on 16/8/23.
+ * Created by Sinyuk on 16/8/25.
  */
 @Qualifier
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Oauth {
+public @interface Token {
 }

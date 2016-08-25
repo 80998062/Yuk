@@ -3,7 +3,7 @@ package com.sinyuk.yuk.utils;
 /**
  * Created by Sinyuk on 16/7/13.
  */
-public class PrefsUtils {
+public final class PrefsKeySet {
 
     // Login
     public static final String KEY_ACCESS_TOKEN = "access_token";

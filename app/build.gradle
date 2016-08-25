@@ -11,6 +11,9 @@ android {
         targetSdkVersion rootProject.ext.android.targetSdkVersion
         versionCode rootProject.ext.android.versionCode
         versionName rootProject.ext.android.versionName
+        buildConfigField "String", "DRIBBBLE_CLIENT_ID", "\"${rootProject.ext.dribbleClient.id}\""
+        buildConfigField "String", "DRIBBBLE_CLIENT_SECRET", "\"${rootProject.ext.dribbleClient.secret}\""
+        buildConfigField "String", "DRIBBBLE_CLIENT_ACCESS_TOKEN", "\"${rootProject.ext.dribbleClient.accessToken}\""
     }
     buildTypes {
         release {
@@ -26,6 +29,15 @@ android {
     compileOptions {
         targetCompatibility 1.8
         sourceCompatibility 1.8
+    }
+
+    signingConfigs {
+        /* release {
+             storeFile file("release-keystore.jks")
+             storePassword "LV2xH9RyWJcXVV"
+             keyAlias "launcher"
+             keyPassword "LnDmFx6JCNo3Kb"
+         }*/
     }
 
 }
@@ -63,6 +75,6 @@ dependencies {
     debugCompile rootProject.ext.dependencies["leakcanary"]
     releaseCompile rootProject.ext.dependencies["leakcanary-no-op"]
     testCompile rootProject.ext.dependencies["leakcanary-no-op"]
-    
+
     compile project(':guillotinemenu')
 }

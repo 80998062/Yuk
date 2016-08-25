@@ -17,7 +17,7 @@ import com.sinyuk.yuk.data.shot.ShotRepository;
 import com.sinyuk.yuk.ui.BaseFragment;
 import com.sinyuk.yuk.utils.BetterViewAnimator;
 import com.sinyuk.yuk.utils.BlackMagics;
-import com.sinyuk.yuk.utils.PrefsUtils;
+import com.sinyuk.yuk.utils.PrefsKeySet;
 import com.sinyuk.yuk.utils.lists.OnScrollStateListener;
 import com.sinyuk.yukloadinglayout.YukLoadingLayout;
 
@@ -155,7 +155,7 @@ public class FeedsFragment extends BaseFragment {
             }
         });
 
-        mSharedPreferences.getBoolean(PrefsUtils.KEY_AUTO_PLAY_GIF, false)
+        mSharedPreferences.getBoolean(PrefsKeySet.KEY_AUTO_PLAY_GIF, false)
                 .asObservable()
                 .subscribe(autoPlayGif -> {
                     mAdapter.setAutoPlayGif(autoPlayGif);

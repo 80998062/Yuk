@@ -7,10 +7,10 @@ import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sinyuk.yuk.BuildConfig;
-import com.sinyuk.yuk.api.oauth.Oauth;
 import com.sinyuk.yuk.api.oauth.OauthInterceptor;
+import com.sinyuk.yuk.api.oauth.Token;
 import com.sinyuk.yuk.utils.NetWorkUtils;
-import com.sinyuk.yuk.utils.PrefsUtils;
+import com.sinyuk.yuk.utils.PrefsKeySet;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -48,19 +48,24 @@ public class ApiModule {
                 .create();
     }
 
+    @Provides
+    @Singleton
+    @Token
+    public Preference<String> provideAccessToken(RxSharedPreferences preferences) {
+        return preferences.getString(PrefsKeySet.KEY_ACCESS_TOKEN);
+    }
 
     @Provides
     @Singleton
-    @Oauth
-    public OauthInterceptor provideOauthInterceptor(RxSharedPreferences preferences){
-        return new OauthInterceptor(preferences);
+    public OauthInterceptor provideOauthInterceptor(@Token Preference<String> accessToken) {
+        return new OauthInterceptor(accessToken);
     }
 
 
     @Provides
     @Singleton
     @Named("Cached")
-    public OkHttpClient provideOkHttpClientWithCache(Application application, @Oauth OauthInterceptor oauthInterceptor) {
+    public OkHttpClient provideOkHttpClientWithCache(Application application, OauthInterceptor oauthInterceptor) {
         File cacheFile = new File(application.getExternalCacheDir(), "okhttp_cache");
 
         Cache cache = new Cache(cacheFile, 1024 * 1024 * 50);

@@ -10,7 +10,7 @@ import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.sinyuk.yuk.api.oauth.AccessToken;
 import com.sinyuk.yuk.api.oauth.OauthService;
 import com.sinyuk.yuk.utils.IntentFactory;
-import com.sinyuk.yuk.utils.PrefsUtils;
+import com.sinyuk.yuk.utils.PrefsKeySet;
 
 import javax.inject.Singleton;
 
@@ -37,7 +37,7 @@ public class AccountManager {
         this.mOauthService = oauthService;
         this.mPreferences = preferences;
         this.intentFactory = intentFactory;
-        this.accessToken = rxSharedPreferences.getString(PrefsUtils.KEY_ACCESS_TOKEN);
+        this.accessToken = rxSharedPreferences.getString(PrefsKeySet.KEY_ACCESS_TOKEN);
 
         isLoggedIn = accessToken.isSet();
         if (isLoggedIn) {
