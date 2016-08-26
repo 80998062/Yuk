@@ -1,15 +1,14 @@
 package com.sinyuk.yuk.api;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
+import com.sinyuk.yuk.BuildConfig;
 import com.sinyuk.yuk.api.oauth.AccessToken;
 import com.sinyuk.yuk.api.oauth.OauthService;
-import com.sinyuk.yuk.utils.IntentFactory;
 import com.sinyuk.yuk.utils.PrefsKeySet;
 
 import javax.inject.Singleton;
@@ -24,19 +23,13 @@ import rx.functions.Action1;
 @Singleton
 public class AccountManager {
     private final OauthService mOauthService;
-    private final IntentFactory intentFactory;
-    private SharedPreferences mPreferences;
     private RxSharedPreferences mRxSharedPreferences;
     private boolean isLoggedIn;
     private Preference<String> accessToken;
 
     public AccountManager(OauthService oauthService,
-                          SharedPreferences preferences,
-                          RxSharedPreferences rxSharedPreferences,
-                          IntentFactory intentFactory) {
+                          RxSharedPreferences rxSharedPreferences) {
         this.mOauthService = oauthService;
-        this.mPreferences = preferences;
-        this.intentFactory = intentFactory;
         this.accessToken = rxSharedPreferences.getString(PrefsKeySet.KEY_ACCESS_TOKEN);
 
         isLoggedIn = accessToken.isSet();
@@ -50,17 +43,15 @@ public class AccountManager {
     }
 
 
-    public Intent createLoginIntent(@NonNull String id, @NonNull String redirect, @NonNull String scope, @NonNull String state) {
+    public HttpUrl createLoginUrl(@NonNull String id, @NonNull String redirect, @NonNull String scope, @NonNull String state) {
 
-        HttpUrl authorizeUrl = HttpUrl.parse(DribbleApi.OAUTH_END_POINT + DribbleApi.NODE_AUTHORIZE) //
+        return HttpUrl.parse(DribbleApi.OAUTH_END_POINT + DribbleApi.NODE_AUTHORIZE) //
                 .newBuilder()
                 .addQueryParameter(DribbleApi.PARAM_CLIENT_ID, id)
                 .addQueryParameter(DribbleApi.PARAM_REDIRECT_URI, redirect)
                 .addQueryParameter(DribbleApi.PARAM_SCOPE, scope)
                 .addQueryParameter(DribbleApi.PARAM_STATE, state)
                 .build();
-
-        return intentFactory.createUrlIntent(authorizeUrl.toString());
     }
 
     public void getRequestCode(Intent intent) {
@@ -73,7 +64,7 @@ public class AccountManager {
     }
 
     private Observable<AccessToken> exchangeAccessToken(String code) {
-        return mOauthService.getAccessToken("", "", code, "")
+        return mOauthService.getAccessToken(BuildConfig.DRIBBBLE_CLIENT_ID, BuildConfig.DRIBBBLE_CLIENT_SECRET, code, DribbleApi.REDIRECT_URI)
                 .doOnNext(new Action1<AccessToken>() {
                     @Override
                     public void call(AccessToken accessToken) {
