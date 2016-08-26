@@ -10,7 +10,7 @@ import rx.Observable;
 /**
  * Created by Sinyuk on 16/8/22.
  */
-public interface OauthService {
+public interface OAuthService {
     @FormUrlEncoded
     @POST("token")
     Observable<AccessToken> getAccessToken(
