@@ -1,13 +1,10 @@
 package com.sinyuk.yuk.api.oauth;
 
-import android.content.SharedPreferences;
-
 import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.google.gson.Gson;
 import com.sinyuk.yuk.BuildConfig;
 import com.sinyuk.yuk.api.AccountManager;
 import com.sinyuk.yuk.api.DribbleApi;
-import com.sinyuk.yuk.utils.IntentFactory;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -59,10 +56,7 @@ public class OauthModule {
 
     @Provides
     @Singleton
-    public AccountManager provideAccountManager(OauthService oauthservice,
-                                                SharedPreferences preferences,
-                                                RxSharedPreferences rxSharedPreferences,
-                                                IntentFactory factory) {
-        return new AccountManager(oauthservice, preferences, rxSharedPreferences, factory);
+    public AccountManager provideAccountManager(OauthService oauthservice, RxSharedPreferences rxSharedPreferences) {
+        return new AccountManager(oauthservice, rxSharedPreferences);
     }
 }
