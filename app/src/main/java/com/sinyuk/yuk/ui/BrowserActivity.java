@@ -54,7 +54,7 @@ public class BrowserActivity extends BaseActivity {
     protected void beforeInflating() {
         App.get(this).getAppComponent().inject(this);
 
-        getWindow().setFormat(PixelFormat.TRANSLUCENT);
+//        getWindow().setFormat(PixelFormat.TRANSLUCENT);
 
         try {
             getWindow().setFlags(
