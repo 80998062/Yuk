@@ -29,7 +29,7 @@ public class SplashActivity extends AppCompatActivity{
         App.get(this).getAppComponent().plus(new SplashModule(this)).inject(this);
         mLazyLoadRunnable = this::startMainActivity;
         if (savedInstanceState == null) {
-            getWindow().getDecorView().post(() -> myHandler.postDelayed(mLazyLoadRunnable, 2000));
+            getWindow().getDecorView().post(() -> myHandler.postDelayed(mLazyLoadRunnable, 0));
         }
     }
 
@@ -37,7 +37,7 @@ public class SplashActivity extends AppCompatActivity{
         Timber.d("Splash Finish");
         Intent starter = new Intent(SplashActivity.this, BrowserActivity.class);
         starter.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        starter.setData(Uri.parse("http://www.zhihu.com/"));
+        starter.setData(Uri.parse("http://weibo.com/163music?refer_flag=0000015010_&from=feed&loc=nickname"));
         startActivity(starter);
         finish();
     }

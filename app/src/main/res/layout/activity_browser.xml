@@ -1,53 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<LinearLayout
     android:id="@+id/root_view"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <android.support.design.widget.AppBarLayout
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tool_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:elevation="0dp">
+        android:layout_height="?actionBarSize"
+        android:background="@android:color/white"
+        android:navigationContentDescription="Exit"
+        app:contentInsetStart="0dp"
+        app:navigationIcon="@drawable/dribbble_ball">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/tool_bar"
+    </android.support.v7.widget.Toolbar>
+
+    <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+        android:id="@+id/progress_bar"
+        style="@style/IrisProgressBar"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"/>
+
+    <com.sinyuk.yuk.utils.BetterViewAnimator
+        android:id="@+id/view_animator"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!--    <include
+                layout="@layout/feed_layout_loading"/>-->
+
+        <com.tencent.smtt.sdk.WebView
+            android:id="@+id/web_view"
             android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            android:background="@android:color/white"
-            app:contentInsetStart="16dp">
+            android:layout_height="match_parent"
+            android:overScrollMode="never"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-            <TextView
-                android:id="@+id/title_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:textColor="@color/official_slate"
-                android:textSize="24sp"
-                android:textStyle="bold"/>
-        </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
+        <include
+            layout="@layout/feed_layout_error"/>
+    </com.sinyuk.yuk.utils.BetterViewAnimator>
 
-    <com.tencent.smtt.sdk.WebView
-        android:id="@+id/web_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-
-    <!--  <com.sinyuk.yuk.utils.BetterViewAnimator
-          android:id="@+id/view_animator"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-          <include
-              layout="@layout/feed_layout_loading"/>
-
-
-          <include
-              layout="@layout/feed_layout_error"/>
-      </com.sinyuk.yuk.utils.BetterViewAnimator>-->
-
-
-</android.support.design.widget.CoordinatorLayout>
+</LinearLayout>

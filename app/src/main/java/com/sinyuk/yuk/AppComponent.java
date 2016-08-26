@@ -5,6 +5,7 @@ import com.sinyuk.yuk.api.oauth.OauthComponent;
 import com.sinyuk.yuk.api.oauth.OauthModule;
 import com.sinyuk.yuk.data.shot.ShotRepositoryComponent;
 import com.sinyuk.yuk.data.shot.ShotRepositoryModule;
+import com.sinyuk.yuk.ui.BrowserActivity;
 import com.sinyuk.yuk.ui.splash.SplashComponent;
 import com.sinyuk.yuk.ui.splash.SplashModule;
 import com.sinyuk.yuk.utils.glide.okhttp3.SinyukGlideModule;
@@ -25,5 +26,6 @@ public interface AppComponent {
 
     OauthComponent plus(OauthModule module);
 
-    void inject(SinyukGlideModule target);
+    void inject(BrowserActivity target);
+
 }

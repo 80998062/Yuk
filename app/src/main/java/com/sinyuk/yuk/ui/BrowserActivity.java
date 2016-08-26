@@ -4,13 +4,14 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 
+import com.sinyuk.yuk.App;
 import com.sinyuk.yuk.R;
+import com.sinyuk.yuk.utils.BetterViewAnimator;
 import com.sinyuk.yuk.utils.NetWorkUtils;
 import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
 import com.tencent.smtt.export.external.interfaces.WebResourceResponse;
@@ -21,7 +22,10 @@ import com.tencent.smtt.sdk.WebSettings.LayoutAlgorithm;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
 
+import java.io.File;
 import java.net.URL;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import timber.log.Timber;
@@ -32,14 +36,16 @@ public class BrowserActivity extends BaseActivity {
     private static final long MAX_CACHE_SIZE = 1024 * 1024 * 50;
 
     @BindView(R.id.root_view)
-    CoordinatorLayout mRootView;
+    LinearLayout mRootView;
+    @BindView(R.id.view_animator)
+    BetterViewAnimator mViewAnimator;
     @BindView(R.id.tool_bar)
     Toolbar mToolbar;
     @BindView(R.id.web_view)
     WebView mWebView;
-    @BindView(R.id.title_tv)
-    TextView mTitleTv;
 
+    @Inject
+    File mCacheFile;
     private URL mIntentUrl;
 
     @Override
@@ -49,7 +55,10 @@ public class BrowserActivity extends BaseActivity {
 
     @Override
     protected void beforeInflating() {
+        App.get(this).getAppComponent().inject(this);
+
         getWindow().setFormat(PixelFormat.TRANSLUCENT);
+
         try {
             getWindow().setFlags(
                     android.view.WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
@@ -70,15 +79,15 @@ public class BrowserActivity extends BaseActivity {
 
     @Override
     protected void finishInflating(Bundle savedInstanceState) {
-        if (savedInstanceState == null) { initWebViewSettings(); }
+        mViewAnimator.setDisplayedChildId(R.id.web_view);
+        initWebViewSettings();
     }
 
     @Override
     protected void onDestroy() {
         if (mWebView != null) {
-            mWebView.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
-            mWebView.clearHistory();
-
+//            mWebView.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
+//            mWebView.clearHistory();
             ((ViewGroup) mWebView.getParent()).removeView(mWebView);
             mWebView.destroy();
             mWebView = null;
@@ -128,11 +137,9 @@ public class BrowserActivity extends BaseActivity {
         webSetting.setAllowFileAccess(true);
         webSetting.setLayoutAlgorithm(LayoutAlgorithm.NARROW_COLUMNS);
         webSetting.setAllowContentAccess(true);
-        webSetting.enableSmoothTransition();
         webSetting.setUseWideViewPort(true);
         webSetting.setSupportMultipleWindows(false);
         webSetting.setLoadWithOverviewMode(true);
-
         // Zoom
         webSetting.setSupportZoom(true);
         webSetting.setBuiltInZoomControls(true);
@@ -140,7 +147,7 @@ public class BrowserActivity extends BaseActivity {
         // 设置缓存
         webSetting.setAppCacheEnabled(true);
         webSetting.setAppCacheMaxSize(MAX_CACHE_SIZE);
-        webSetting.setAppCachePath(this.getDir("webview_cache", 0).getPath());
+        webSetting.setAppCachePath(mCacheFile.getPath());
         if (!NetWorkUtils.isNetworkConnection(this)) {
             webSetting.setCacheMode(WebSettings.LOAD_CACHE_ONLY);
         }
@@ -154,8 +161,8 @@ public class BrowserActivity extends BaseActivity {
         //webSetting.setGeolocationDatabasePath(this.getDir("webview_geolocation", 0).getPath());
 
 
-        // webSetting.setPageCacheCapacity(IX5WebSettings.DEFAULT_CACHE_CAPACITY);
-        //webSetting.setPluginState(WebSettings.PluginState.ON_DEMAND);
+//        webSetting.s(IX5WebSettings.DEFAULT_CACHE_CAPACITY);
+        webSetting.setPluginState(WebSettings.PluginState.ON_DEMAND);
         webSetting.setRenderPriority(WebSettings.RenderPriority.HIGH);
 
         webSetting.setSaveFormData(true);
@@ -217,13 +224,13 @@ public class BrowserActivity extends BaseActivity {
 
         @Override
         public void onReceivedTitle(WebView view, String title) {
-            if (mTitleTv == null) { return; }
+            if (mToolbar == null) { return; }
             if (!mWebView.getUrl().equalsIgnoreCase(mHomeUrl)) {
                 if (title != null && title.length() > MAX_LENGTH) {
-                    mTitleTv.setText(title.subSequence(0, MAX_LENGTH) + "...");
-                } else { mTitleTv.setText(title); }
+                    mToolbar.setTitle(title.subSequence(0, MAX_LENGTH) + "...");
+                } else { mToolbar.setTitle(title); }
             } else {
-                mTitleTv.setText("");
+                mToolbar.setTitle("");
             }
         }
     }
