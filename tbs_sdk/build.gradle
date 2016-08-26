@@ -1,2 +1,0 @@
-configurations.maybeCreate("default")
-artifacts.add("default", file('tbs_sdk_thirdapp_v2.2.0.1056_36542_sharewithdownload_withoutGame_obfs_20160816_145431.jar'))

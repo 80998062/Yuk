@@ -3,24 +3,24 @@ package com.sinyuk.yuk.ui;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 
 import com.sinyuk.yuk.App;
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.utils.BetterViewAnimator;
 import com.sinyuk.yuk.utils.NetWorkUtils;
-import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
-import com.tencent.smtt.export.external.interfaces.WebResourceResponse;
-import com.tencent.smtt.sdk.CookieSyncManager;
-import com.tencent.smtt.sdk.WebChromeClient;
-import com.tencent.smtt.sdk.WebSettings;
-import com.tencent.smtt.sdk.WebSettings.LayoutAlgorithm;
-import com.tencent.smtt.sdk.WebView;
-import com.tencent.smtt.sdk.WebViewClient;
+import com.sinyuk.yuk.widgets.NestedWebView;
 
 import java.io.File;
 import java.net.URL;
@@ -33,16 +33,13 @@ import timber.log.Timber;
 public class BrowserActivity extends BaseActivity {
     private static final String mHomeUrl = "https://dribbble.com/shots";
     private static final int MAX_LENGTH = 14;
-    private static final long MAX_CACHE_SIZE = 1024 * 1024 * 50;
 
-    @BindView(R.id.root_view)
-    LinearLayout mRootView;
     @BindView(R.id.view_animator)
     BetterViewAnimator mViewAnimator;
     @BindView(R.id.tool_bar)
     Toolbar mToolbar;
     @BindView(R.id.web_view)
-    WebView mWebView;
+    NestedWebView mWebView;
 
     @Inject
     File mCacheFile;
@@ -86,8 +83,9 @@ public class BrowserActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         if (mWebView != null) {
-//            mWebView.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
-//            mWebView.clearHistory();
+            mWebView.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
+            mWebView.clearHistory();
+            mWebView.removeAllViews();
             ((ViewGroup) mWebView.getParent()).removeView(mWebView);
             mWebView.destroy();
             mWebView = null;
@@ -135,7 +133,11 @@ public class BrowserActivity extends BaseActivity {
         // 注入一个Cache path 跟Okhttp一起
         WebSettings webSetting = mWebView.getSettings();
         webSetting.setAllowFileAccess(true);
-        webSetting.setLayoutAlgorithm(LayoutAlgorithm.NARROW_COLUMNS);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            webSetting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
+        } else {
+            webSetting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
+        }
         webSetting.setAllowContentAccess(true);
         webSetting.setUseWideViewPort(true);
         webSetting.setSupportMultipleWindows(false);
@@ -146,7 +148,7 @@ public class BrowserActivity extends BaseActivity {
         webSetting.setDisplayZoomControls(false);
         // 设置缓存
         webSetting.setAppCacheEnabled(true);
-        webSetting.setAppCacheMaxSize(MAX_CACHE_SIZE);
+//        webSetting.setAppCacheMaxSize(MAX_CACHE_SIZE);
         webSetting.setAppCachePath(mCacheFile.getPath());
         if (!NetWorkUtils.isNetworkConnection(this)) {
             webSetting.setCacheMode(WebSettings.LOAD_CACHE_ONLY);
@@ -160,22 +162,16 @@ public class BrowserActivity extends BaseActivity {
         webSetting.setGeolocationEnabled(false);
         //webSetting.setGeolocationDatabasePath(this.getDir("webview_geolocation", 0).getPath());
 
-
-//        webSetting.s(IX5WebSettings.DEFAULT_CACHE_CAPACITY);
-        webSetting.setPluginState(WebSettings.PluginState.ON_DEMAND);
-        webSetting.setRenderPriority(WebSettings.RenderPriority.HIGH);
+//        webSetting.setPluginState(WebSettings.PluginState.ON_DEMAND);
+//        webSetting.setRenderPriority(WebSettings.RenderPriority.HIGH);
 
         webSetting.setSaveFormData(true);
-        webSetting.setSavePassword(true);
 
         if (mIntentUrl == null) {
             mWebView.loadUrl(mHomeUrl);
         } else {
             mWebView.loadUrl(mIntentUrl.toString());
         }
-
-        CookieSyncManager.createInstance(this);
-        CookieSyncManager.getInstance().sync();
     }
 
     private class MyWebViewClient extends WebViewClient {
@@ -203,9 +199,9 @@ public class BrowserActivity extends BaseActivity {
 
         @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-
-            Timber.d("request.getUrl().toString() is %s", request.getUrl().toString());
-
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Timber.d("Url : %s", request.getUrl().toString());
+            }
             return super.shouldInterceptRequest(view, request);
         }
     }
