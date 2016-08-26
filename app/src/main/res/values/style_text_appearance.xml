@@ -4,4 +4,12 @@
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">end</item>
     </style>
+
+    <style name="browser_activity_title">
+        <item name="android:textSize">@dimen/material_text_subhead</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:typeface">monospace</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">marquee</item>
+    </style>
 </resources>

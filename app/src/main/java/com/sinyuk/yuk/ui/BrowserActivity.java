@@ -2,11 +2,11 @@ package com.sinyuk.yuk.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -14,7 +14,6 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.LinearLayout;
 
 import com.sinyuk.yuk.App;
 import com.sinyuk.yuk.R;
@@ -77,11 +76,22 @@ public class BrowserActivity extends BaseActivity {
     @Override
     protected void finishInflating(Bundle savedInstanceState) {
         mViewAnimator.setDisplayedChildId(R.id.web_view);
+        setupAppBar();
         initWebViewSettings();
     }
 
     @Override
     protected void onDestroy() {
+        clearWebView();
+        super.onDestroy();
+    }
+
+    private void setupAppBar() {
+        mToolbar.setNavigationOnClickListener(view -> finish());
+
+    }
+
+    private void clearWebView() {
         if (mWebView != null) {
             mWebView.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
             mWebView.clearHistory();
@@ -90,7 +100,6 @@ public class BrowserActivity extends BaseActivity {
             mWebView.destroy();
             mWebView = null;
         }
-        super.onDestroy();
     }
 
     @Override
@@ -121,6 +130,12 @@ public class BrowserActivity extends BaseActivity {
             } else { return super.onKeyDown(keyCode, event); }
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void finish() {
+        clearWebView();
+        super.finish();
     }
 
     @SuppressLint("SetJavaScriptEnabled")

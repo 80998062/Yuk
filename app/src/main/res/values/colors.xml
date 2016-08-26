@@ -26,4 +26,6 @@
     <color name="gif_badge_dark">#68202020</color>
 
     <color name="immersive_bars">#2f000000</color>
+
+    <color name="white">#FFFFFF</color>
 </resources>
