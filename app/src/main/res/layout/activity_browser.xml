@@ -29,7 +29,7 @@
         android:id="@+id/progress_bar"
         style="@style/IrisProgressBar"
         android:layout_width="match_parent"
-        android:layout_height="4dp"
+        android:layout_height="6dp"
         app:layout_anchor="@id/app_bar_layout"
         app:layout_anchorGravity="bottom"/>
 
