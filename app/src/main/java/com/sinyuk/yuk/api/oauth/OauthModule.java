@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.sinyuk.yuk.BuildConfig;
 import com.sinyuk.yuk.api.AccountManager;
 import com.sinyuk.yuk.api.DribbleApi;
+import com.sinyuk.yuk.api.DribbleService;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -56,7 +57,7 @@ public class OauthModule {
 
     @Provides
     @Singleton
-    public AccountManager provideAccountManager(OauthService oauthservice, RxSharedPreferences rxSharedPreferences) {
-        return new AccountManager(oauthservice, rxSharedPreferences);
+    public AccountManager provideAccountManager(DribbleService dribbleService, OauthService oauthservice, RxSharedPreferences rxSharedPreferences) {
+        return new AccountManager(dribbleService, oauthservice, rxSharedPreferences);
     }
 }

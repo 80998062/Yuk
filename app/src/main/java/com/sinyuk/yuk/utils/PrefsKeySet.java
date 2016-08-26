@@ -14,4 +14,9 @@ public final class PrefsKeySet {
     public static final String KEY_AUTO_CACHING = "auto_caching";
 
 
+    public static final String KEY_USER_ID = "user_id";
+    public static final String KEY_USER_NAME = "user_name";
+    public static final String KEY_USER_USERNAME = "user_username";
+    public static final String KEY_USER_AVATAR = "user_avatar";
+    public static final String KEY_USER_TYPE = "user_type";
 }

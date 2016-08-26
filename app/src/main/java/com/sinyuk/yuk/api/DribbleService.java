@@ -1,6 +1,7 @@
 package com.sinyuk.yuk.api;
 
 import com.sinyuk.yuk.data.shot.Shot;
+import com.sinyuk.yuk.data.user.User;
 
 import java.util.List;
 
@@ -17,5 +18,9 @@ public interface DribbleService {
 //    @Headers("Cache-Control: public,max-age=10,only-if-cached")
     @GET("shots")
     Observable<List<Shot>> shots(@Query("list") String listType, @Query("page") int pageIndex);
+
+    @GET("user")
+    Observable<User> getAuthenticatedUser();
+
 
 }

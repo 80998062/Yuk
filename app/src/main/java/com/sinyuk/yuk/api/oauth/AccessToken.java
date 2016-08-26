@@ -38,4 +38,13 @@ public final class AccessToken {
     public String getScope() { return scope;}
 
     public void setScope(String scope) { this.scope = scope;}
+
+    @Override
+    public String toString() {
+        return "AccessToken{" +
+                "accessToken='" + accessToken + '\'' +
+                ", tokenType='" + tokenType + '\'' +
+                ", scope='" + scope + '\'' +
+                '}';
+    }
 }

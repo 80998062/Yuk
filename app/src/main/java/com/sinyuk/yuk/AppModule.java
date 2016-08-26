@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.f2prateek.rx.preferences.RxSharedPreferences;
-import com.sinyuk.yuk.utils.IntentFactory;
 
 import java.io.File;
 
@@ -50,12 +49,6 @@ public final class AppModule {
     @Singleton
     public RxSharedPreferences providePreferences(SharedPreferences preferences) {
         return RxSharedPreferences.create(preferences);
-    }
-
-    @Provides
-    @Singleton
-    public IntentFactory provideIntentFactory() {
-        return IntentFactory.REAL;
     }
 
     @Provides

@@ -52,7 +52,7 @@ public class User implements Parcelable {
      * updated_at : 2014-02-22T17:10:33Z
      */
     @SerializedName("id")
-    private int mId;
+    private long mId;
     @SerializedName("name")
     private String mName;
     @SerializedName("username")
@@ -118,7 +118,7 @@ public class User implements Parcelable {
     public User() {}
 
     protected User(Parcel in) {
-        this.mId = in.readInt();
+        this.mId = in.readLong();
         this.mName = in.readString();
         this.mUsername = in.readString();
         this.mHtmlUrl = in.readString();
@@ -149,9 +149,9 @@ public class User implements Parcelable {
         this.mUpdatedAt = in.readString();
     }
 
-    public int getId() { return mId;}
+    public long getId() { return mId;}
 
-    public void setId(int id) { mId = id;}
+    public void setId(long id) { mId = id;}
 
     public String getName() { return mName;}
 
@@ -270,7 +270,7 @@ public class User implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.mId);
+        dest.writeLong(this.mId);
         dest.writeString(this.mName);
         dest.writeString(this.mUsername);
         dest.writeString(this.mHtmlUrl);
