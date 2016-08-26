@@ -56,14 +56,13 @@ public class AccountManager {
     }
 
 
-    public HttpUrl createLoginUrl(@NonNull String id, @NonNull String redirect, @NonNull String scope, @NonNull String state) {
+    public HttpUrl createLoginUrl(@NonNull String id, @NonNull String redirect, @NonNull String scope) {
 
         return HttpUrl.parse(DribbleApi.OAUTH_END_POINT + DribbleApi.NODE_AUTHORIZE) //
                 .newBuilder()
                 .addQueryParameter(DribbleApi.PARAM_CLIENT_ID, id)
                 .addQueryParameter(DribbleApi.PARAM_REDIRECT_URI, redirect)
                 .addQueryParameter(DribbleApi.PARAM_SCOPE, scope)
-                .addQueryParameter(DribbleApi.PARAM_STATE, state)
                 .build();
     }
 
@@ -125,6 +124,7 @@ public class AccountManager {
     }
 
     private void saveInPreference(User user) {
+        Timber.d("saveInPreference -> %s", user.toString());
         userName.set(user.getName());
         userUsername.set(user.getUsername());
         userAvatar.set(user.getAvatarUrl());

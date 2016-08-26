@@ -300,4 +300,39 @@ public class User implements Parcelable {
         dest.writeString(this.mCreatedAt);
         dest.writeString(this.mUpdatedAt);
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "mId=" + mId +
+                ", mName='" + mName + '\'' +
+                ", mUsername='" + mUsername + '\'' +
+                ", mHtmlUrl='" + mHtmlUrl + '\'' +
+                ", mAvatarUrl='" + mAvatarUrl + '\'' +
+                ", mBio='" + mBio + '\'' +
+                ", mLocation='" + mLocation + '\'' +
+                ", mLinks=" + mLinks +
+                ", mBucketsCount=" + mBucketsCount +
+                ", mCommentsReceivedCount=" + mCommentsReceivedCount +
+                ", mFollowersCount=" + mFollowersCount +
+                ", mFollowingsCount=" + mFollowingsCount +
+                ", mLikesCount=" + mLikesCount +
+                ", mLikesReceivedCount=" + mLikesReceivedCount +
+                ", mProjectsCount=" + mProjectsCount +
+                ", mReboundsReceivedCount=" + mReboundsReceivedCount +
+                ", mShotsCount=" + mShotsCount +
+                ", mTeamsCount=" + mTeamsCount +
+                ", mCanUploadShot=" + mCanUploadShot +
+                ", mType='" + mType + '\'' +
+                ", mPro=" + mPro +
+                ", mBucketsUrl='" + mBucketsUrl + '\'' +
+                ", mFollowersUrl='" + mFollowersUrl + '\'' +
+                ", mFollowingUrl='" + mFollowingUrl + '\'' +
+                ", mLikesUrl='" + mLikesUrl + '\'' +
+                ", mShotsUrl='" + mShotsUrl + '\'' +
+                ", mTeamsUrl='" + mTeamsUrl + '\'' +
+                ", mCreatedAt='" + mCreatedAt + '\'' +
+                ", mUpdatedAt='" + mUpdatedAt + '\'' +
+                '}';
+    }
 }

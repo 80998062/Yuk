@@ -5,6 +5,7 @@ package com.sinyuk.yuk.api;
  */
 public class DribbleApi {
     public static final String REDIRECT_URI  = "http://yuk.com/redirect";
+    public static final String SCOPES  = "public+write+comment+upload";
     public static final String END_POINT = "https://api.dribbble.com/v1/";
     public static final String OAUTH_END_POINT ="https://dribbble.com/oauth/";
     public static final String NODE_AUTHORIZE ="authorize";
