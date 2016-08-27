@@ -1,21 +1,26 @@
 package com.sinyuk.yuk.api;
 
+import com.sinyuk.yuk.BuildConfig;
+
 /**
  * Created by Sinyuk on 16.6.16.
  */
 public class DribbleApi {
-    public static final String REDIRECT_URI  = "http://yuk.com/redirect";
-    public static final String SCOPES  = "public+write+comment+upload";
+    public static final String REDIRECT_CALLBACK = "oauth-callback";
     public static final String END_POINT = "https://api.dribbble.com/v1/";
-    public static final String OAUTH_END_POINT ="https://dribbble.com/oauth/";
-    public static final String NODE_AUTHORIZE ="authorize";
-    public static final String PARAM_CLIENT_ID ="client_id";
-    public static final String PARAM_REDIRECT_URI ="redirect_uri";
-    public static final String PARAM_SCOPE ="scope";
-    public static final String PARAM_STATE ="state";
+    public static final String OAUTH_END_POINT = "https://dribbble.com/oauth/";
+    public static final String PARAM_CLIENT_ID = "client_id";
+    public static final String PARAM_REDIRECT_URI = "redirect_uri";
+    public static final String PARAM_SCOPE = "scope";
+    public static final String PARAM_STATE = "state";
     public static final String PER_PAGE = "per_page";
 
     public static final int PAGE_SIZE = 10;
+
+    public static final String LOGIN_URL = OAUTH_END_POINT + "authorize?client_id="
+            + BuildConfig.DRIBBBLE_CLIENT_ID
+            + "&redirect_uri=yuk%3A%2F%2F" + DribbleApi.REDIRECT_CALLBACK
+            + "&scope=public+write+comment+upload";
 
     // Shots
 
@@ -53,6 +58,6 @@ public class DribbleApi {
     public static final String RECENT = "recent";
     public static final String VIEWS = "views";
 
-    public static final String DATE_FORMAT  = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
     public static final String ACCESS_TYPE = "Bearer";
 }

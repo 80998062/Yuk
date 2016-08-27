@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.widget.Button;
 
 import com.sinyuk.yuk.App;
-import com.sinyuk.yuk.BuildConfig;
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.api.AccountManager;
 import com.sinyuk.yuk.api.DribbleApi;
@@ -18,7 +17,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import okhttp3.HttpUrl;
 import timber.log.Timber;
 
 /**
@@ -53,7 +51,7 @@ public class DribbbleLoginActivity extends BaseActivity {
         super.onResume();
         // the intent filter defined in AndroidManifest will handle the return from ACTION_VIEW intent
         Uri uri = getIntent().getData();
-        if (uri != null && uri.toString().startsWith(DribbleApi.REDIRECT_URI)) {
+        if (uri != null && uri.toString().startsWith(DribbleApi.REDIRECT_CALLBACK)) {
             // use the parameter your API exposes for the code (mostly it's "code")
             String code = uri.getQueryParameter("code");
             if (code != null) {
@@ -70,11 +68,9 @@ public class DribbbleLoginActivity extends BaseActivity {
 
     @OnClick(R.id.button)
     public void onClick() {
-        final HttpUrl httpUrl = mAccountManager.createLoginUrl(BuildConfig.DRIBBBLE_CLIENT_ID,
-                DribbleApi.REDIRECT_URI,
-                DribbleApi.SCOPES);
         Intent intent = new Intent(DribbbleLoginActivity.this, BrowserActivity.class);
-        intent.setData(Uri.parse(httpUrl.toString()));
+        intent.setData(Uri.parse(DribbleApi.LOGIN_URL));
+        Timber.d("ask for request code -> %s", Uri.parse(DribbleApi.LOGIN_URL).getPath());
         startActivity(intent);
     }
 }

@@ -43,6 +43,7 @@ public class AccountManager {
         this.mDribbleService = dribbleService;
         this.mOauthService = oauthService;
         this.mRxSharedPreferences = rxSharedPreferences;
+        mAccessToken = mRxSharedPreferences.getString(PrefsKeySet.KEY_ACCESS_TOKEN);
 
         if (mAccessToken.isSet()) {
             userId = mRxSharedPreferences.getLong(PrefsKeySet.KEY_USER_ID, 0L);
@@ -50,27 +51,14 @@ public class AccountManager {
             userUsername = mRxSharedPreferences.getString(PrefsKeySet.KEY_USER_USERNAME, null);
             userAvatar = mRxSharedPreferences.getString(PrefsKeySet.KEY_USER_AVATAR, null);
             userType = mRxSharedPreferences.getString(PrefsKeySet.KEY_USER_TYPE, null);
-
-            mAccessToken = mRxSharedPreferences.getString(PrefsKeySet.KEY_ACCESS_TOKEN);
         }
-    }
-
-
-    public HttpUrl createLoginUrl(@NonNull String id, @NonNull String redirect, @NonNull String scope) {
-
-        return HttpUrl.parse(DribbleApi.OAUTH_END_POINT + DribbleApi.NODE_AUTHORIZE) //
-                .newBuilder()
-                .addQueryParameter(DribbleApi.PARAM_CLIENT_ID, id)
-                .addQueryParameter(DribbleApi.PARAM_REDIRECT_URI, redirect)
-                .addQueryParameter(DribbleApi.PARAM_SCOPE, scope)
-                .build();
     }
 
     public String getRequestCode(Intent intent) {
         if (intent != null
                 && intent.getData() != null
                 && !TextUtils.isEmpty(intent.getData().getAuthority())
-                && DribbleApi.REDIRECT_URI.equals(intent.getData().getAuthority())) {
+                && DribbleApi.REDIRECT_CALLBACK.equals(intent.getData().getAuthority())) {
             String code = intent.getData().getQueryParameter("code");
             exchangeAccessToken(code);
             return code;
@@ -79,7 +67,7 @@ public class AccountManager {
     }
 
     private void exchangeAccessToken(String code) {
-        mOauthService.getAccessToken(BuildConfig.DRIBBBLE_CLIENT_ID, BuildConfig.DRIBBBLE_CLIENT_SECRET, code, DribbleApi.REDIRECT_URI)
+        mOauthService.getAccessToken(BuildConfig.DRIBBBLE_CLIENT_ID, BuildConfig.DRIBBBLE_CLIENT_SECRET, code, DribbleApi.REDIRECT_CALLBACK)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
                 .subscribe(new Observer<AccessToken>() {
