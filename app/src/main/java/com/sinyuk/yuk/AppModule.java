@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.f2prateek.rx.preferences.RxSharedPreferences;
+import com.sinyuk.yuk.utils.ToastUtils;
 
 import java.io.File;
 
@@ -55,5 +56,11 @@ public final class AppModule {
     @Singleton
     public File provideCachePath() {
         return new File(application.getExternalCacheDir(), "network_cache");
+    }
+
+    @Provides
+    @Singleton
+    public ToastUtils provideToastUtils() {
+        return new ToastUtils(application);
     }
 }
