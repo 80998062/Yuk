@@ -1,6 +1,7 @@
 package com.sinyuk.yuk.api.oauth;
 
 import com.sinyuk.yuk.ui.login.DribbbleLoginActivity;
+import com.sinyuk.yuk.ui.oauth.DribbleOauthActivity;
 
 import javax.inject.Singleton;
 
@@ -16,5 +17,5 @@ import dagger.Subcomponent;
         }
 )
 public interface OauthComponent {
-        void inject(DribbbleLoginActivity target);
+        void inject(DribbleOauthActivity target);
 }

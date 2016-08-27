@@ -42,7 +42,8 @@ public class AccountManager {
         this.mRxSharedPreferences = rxSharedPreferences;
         mAccessToken = mRxSharedPreferences.getString(PrefsKeySet.KEY_ACCESS_TOKEN);
 
-        if (mAccessToken.isSet()) {
+        // 初始化
+        if (!mAccessToken.isSet()) {
             userId = mRxSharedPreferences.getLong(PrefsKeySet.KEY_USER_ID, 0L);
             userName = mRxSharedPreferences.getString(PrefsKeySet.KEY_USER_NAME, null);
             userUsername = mRxSharedPreferences.getString(PrefsKeySet.KEY_USER_USERNAME, null);
@@ -52,7 +53,10 @@ public class AccountManager {
     }
 
     public void onReceiveRequestCode(String code) {
-        mOauthService.getAccessToken(BuildConfig.DRIBBBLE_CLIENT_ID, BuildConfig.DRIBBBLE_CLIENT_SECRET, code, DribbleApi.REDIRECT_CALLBACK)
+        mOauthService.getAccessToken(BuildConfig.DRIBBBLE_CLIENT_ID,
+                BuildConfig.DRIBBBLE_CLIENT_SECRET,
+                code,
+                DribbleApi.REDIRECT_URI)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
                 .subscribe(new Observer<AccessToken>() {
@@ -76,6 +80,7 @@ public class AccountManager {
 
 
     private void refreshUserProfile() {
+        Timber.d("refreshUserProfile");
         mDribbleService.getAuthenticatedUser()
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
@@ -98,7 +103,8 @@ public class AccountManager {
     }
 
     private void saveInPreference(User user) {
-        Timber.d("saveInPreference -> %s", user.toString());
+        Timber.d("saveInPreference");
+        Timber.d(user.toString());
         userName.set(user.getName());
         userUsername.set(user.getUsername());
         userAvatar.set(user.getAvatarUrl());

@@ -6,7 +6,9 @@ import com.sinyuk.yuk.BuildConfig;
  * Created by Sinyuk on 16.6.16.
  */
 public class DribbleApi {
-    public static final String REDIRECT_CALLBACK = "oauth-callback";
+    public static final String REDIRECT_SCHEMA = "yuk";
+    public static final String REDIRECT_AUTHORITY = "oauth-callback";
+    public static final String REDIRECT_URI = DribbleApi.REDIRECT_SCHEMA + "://" + DribbleApi.REDIRECT_AUTHORITY;
     public static final String END_POINT = "https://api.dribbble.com/v1/";
     public static final String OAUTH_END_POINT = "https://dribbble.com/oauth/";
     public static final String PARAM_CLIENT_ID = "client_id";
@@ -17,9 +19,9 @@ public class DribbleApi {
 
     public static final int PAGE_SIZE = 10;
 
-    public static final String LOGIN_URL = OAUTH_END_POINT + "authorize?client_id="
-            + BuildConfig.DRIBBBLE_CLIENT_ID
-            + "&redirect_uri=yuk%3A%2F%2F" + DribbleApi.REDIRECT_CALLBACK
+    public static final String LOGIN_URL = OAUTH_END_POINT
+            + "authorize?client_id=" + BuildConfig.DRIBBBLE_CLIENT_ID
+            + "&redirect_uri=" + REDIRECT_URI
             + "&scope=public+write+comment+upload";
 
     // Shots

@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Yuk</string>
+    <string name="dribbble_oauth_activity_toolbar_title">授权登录</string>
     <array name="iris_color_light">
         <item>@color/official_link_blue</item>
         <item>@color/official_jobs_hiring</item>
