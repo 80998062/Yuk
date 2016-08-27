@@ -1,7 +1,5 @@
 package com.sinyuk.yuk.api;
 
-import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.f2prateek.rx.preferences.Preference;
@@ -14,7 +12,6 @@ import com.sinyuk.yuk.utils.PrefsKeySet;
 
 import javax.inject.Singleton;
 
-import okhttp3.HttpUrl;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -54,19 +51,7 @@ public class AccountManager {
         }
     }
 
-    public String getRequestCode(Intent intent) {
-        if (intent != null
-                && intent.getData() != null
-                && !TextUtils.isEmpty(intent.getData().getAuthority())
-                && DribbleApi.REDIRECT_CALLBACK.equals(intent.getData().getAuthority())) {
-            String code = intent.getData().getQueryParameter("code");
-            exchangeAccessToken(code);
-            return code;
-        }
-        return null;
-    }
-
-    private void exchangeAccessToken(String code) {
+    public void onReceiveRequestCode(String code) {
         mOauthService.getAccessToken(BuildConfig.DRIBBBLE_CLIENT_ID, BuildConfig.DRIBBBLE_CLIENT_SECRET, code, DribbleApi.REDIRECT_CALLBACK)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
@@ -88,6 +73,7 @@ public class AccountManager {
                     }
                 });
     }
+
 
     private void refreshUserProfile() {
         mDribbleService.getAuthenticatedUser()

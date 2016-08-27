@@ -3,6 +3,7 @@ package com.sinyuk.yuk.ui.login;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.widget.Button;
 
 import com.sinyuk.yuk.App;
@@ -39,6 +40,7 @@ public class DribbbleLoginActivity extends BaseActivity {
     protected void beforeInflating() {
         Timber.tag("DribbbleLoginActivity");
         App.get(this).getAppComponent().plus(new OauthModule()).inject(this);
+        checkAuthCallback(getIntent());
     }
 
     @Override
@@ -49,22 +51,36 @@ public class DribbbleLoginActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        checkAuthCallback(intent);
+    }
+
+    private void checkAuthCallback(Intent intent) {
+//        yuk://oauth-callback?code=
+        if (intent.getData() == null || !intent.getData().getScheme().equals("yuk"))
+            return;
         // the intent filter defined in AndroidManifest will handle the return from ACTION_VIEW intent
         Uri uri = getIntent().getData();
         if (uri != null && uri.toString().startsWith(DribbleApi.REDIRECT_CALLBACK)) {
             // use the parameter your API exposes for the code (mostly it's "code")
             String code = uri.getQueryParameter("code");
-            if (code != null) {
+            if (!TextUtils.isEmpty(code)) {
                 // get access token
                 // we'll do that in a minute
+                mAccountManager.onReceiveRequestCode(code);
                 Timber.d("code -> %s", code);
             } else if (uri.getQueryParameter("error") != null) {
                 // show an error message here
                 Timber.e("error -> %s", uri.getQueryParameter("error"));
             }
         }
-    }
 
+    }
 
     @OnClick(R.id.button)
     public void onClick() {

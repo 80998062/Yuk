@@ -27,6 +27,7 @@ import com.sinyuk.yuk.App;
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.utils.BetterViewAnimator;
 import com.sinyuk.yuk.utils.NetWorkUtils;
+import com.sinyuk.yuk.utils.ToastUtils;
 import com.sinyuk.yuk.widgets.NestedWebView;
 
 import java.io.File;
@@ -43,6 +44,8 @@ public class BrowserActivity extends BaseActivity {
     private static final int MAX_LENGTH = 24;
     @Inject
     File mCacheFile;
+    @Inject
+    ToastUtils toastUtils;
 
     @BindView(R.id.view_animator)
     BetterViewAnimator mViewAnimator;
@@ -147,7 +150,7 @@ public class BrowserActivity extends BaseActivity {
         webSetting.setSaveFormData(true);
 
         if (mIntentUrl == null) {
-            mWebView.loadUrl(mHomeUrl);
+            mViewAnimator.setDisplayedChildId(R.id.layout_error);
         } else {
             mWebView.loadUrl(mIntentUrl.toString());
         }
@@ -216,7 +219,7 @@ public class BrowserActivity extends BaseActivity {
 
     public void onReceivedErrors(int code) {
         if (code != -1) {
-
+            toastUtils.toastLong("Error code : " + code);
         }
         mViewAnimator.setDisplayedChildId(R.id.layout_error);
     }
@@ -226,6 +229,15 @@ public class BrowserActivity extends BaseActivity {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);
             return true;
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                view.loadUrl(request.getUrl().toString());
+                return true;
+            }
+            return super.shouldOverrideUrlLoading(view, request);
         }
 
         @Override
