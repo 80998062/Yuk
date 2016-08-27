@@ -30,10 +30,12 @@ import com.sinyuk.yuk.App;
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.api.AccountManager;
 import com.sinyuk.yuk.api.DribbleApi;
+import com.sinyuk.yuk.api.oauth.AccessToken;
 import com.sinyuk.yuk.api.oauth.OauthModule;
 import com.sinyuk.yuk.ui.BaseActivity;
-import com.sinyuk.yuk.ui.feeds.FeedsAdapter;
 import com.sinyuk.yuk.utils.BetterViewAnimator;
+import com.sinyuk.yuk.utils.reactiveX.Funcs;
+import com.sinyuk.yuk.utils.reactiveX.Results;
 import com.sinyuk.yuk.widgets.NestedWebView;
 
 import java.net.URL;
@@ -42,6 +44,12 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+import retrofit2.Response;
+import retrofit2.adapter.rxjava.Result;
+import rx.Observable;
+import rx.Observer;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import timber.log.Timber;
 
 /**
@@ -229,9 +237,12 @@ public class DribbleOauthActivity extends BaseActivity {
         if (!TextUtils.isEmpty(code)) {
             // get access token
             // we'll do that in a minute
-            accountManager.onReceiveRequestCode(code);
+            Observable<Result<AccessToken>> result= accountManager.getAccessToken(code);
+
+            addSubscription(result.filter(Results.isSuccessful()).subscribe(handleAuthResult));
+            addSubscription(result.filter(Funcs.not(Results.isSuccessful())).subscribe(handleAuthError));
+
             // 切换到那个
-            mViewAnimator.setDisplayedChildId(R.id.dribble_oauth_succeed_layout);
             clearWebView();
             Timber.d("code -> %s", code);
         } else if (data.getQueryParameter("error") != null) {
@@ -239,6 +250,35 @@ public class DribbleOauthActivity extends BaseActivity {
             Timber.e("error -> %s", data.getQueryParameter("error"));
         }
     }
+
+    private final Observer<Result<AccessToken>> handleAuthResult = new Observer<Result<AccessToken>>() {
+        @Override
+        public void onCompleted() {
+            accountManager.refreshUserProfile();
+            mViewAnimator.setDisplayedChildId(R.id.dribble_oauth_succeed_layout);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Result<AccessToken> result) {
+            accountManager.saveAccessToken(result.response().body());
+        }
+    };
+
+    private final Action1<Result<AccessToken>> handleAuthError = result -> {
+        if (result.isError()) {
+            Timber.e(result.error(), "Failed to get trending repositories");
+        } else {
+            Response<AccessToken> response = result.response();
+            Timber.e("Error %s", response.errorBody());
+            Timber.e("Server returned %d", response.code());
+        }
+        mViewAnimator.setDisplayedChildId(R.id.layout_error);
+    };
 
 
     public void onReceivedErrors(int code) {
@@ -265,7 +305,6 @@ public class DribbleOauthActivity extends BaseActivity {
         @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-            Timber.d("Url -> %s", request.getUrl().toString());
             if (isAuthCallback(request.getUrl())) {
                 handleAuthCallback(request.getUrl());
                 return false;

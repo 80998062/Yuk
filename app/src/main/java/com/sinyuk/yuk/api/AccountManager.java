@@ -12,9 +12,11 @@ import com.sinyuk.yuk.utils.PrefsKeySet;
 
 import javax.inject.Singleton;
 
+import retrofit2.adapter.rxjava.Result;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -42,44 +44,26 @@ public class AccountManager {
         this.mRxSharedPreferences = rxSharedPreferences;
         mAccessToken = mRxSharedPreferences.getString(PrefsKeySet.KEY_ACCESS_TOKEN);
 
-        // 初始化
-        if (!mAccessToken.isSet()) {
-            userId = mRxSharedPreferences.getLong(PrefsKeySet.KEY_USER_ID, 0L);
-            userName = mRxSharedPreferences.getString(PrefsKeySet.KEY_USER_NAME, null);
-            userUsername = mRxSharedPreferences.getString(PrefsKeySet.KEY_USER_USERNAME, null);
-            userAvatar = mRxSharedPreferences.getString(PrefsKeySet.KEY_USER_AVATAR, null);
-            userType = mRxSharedPreferences.getString(PrefsKeySet.KEY_USER_TYPE, null);
-        }
+
+        userId = mRxSharedPreferences.getLong(PrefsKeySet.KEY_USER_ID, 0L);
+        userName = mRxSharedPreferences.getString(PrefsKeySet.KEY_USER_NAME, null);
+        userUsername = mRxSharedPreferences.getString(PrefsKeySet.KEY_USER_USERNAME, null);
+        userAvatar = mRxSharedPreferences.getString(PrefsKeySet.KEY_USER_AVATAR, null);
+        userType = mRxSharedPreferences.getString(PrefsKeySet.KEY_USER_TYPE, null);
     }
 
-    public void onReceiveRequestCode(String code) {
-        mOauthService.getAccessToken(BuildConfig.DRIBBBLE_CLIENT_ID,
-                BuildConfig.DRIBBBLE_CLIENT_SECRET,
-                code,
-                DribbleApi.REDIRECT_URI)
+    public Observable<Result<AccessToken>> getAccessToken(String code) {
+        return mOauthService.getAccessToken(BuildConfig.DRIBBBLE_CLIENT_ID, BuildConfig.DRIBBBLE_CLIENT_SECRET, code, DribbleApi.REDIRECT_URI)
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.computation())
-                .subscribe(new Observer<AccessToken>() {
+                .doOnNext(new Action1<Result<AccessToken>>() {
                     @Override
-                    public void onCompleted() {
-                        // TODO: post a event
-                        refreshUserProfile();
+                    public void call(Result<AccessToken> result) {
                     }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onNext(AccessToken accessToken) {
-                        saveAccessToken(accessToken);
-                    }
-                });
+                })
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
-
-    private void refreshUserProfile() {
+    public void refreshUserProfile() {
         Timber.d("refreshUserProfile");
         mDribbleService.getAuthenticatedUser()
                 .subscribeOn(Schedulers.io())
@@ -128,7 +112,7 @@ public class AccountManager {
         return mAccessToken.isSet();
     }
 
-    private void saveAccessToken(AccessToken accessToken) {
+    public void saveAccessToken(AccessToken accessToken) {
         Timber.d("Get AccessToken : %s", accessToken.toString());
         if (!TextUtils.isEmpty(accessToken.getAccessToken())) {
             mAccessToken.set(accessToken.getAccessToken());

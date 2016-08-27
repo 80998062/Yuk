@@ -1,10 +1,9 @@
 package com.sinyuk.yuk.api.oauth;
 
-import com.sinyuk.yuk.api.oauth.AccessToken;
-
-import retrofit2.Response;
+import retrofit2.adapter.rxjava.Result;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import rx.Observable;
 
@@ -13,8 +12,9 @@ import rx.Observable;
  */
 public interface OauthService {
     @FormUrlEncoded
+    @Headers("Cache-Control: no-cache")
     @POST("token")
-    Observable<Response> getAccessToken(
+    Observable<Result<AccessToken>> getAccessToken(
             @Field("client_id") String id,
             @Field("client_secret") String secret,
             @Field("code") String code,
