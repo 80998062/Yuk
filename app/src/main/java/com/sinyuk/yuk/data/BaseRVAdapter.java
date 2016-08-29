@@ -4,7 +4,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,7 +20,7 @@ public abstract class BaseRVAdapter<T, VH extends RecyclerView.ViewHolder> exten
     private RecyclerView.ViewHolder headerViewHolder;
     private RecyclerView.ViewHolder footerViewHolder;
 
-    private List<T> mDataSet = Collections.emptyList();
+    protected List<T> mDataSet = Collections.emptyList();
 
  /*    public void setHeaderView(View header) {
         if (headerViewHolder == null || header != headerViewHolder.itemView) {
@@ -134,6 +133,7 @@ public abstract class BaseRVAdapter<T, VH extends RecyclerView.ViewHolder> exten
         }
     }
 
+    protected abstract void onBindMyItemViewHolder(VH holder, int position);
 
     @Override
     public int getItemViewType(int position) {
@@ -164,33 +164,19 @@ public abstract class BaseRVAdapter<T, VH extends RecyclerView.ViewHolder> exten
         return mDataSet;
     }
 
-    public void setDataSet(List<T> data) {
-        mDataSet = data;
+/*    public void setDataSet(List<T> data) {
+        mDataSet = new ArrayList<>(data);
         notifyDataSetChanged();
     }
 
-    public void appendData(List<T> dataSet) {
-        mDataSet.addAll(dataSet);
-        notifyDataSetChanged();
-    }
+    public void setData(List<T> data) {
+        final DiffUtil.Callback diffCallback = new DiffUtil.Callback (mDataSet, data);
+        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
 
-    public void addData(int position, T item) {
-        if (mDataSet != null && position < mDataSet.size()) {
-            mDataSet.add(position, item);
-            notifyItemInserted(position);
-        }
-    }
-
-    public void removeData(int position) {
-        if (mDataSet != null && position < mDataSet.size()) {
-            mDataSet.remove(position);
-            notifyItemRemoved(position);
-        }
-    }
+        diffResult.dispatchUpdatesTo(this);
+    }*/
 
     public abstract VH onCreateMyItemViewHolder(ViewGroup parent, int viewType);
-
-    public abstract void onBindMyItemViewHolder(VH holder, int position);
 
     /**
      * ViewHolder for header and footer

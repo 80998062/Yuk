@@ -70,7 +70,7 @@ public class FeedsFragment extends BaseFragment {
 
         @Override
         public void onNext(List<Shot> shots) {
-            mAdapter.setDataSet(shots);
+            mAdapter.addOrUpdate(shots);
             Timber.d("Data in adapter %s", shots.toString());
         }
     };

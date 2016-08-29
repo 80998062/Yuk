@@ -36,7 +36,7 @@ public class ShotRepository {
         return cachingObservable
                 .map(insertShots(page, type))
                 .subscribeOn(Schedulers.io())
-                .doOnError(throwable -> handleError(type))
+                .doOnError(throwable -> mShotCache.remove(type))
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -46,7 +46,6 @@ public class ShotRepository {
             if (list == null) {
                 list = new LinkedList<>();
             }
-            Timber.d("Shots in cache :" + list.toString());
             if (page == 1) {
                 if (Collections.disjoint(list, result)) {
                     list.clear();
@@ -61,9 +60,5 @@ public class ShotRepository {
             mShotCache.put(type, list);
             return list;
         };
-    }
-
-    private void handleError(String type) {
-        mShotCache.remove(type);
     }
 }

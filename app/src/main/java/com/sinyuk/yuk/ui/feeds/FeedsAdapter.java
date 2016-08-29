@@ -1,6 +1,7 @@
 package com.sinyuk.yuk.ui.feeds;
 
 import android.content.Context;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -11,7 +12,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.data.BaseRVAdapter;
 import com.sinyuk.yuk.data.shot.Shot;
+import com.sinyuk.yuk.data.shot.ShotDiffCallback;
 import com.sinyuk.yuk.utils.glide.CropCircleTransformation;
+
+import java.util.List;
 
 import timber.log.Timber;
 
@@ -39,7 +43,7 @@ public class FeedsAdapter extends BaseRVAdapter<Shot, FeedsAdapter.FeedItemViewH
     }
 
     @Override
-    public void onBindMyItemViewHolder(FeedItemViewHolder holder, int position) {
+    protected void onBindMyItemViewHolder(FeedItemViewHolder holder, int position) {
         final Shot data = getDataSet().get(position);
         if (data.isAnimated()) {
             holder.bindTo(data, GIFBuilder, isAutoPlayGif, avatarBuilder);
@@ -48,10 +52,20 @@ public class FeedsAdapter extends BaseRVAdapter<Shot, FeedsAdapter.FeedItemViewH
         }
     }
 
+    // 每次传递进来全部的items
+    public void addOrUpdate(List<Shot> data) {
+        if (data == null || data.isEmpty()) return;
+        final List<Shot> oldTemp = mDataSet;
+        mDataSet = data;
+        final ShotDiffCallback diffCallback = new ShotDiffCallback(oldTemp, data);
+        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
+        diffResult.dispatchUpdatesTo(this);
+    }
 
     public void setAutoPlayGif(boolean autoPlayGif) {
         this.isAutoPlayGif = autoPlayGif;
     }
+
 
     public class FeedItemViewHolder extends RecyclerView.ViewHolder {
         private final FeedItemView feedItemView;
