@@ -1,12 +1,10 @@
 package com.sinyuk.yuk.ui.oauth;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -18,10 +16,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -37,6 +32,7 @@ import com.sinyuk.yuk.api.oauth.OauthModule;
 import com.sinyuk.yuk.data.user.User;
 import com.sinyuk.yuk.ui.BaseActivity;
 import com.sinyuk.yuk.utils.BetterViewAnimator;
+import com.sinyuk.yuk.utils.StringUtils;
 import com.sinyuk.yuk.widgets.NestedWebView;
 
 import java.net.URL;
@@ -258,10 +254,8 @@ public class DribbleOauthActivity extends BaseActivity {
 
     private void handleAuthCallback(Uri data) {
 //        yuk://oauth-callback?code=
-        Timber.d("authority : %s", data.getAuthority());
-        Timber.d("path : %s", data.getPath());
-        Timber.d("host : %s", data.getHost());
-
+        hideProgress();
+        mViewAnimator.setDisplayedChildId(R.id.wait_layout);
         // use the parameter your API exposes for the code (mostly it's "code")
         String code = data.getQueryParameter("code");
         if (!TextUtils.isEmpty(code)) {
@@ -279,31 +273,32 @@ public class DribbleOauthActivity extends BaseActivity {
     }
 
     public void handleMillionsOfErrors(String msg, int code) {
-        int errorCode = 1024;
-        String errorDescription = getString(R.string.dribble_oauth_error_message);
-
-        if (code != -1) {
-            errorCode = code;
-        }
-
-        if (!TextUtils.isEmpty(msg)) {
-            errorDescription = msg;
-        }
-
-        Timber.d("error message : %s", errorDescription);
-        Timber.d("error code : %d", errorCode);
-
         if (messageTv == null) {
             messageTv = (TextView) mFailedLayout.findViewById(R.id.message_tv);
         }
         if (messageTv == null) return;
 
-        messageTv.setText(errorCode + " ---- " + errorDescription);
+        if (code != -1) {
+            messageTv.setText(code + " <-----> ");
+        }
 
+        messageTv.append(StringUtils.valueOrDefault(msg, getString(R.string.dribble_oauth_error_message)));
+
+        hideProgress();
         mViewAnimator.setDisplayedChildId(R.id.failded_layout);
     }
 
-    private boolean isRedirectUri(final String msg, final int code) {
+    private void showProgress() {
+        mProgressBar.setVisibility(View.VISIBLE);
+        mProgressBar.progressiveStart();
+    }
+
+    private void hideProgress() {
+        mProgressBar.setVisibility(View.GONE);
+        mProgressBar.progressiveStop();
+    }
+
+/*    private boolean isRedirectUri(final String msg, final int code) {
         Timber.d("Redirect err msg : %s", msg);
         Timber.d("Redirect err code : %d", code);
         return (DribbleApi.REDIRECT_AUTHORITY).equals(Uri.parse(msg).getAuthority()) && code == DribbleApi.REDIRECT_URL_ERROR_CODE;
@@ -313,33 +308,36 @@ public class DribbleOauthActivity extends BaseActivity {
         Timber.d("Redirect err msg : %s", uri.toString());
         Timber.d("Redirect err code : %d", code);
         return (DribbleApi.REDIRECT_AUTHORITY).equals(uri.getAuthority()) && code == DribbleApi.REDIRECT_URL_ERROR_CODE;
-    }
+    }*/
 
     private class MyWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            Timber.d("Url -> %s", url);
-            if (isAuthCallback(Uri.parse(url))) {
-                handleAuthCallback(Uri.parse(url));
-            } else {
-                view.loadUrl(url);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                Timber.d("Url -> %s", url);
+                if (isAuthCallback(Uri.parse(url))) {
+                    handleAuthCallback(Uri.parse(url));
+                } else {
+                    view.loadUrl(url);
+                }
             }
             return false;
         }
 
-        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-            Timber.d("Url -> %s", request.getUrl());
-            if (isAuthCallback(request.getUrl())) {
-                handleAuthCallback(request.getUrl());
-            } else {
-                view.loadUrl(request.getUrl().toString());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Timber.d("Url -> %s", request.getUrl());
+                if (isAuthCallback(request.getUrl())) {
+                    handleAuthCallback(request.getUrl());
+                } else {
+                    view.loadUrl(request.getUrl().toString());
+                }
             }
             return false;
         }
 
-        @TargetApi(Build.VERSION_CODES.M)
+   /*     @TargetApi(Build.VERSION_CODES.M)
         @Override
         public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
             super.onReceivedError(view, request, error);
@@ -371,7 +369,7 @@ public class DribbleOauthActivity extends BaseActivity {
         public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
             super.onReceivedSslError(view, handler, error);
             handleMillionsOfErrors(error.getUrl(), error.getPrimaryError());
-        }
+        }*/
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -379,16 +377,13 @@ public class DribbleOauthActivity extends BaseActivity {
             if (favicon != null) {
                 mFavicon.setImageBitmap(favicon);
             }
-            mProgressBar.setVisibility(View.VISIBLE);
-            mProgressBar.progressiveStart();
-
+            showProgress();
         }
 
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            mProgressBar.setVisibility(View.GONE);
-            mProgressBar.progressiveStop();
+            hideProgress();
         }
     }
 }
