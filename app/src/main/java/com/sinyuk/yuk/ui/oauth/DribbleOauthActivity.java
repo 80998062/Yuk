@@ -27,32 +27,26 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.sinyuk.yuk.App;
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.api.AccountManager;
 import com.sinyuk.yuk.api.DribbleApi;
-import com.sinyuk.yuk.api.oauth.AccessToken;
 import com.sinyuk.yuk.api.oauth.OauthModule;
 import com.sinyuk.yuk.data.user.User;
 import com.sinyuk.yuk.ui.BaseActivity;
 import com.sinyuk.yuk.utils.BetterViewAnimator;
 import com.sinyuk.yuk.widgets.NestedWebView;
 
-import java.io.IOException;
 import java.net.URL;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
-import retrofit2.Response;
 import retrofit2.adapter.rxjava.HttpException;
-import retrofit2.adapter.rxjava.Result;
-import rx.Observable;
-import rx.Observer;
 import rx.functions.Action1;
-import rx.functions.Func1;
 import timber.log.Timber;
 
 /**
@@ -61,23 +55,38 @@ import timber.log.Timber;
 public class DribbleOauthActivity extends BaseActivity {
     @BindView(R.id.view_animator)
     BetterViewAnimator mViewAnimator;
+    private final Action1<User> handleAuthResult = new Action1<User>() {
+        @Override
+        public void call(User user) {
+            mViewAnimator.setDisplayedChildId(R.id.dribble_oauth_succeed_layout);
+        }
+    };
     @BindView(R.id.tool_bar)
     Toolbar mToolbar;
     @BindView(R.id.web_view)
     NestedWebView mWebView;
     @BindView(R.id.menu)
     ImageView mMenu;
+    @BindView(R.id.failded_layout)
+    RelativeLayout mFailedLayout;
     @BindView(R.id.favicon)
     ImageView mFavicon;
     @BindView(R.id.progress_bar)
     SmoothProgressBar mProgressBar;
-    @BindView(R.id.layout_error)
-    RelativeLayout mLayoutError;
     @BindView(R.id.root_view)
     CoordinatorLayout mRootView;
     @Inject
     AccountManager accountManager;
     private URL mIntentUrl;
+    private TextView messageTv;
+    private final Action1<Throwable> handleAuthError = throwable -> {
+        if (throwable instanceof HttpException) {
+            HttpException error = (HttpException) throwable;
+            handleMillionsOfErrors(error.message(), error.code());
+        } else {
+            handleMillionsOfErrors(throwable.getLocalizedMessage(), -1);
+        }
+    };
 
     public static Intent getAuthIntent(Context context) {
         final Intent intent = new Intent(context, DribbleOauthActivity.class);
@@ -87,7 +96,7 @@ public class DribbleOauthActivity extends BaseActivity {
 
     @Override
     protected int getContentViewID() {
-        return R.layout.dribble_oauth_activity;
+        return R.layout.dribbble_oauth_activity;
     }
 
     @Override
@@ -118,6 +127,17 @@ public class DribbleOauthActivity extends BaseActivity {
         setupAppBar();
         initWebViewSettings();
     }
+
+/*
+    @Override
+    protected void onNewIntent(Intent intent) {
+        if (intent == null || mWebView == null || intent.getData() == null) {
+            return;
+        }
+        Timber.d("on new  -> %s",intent.getData().toString());
+        mWebView.loadUrl(intent.getData().toString());
+    }
+*/
 
     private void setupAppBar() {
         mToolbar.setTitle(R.string.dribbble_oauth_activity_toolbar_title);
@@ -160,14 +180,6 @@ public class DribbleOauthActivity extends BaseActivity {
 
         mWebView.loadUrl(mIntentUrl.toString());
 
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        if (intent == null || mWebView == null || intent.getData() == null) {
-            return;
-        }
-        mWebView.loadUrl(intent.getData().toString());
     }
 
     @Override
@@ -228,14 +240,15 @@ public class DribbleOauthActivity extends BaseActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CookieManager.getInstance().removeAllCookies(null);
             CookieManager.getInstance().flush();
-        }else {
+        } else {
             CookieSyncManager cookieSyncMngr = CookieSyncManager.createInstance(this);
             cookieSyncMngr.startSync();
-            CookieManager cookieManager=CookieManager.getInstance();
+            CookieManager cookieManager = CookieManager.getInstance();
             cookieManager.removeAllCookie();
             cookieManager.removeSessionCookie();
             cookieSyncMngr.stopSync();
-            cookieSyncMngr.sync();        }
+            cookieSyncMngr.sync();
+        }
     }
 
     private boolean isAuthCallback(Uri data) {
@@ -245,7 +258,6 @@ public class DribbleOauthActivity extends BaseActivity {
 
     private void handleAuthCallback(Uri data) {
 //        yuk://oauth-callback?code=
-        Timber.w("handleAuthCallback -> %s", data.toString());
         Timber.d("authority : %s", data.getAuthority());
         Timber.d("path : %s", data.getPath());
         Timber.d("host : %s", data.getHost());
@@ -260,35 +272,47 @@ public class DribbleOauthActivity extends BaseActivity {
                     .doOnError(handleAuthError)
                     .doOnTerminate(this::clearCookies)
                     .subscribe(handleAuthResult));
-            Timber.d("code -> %s", code);
         } else if (data.getQueryParameter("error") != null) {
             // show an error message here
-            Timber.e("error -> %s", data.getQueryParameter("error"));
+            handleMillionsOfErrors(data.getQueryParameter("error"), -1);
         }
     }
 
-    private final Action1<User> handleAuthResult = new Action1<User>() {
-        @Override
-        public void call(User user) {
-            mViewAnimator.setDisplayedChildId(R.id.dribble_oauth_succeed_layout);
-        }
-    };
+    public void handleMillionsOfErrors(String msg, int code) {
+        int errorCode = 1024;
+        String errorDescription = getString(R.string.dribble_oauth_error_message);
 
-    private final Action1<Throwable> handleAuthError = throwable -> {
-        if (throwable instanceof HttpException) {
-            HttpException error = (HttpException) throwable;
-            Timber.e("HttpException -> %s", error.getLocalizedMessage());
-        }else {
-            throwable.printStackTrace();
-        }
-    };
-
-
-    public void onReceivedErrors(int code) {
         if (code != -1) {
-            Timber.e("Error code : %d",code);
+            errorCode = code;
         }
-        mViewAnimator.setDisplayedChildId(R.id.layout_error);
+
+        if (!TextUtils.isEmpty(msg)) {
+            errorDescription = msg;
+        }
+
+        Timber.d("error message : %s", errorDescription);
+        Timber.d("error code : %d", errorCode);
+
+        if (messageTv == null) {
+            messageTv = (TextView) mFailedLayout.findViewById(R.id.message_tv);
+        }
+        if (messageTv == null) return;
+
+        messageTv.setText(errorCode + " ---- " + errorDescription);
+
+        mViewAnimator.setDisplayedChildId(R.id.failded_layout);
+    }
+
+    private boolean isRedirectUri(final String msg, final int code) {
+        Timber.d("Redirect err msg : %s", msg);
+        Timber.d("Redirect err code : %d", code);
+        return (DribbleApi.REDIRECT_AUTHORITY).equals(Uri.parse(msg).getAuthority()) && code == DribbleApi.REDIRECT_URL_ERROR_CODE;
+    }
+
+    private boolean isRedirectUri(final Uri uri, final int code) {
+        Timber.d("Redirect err msg : %s", uri.toString());
+        Timber.d("Redirect err code : %d", code);
+        return (DribbleApi.REDIRECT_AUTHORITY).equals(uri.getAuthority()) && code == DribbleApi.REDIRECT_URL_ERROR_CODE;
     }
 
     private class MyWebViewClient extends WebViewClient {
@@ -297,54 +321,56 @@ public class DribbleOauthActivity extends BaseActivity {
             Timber.d("Url -> %s", url);
             if (isAuthCallback(Uri.parse(url))) {
                 handleAuthCallback(Uri.parse(url));
-                return false;
             } else {
                 view.loadUrl(url);
-                return true;
             }
-
+            return false;
         }
 
         @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            Timber.d("Url -> %s", request.getUrl());
             if (isAuthCallback(request.getUrl())) {
                 handleAuthCallback(request.getUrl());
-                return false;
             } else {
                 view.loadUrl(request.getUrl().toString());
-                return true;
             }
+            return false;
         }
 
+        @TargetApi(Build.VERSION_CODES.M)
         @Override
         public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
             super.onReceivedError(view, request, error);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Timber.e("onReceivedError -> %s",error.getDescription());
-                onReceivedErrors(error.getErrorCode());
+            if (isRedirectUri(request.getUrl(), error.getErrorCode())) {
+                mViewAnimator.setDisplayedChildId(R.id.wait_layout);
             } else {
-                onReceivedErrors(-1);
-                Timber.e("onReceivedError -> %s",error.toString());
+                handleMillionsOfErrors(error.getDescription().toString(), error.getErrorCode());
             }
         }
 
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             super.onReceivedError(view, errorCode, description, failingUrl);
-            Timber.e("onReceivedError -> %s",description);
+            if (isRedirectUri(failingUrl, errorCode)) {
+                mViewAnimator.setDisplayedChildId(R.id.wait_layout);
+            } else {
+                handleMillionsOfErrors(description, errorCode);
+            }
         }
 
+        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         @Override
         public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
             super.onReceivedHttpError(view, request, errorResponse);
-            Timber.e("onReceivedError -> %s",errorResponse.toString());
+            handleMillionsOfErrors(errorResponse.getReasonPhrase(), errorResponse.getStatusCode());
         }
 
         @Override
         public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
             super.onReceivedSslError(view, handler, error);
-            Timber.e("onReceivedError -> %s",error.toString());
+            handleMillionsOfErrors(error.getUrl(), error.getPrimaryError());
         }
 
         @Override
@@ -363,14 +389,6 @@ public class DribbleOauthActivity extends BaseActivity {
             super.onPageFinished(view, url);
             mProgressBar.setVisibility(View.GONE);
             mProgressBar.progressiveStop();
-        }
-
-        @Override
-        public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Timber.d("Url : %s", request.getUrl().toString());
-            }
-            return super.shouldInterceptRequest(view, request);
         }
     }
 }

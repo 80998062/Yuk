@@ -59,7 +59,7 @@ public class BrowserActivity extends BaseActivity {
     ImageView mFavicon;
     @BindView(R.id.progress_bar)
     SmoothProgressBar mProgressBar;
-    @BindView(R.id.layout_error)
+    @BindView(R.id.error_layout)
     RelativeLayout mLayoutError;
     @BindView(R.id.root_view)
     CoordinatorLayout mRootView;
@@ -150,7 +150,7 @@ public class BrowserActivity extends BaseActivity {
         webSetting.setSaveFormData(true);
 
         if (mIntentUrl == null) {
-            mViewAnimator.setDisplayedChildId(R.id.layout_error);
+            mViewAnimator.setDisplayedChildId(R.id.error_layout);
         } else {
             mWebView.loadUrl(mIntentUrl.toString());
         }
@@ -221,7 +221,7 @@ public class BrowserActivity extends BaseActivity {
         if (code != -1) {
             toastUtils.toastLong("Error code : " + code);
         }
-        mViewAnimator.setDisplayedChildId(R.id.layout_error);
+        mViewAnimator.setDisplayedChildId(R.id.error_layout);
     }
 
     private class MyWebViewClient extends WebViewClient {

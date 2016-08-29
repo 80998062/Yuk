@@ -46,7 +46,7 @@ public class FeedsFragment extends BaseFragment {
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
     SmoothProgressBar smoothProgressBar;
-    @BindView(R.id.layout_error)
+    @BindView(R.id.error_layout)
     RelativeLayout mLayoutError;
     @BindView(R.id.layout_loading)
     RelativeLayout mLayoutLoading;
@@ -209,9 +209,9 @@ public class FeedsFragment extends BaseFragment {
         throwable.printStackTrace();
         if (mYukLoadingLayout != null && mYukLoadingLayout.isRefreshing()) {
             mYukLoadingLayout.postDelayed(() -> mYukLoadingLayout.finishRefreshing(), 3000);
-            mYukLoadingLayout.postDelayed(() -> mViewAnimator.setDisplayedChildId(R.id.layout_error), 3500);
+            mYukLoadingLayout.postDelayed(() -> mViewAnimator.setDisplayedChildId(R.id.error_layout), 3500);
         } else {
-            mViewAnimator.setDisplayedChildId(R.id.layout_error);
+            mViewAnimator.setDisplayedChildId(R.id.error_layout);
         }
 
     }

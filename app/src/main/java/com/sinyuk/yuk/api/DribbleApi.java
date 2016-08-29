@@ -62,4 +62,6 @@ public class DribbleApi {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
     public static final String ACCESS_TYPE = "Bearer";
+    public static final int REDIRECT_URL_ERROR_CODE = -10;
+    public static final String REDIRECT_URL_ERROR_MSG = "net::ERR_UNKNOWN_URL_SCHEME";
 }
