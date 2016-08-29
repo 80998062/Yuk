@@ -187,9 +187,15 @@ public class DribbleHeart extends View implements SpringListener {
     }
 
     public void stop() {
-        if (accelerateFall.isRunning()) { accelerateFall.cancel(); }
-        if (decelerateRaise.isRunning()) { decelerateRaise.cancel(); }
-        if (null != spring) { spring.removeListener(this); }
+        if (accelerateFall != null && accelerateFall.isRunning()) {
+            accelerateFall.cancel();
+        }
+        if (decelerateRaise != null && decelerateRaise.isRunning()) {
+            decelerateRaise.cancel();
+        }
+        if (null != spring) {
+            spring.removeListener(this);
+        }
         reset(mWidth, mHeight);
         invalidate();
     }

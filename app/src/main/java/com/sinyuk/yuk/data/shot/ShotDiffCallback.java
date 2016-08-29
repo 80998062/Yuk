@@ -1,6 +1,7 @@
 package com.sinyuk.yuk.data.shot;
 
 import android.support.v7.util.DiffUtil;
+import android.util.Log;
 
 import java.util.List;
 
@@ -8,6 +9,7 @@ import java.util.List;
  * Created by Sinyuk on 16/8/29.
  */
 public final class ShotDiffCallback extends DiffUtil.Callback {
+    private static final String TAG = "ShotDiffCallback";
 //    private static final String KEY_ID = "ID";
 //    private static final String KEY_TITLE = "TITLE";
 //    private static final String KEY_DESCRIPTION = "DESCRIPTION";
@@ -46,11 +48,13 @@ public final class ShotDiffCallback extends DiffUtil.Callback {
 
     @Override
     public int getOldListSize() {
+        Log.d(TAG, "getOldListSize: " + oldList.size());
         return oldList.size();
     }
 
     @Override
     public int getNewListSize() {
+        Log.d(TAG, "getNewListSize: " + newList.size());
         return newList.size();
 
     }

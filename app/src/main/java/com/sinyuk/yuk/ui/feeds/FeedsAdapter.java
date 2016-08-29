@@ -44,7 +44,7 @@ public class FeedsAdapter extends BaseRVAdapter<Shot, FeedsAdapter.FeedItemViewH
 
     @Override
     protected void onBindMyItemViewHolder(FeedItemViewHolder holder, int position) {
-        final Shot data = getDataSet().get(position);
+        final Shot data = mDataSet.get(position);
         if (data.isAnimated()) {
             holder.bindTo(data, GIFBuilder, isAutoPlayGif, avatarBuilder);
         } else {
@@ -54,11 +54,10 @@ public class FeedsAdapter extends BaseRVAdapter<Shot, FeedsAdapter.FeedItemViewH
 
     // 每次传递进来全部的items
     public void addOrUpdate(List<Shot> data) {
-        if (data == null || data.isEmpty()) return;
-        final List<Shot> oldTemp = mDataSet;
+        Timber.d("addOrUpdate : %s ", data.toString());
+        final ShotDiffCallback diffCallback = new ShotDiffCallback(mDataSet, data);
+        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback,false);
         mDataSet = data;
-        final ShotDiffCallback diffCallback = new ShotDiffCallback(oldTemp, data);
-        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
         diffResult.dispatchUpdatesTo(this);
     }
 

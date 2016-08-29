@@ -71,7 +71,6 @@ public class FeedsFragment extends BaseFragment {
         @Override
         public void onNext(List<Shot> shots) {
             mAdapter.addOrUpdate(shots);
-            Timber.d("Data in adapter %s", shots.toString());
         }
     };
     private String mType = DribbleApi.ALL;
@@ -151,7 +150,7 @@ public class FeedsFragment extends BaseFragment {
         mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
-                mViewAnimator.setDisplayedChildId(mAdapter.getDataItemCount() == 0 ? R.id.layout_loading : R.id.layout_list);
+//                mViewAnimator.setDisplayedChildId(mAdapter.getDataItemCount() == 0 ? R.id.layout_loading : R.id.layout_list);
             }
         });
 
