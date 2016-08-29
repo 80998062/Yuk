@@ -51,12 +51,7 @@ import timber.log.Timber;
 public class DribbleOauthActivity extends BaseActivity {
     @BindView(R.id.view_animator)
     BetterViewAnimator mViewAnimator;
-    private final Action1<User> handleAuthResult = new Action1<User>() {
-        @Override
-        public void call(User user) {
-            mViewAnimator.setDisplayedChildId(R.id.dribble_oauth_succeed_layout);
-        }
-    };
+
     @BindView(R.id.tool_bar)
     Toolbar mToolbar;
     @BindView(R.id.web_view)
@@ -75,6 +70,14 @@ public class DribbleOauthActivity extends BaseActivity {
     AccountManager accountManager;
     private URL mIntentUrl;
     private TextView messageTv;
+
+    private final Action1<User> handleAuthResult = new Action1<User>() {
+        @Override
+        public void call(User user) {
+            mViewAnimator.setDisplayedChildId(R.id.dribble_oauth_succeed_layout);
+        }
+    };
+
     private final Action1<Throwable> handleAuthError = throwable -> {
         if (throwable instanceof HttpException) {
             HttpException error = (HttpException) throwable;
