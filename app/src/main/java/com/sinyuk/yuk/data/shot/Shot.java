@@ -12,6 +12,7 @@ import com.sinyuk.yuk.data.user.User;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -66,7 +67,7 @@ public class Shot implements Parcelable {
     @SerializedName("animated")
     private final boolean animated;
     @SerializedName("tags")
-    private final List<String> tags;
+    private final ArrayList<String> tags;
     @SerializedName("user")
     private final User user;
     @SerializedName("team")
@@ -75,9 +76,10 @@ public class Shot implements Parcelable {
      * extras
      */
     private boolean hasFadedIn = false;
-    private Spanned parsedDescription;
 
-    public Shot(int id, String title, String description, int width, int height, Images images, int viewsCount, int likesCount, int commentsCount, int attachmentsCount, int reboundsCount, int bucketsCount, String createdAt, String updatedAt, String htmlUrl, String attachmentsUrl, String bucketsUrl, String commentsUrl, String likesUrl, String projectsUrl, String reboundsUrl, boolean animated, List<String> tags, User user, Team team) {
+    public Shot(int id, String title, String description, int width, int height, Images images, int viewsCount,
+                int likesCount, int commentsCount, int attachmentsCount, int reboundsCount, int bucketsCount, String createdAt, String updatedAt, String htmlUrl, String attachmentsUrl, String bucketsUrl, String commentsUrl, String likesUrl, String projectsUrl,
+                String reboundsUrl, boolean animated, ArrayList<String> tags, User user, Team team) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -217,7 +219,7 @@ public class Shot implements Parcelable {
         return animated;
     }
 
-    public List<String> getTags() {
+    public ArrayList<String> getTags() {
         return tags;
     }
 
@@ -237,12 +239,11 @@ public class Shot implements Parcelable {
         this.hasFadedIn = hasFadedIn;
     }
 
-    public Spanned getParsedDescription() {
-        return parsedDescription;
-    }
 
     @Override
-    public int describeContents() { return 0; }
+    public int describeContents() {
+        return 0;
+    }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
@@ -303,9 +304,13 @@ public class Shot implements Parcelable {
 
     public static final Creator<Shot> CREATOR = new Creator<Shot>() {
         @Override
-        public Shot createFromParcel(Parcel source) {return new Shot(source);}
+        public Shot createFromParcel(Parcel source) {
+            return new Shot(source);
+        }
 
         @Override
-        public Shot[] newArray(int size) {return new Shot[size];}
+        public Shot[] newArray(int size) {
+            return new Shot[size];
+        }
     };
 }
