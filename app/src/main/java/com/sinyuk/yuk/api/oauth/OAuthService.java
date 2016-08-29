@@ -10,7 +10,7 @@ import rx.Observable;
 /**
  * Created by Sinyuk on 16/8/22.
  */
-public interface OAuthService {
+public interface OauthService {
     @FormUrlEncoded
     @Headers("Cache-Control: no-cache")
     @POST("token")
