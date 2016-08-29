@@ -14,7 +14,7 @@ public interface OauthService {
     @FormUrlEncoded
     @Headers("Cache-Control: no-cache")
     @POST("token")
-    Observable<Result<AccessToken>> getAccessToken(
+    Observable<AccessToken> getAccessToken(
             @Field("client_id") String id,
             @Field("client_secret") String secret,
             @Field("code") String code,

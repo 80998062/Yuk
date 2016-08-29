@@ -15,7 +15,9 @@ import javax.inject.Singleton;
 import retrofit2.adapter.rxjava.Result;
 import rx.Observable;
 import rx.Observer;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -52,38 +54,29 @@ public class AccountManager {
         userType = mRxSharedPreferences.getString(PrefsKeySet.KEY_USER_TYPE, null);
     }
 
-    public Observable<Result<AccessToken>> getAccessToken(String code) {
+    public Observable<AccessToken> getAccessToken(String code) {
         return mOauthService.getAccessToken(BuildConfig.DRIBBBLE_CLIENT_ID, BuildConfig.DRIBBBLE_CLIENT_SECRET, code, DribbleApi.REDIRECT_URI)
                 .subscribeOn(Schedulers.io())
-                .doOnNext(new Action1<Result<AccessToken>>() {
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(new Action1<AccessToken>() {
                     @Override
-                    public void call(Result<AccessToken> result) {
+                    public void call(AccessToken accessToken) {
+                        saveAccessToken(accessToken);
                     }
-                })
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public void refreshUserProfile() {
-        Timber.d("refreshUserProfile");
-        mDribbleService.getAuthenticatedUser()
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.computation())
-                .subscribe(new Observer<User>() {
+                }).doOnCompleted(new Action0() {
                     @Override
-                    public void onCompleted() {
-                        // TODO: post a event
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onNext(User user) {
-                        saveInPreference(user);
+                    public void call() {
+                        refreshUserProfile();
                     }
                 });
+    }
+
+    public Observable<User> refreshUserProfile() {
+        Timber.d("refreshUserProfile");
+        return mDribbleService.getAuthenticatedUser()
+                .doOnNext(this::saveInPreference)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     private void saveInPreference(User user) {
