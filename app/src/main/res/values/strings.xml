@@ -11,9 +11,9 @@
     </array>
 
     <array name="iris_color_dark">
-        <item>@color/white</item>
-        <item>@color/official_jobs_hiring</item>
+        <item>@color/official_playbook</item>
         <item>@color/official_teams</item>
+        <item>@color/official_jobs_hiring</item>
     </array>
 
 </resources>

@@ -18,7 +18,7 @@ public class BlackMagics {
         Preconditions.checkNotNull(progressBar,"progressBar is Null");
         return progressBar.animate()
                 .alpha(0)
-                .setDuration(400)
+                .setDuration(250)
                 .setInterpolator(new FastOutSlowInInterpolator())
                 .withLayer();
     }
@@ -32,7 +32,7 @@ public class BlackMagics {
         Preconditions.checkNotNull(progressBar,"progressBar is Null");
         return progressBar.animate()
                 .alpha(1f)
-                .setDuration(400)
+                .setDuration(250)
                 .setInterpolator(new FastOutSlowInInterpolator())
                 .withLayer();
     }

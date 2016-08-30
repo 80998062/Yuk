@@ -1,10 +1,11 @@
 package com.sinyuk.yuk.ui.feeds;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
@@ -16,6 +17,7 @@ import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.data.shot.ShotRepository;
 import com.sinyuk.yuk.ui.BaseFragment;
 import com.sinyuk.yuk.utils.BetterViewAnimator;
+import com.sinyuk.yuk.utils.BlackMagics;
 import com.sinyuk.yuk.utils.PrefsKeySet;
 import com.sinyuk.yuk.utils.lists.SlideInUpAnimator;
 import com.sinyuk.yukloadinglayout.YukLoadingLayout;
@@ -83,6 +85,7 @@ public class FeedsFragment extends BaseFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         App.get(context).getShotRepositoryComponent().inject(this);
+        smoothProgressBar = (SmoothProgressBar) ((Activity) context).findViewById(R.id.progress_bar);
     }
 
     @Override
@@ -129,7 +132,9 @@ public class FeedsFragment extends BaseFragment {
                 final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
                 boolean isBottom =
                         linearLayoutManager.findLastCompletelyVisibleItemPosition() >= recyclerView.getAdapter().getItemCount() - PRELOAD_THRESHOLD;
-                if (isBottom) {loadFeeds(mPage);}
+                if (isBottom) {
+                    loadFeeds(mPage);
+                }
             }
         });
 
@@ -175,11 +180,11 @@ public class FeedsFragment extends BaseFragment {
      */
     private void showLoadingProgress() {
         isLoading = true;
-     /*   BlackMagics.scrollUp(smoothProgressBar).withStartAction(() -> {
+        BlackMagics.fadeIn(smoothProgressBar).withStartAction(() -> {
             smoothProgressBar.setVisibility(View.VISIBLE);
             smoothProgressBar.progressiveStart();
         });
-*/
+
     }
 
     /**
@@ -187,11 +192,13 @@ public class FeedsFragment extends BaseFragment {
      */
     private void hideLoadingProgress() {
         isLoading = false;
-      /*  if (mPage == FIRST_PAGE) { return; } // 当加载第一页时 什么都不做
-        BlackMagics.scrollDown(smoothProgressBar).withEndAction(() -> {
+        if (mPage == FIRST_PAGE) {// 当加载第一页时 什么都不做
+            return;
+        }
+        BlackMagics.fadeOut(smoothProgressBar).withEndAction(() -> {
             smoothProgressBar.setVisibility(View.GONE);
             smoothProgressBar.progressiveStop();
-        });*/
+        });
     }
 
     /**
