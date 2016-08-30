@@ -114,6 +114,10 @@ public class FeedsFragment extends BaseFragment {
 
         mRecyclerView.setLayoutManager(layoutManager);
 
+        mRecyclerView.setHasFixedSize(true);
+
+        mRecyclerView.setScrollingTouchSlop(RecyclerView.TOUCH_SLOP_PAGING);
+
         mRecyclerView.addItemDecoration(new FeedsItemDecoration(getContext()));
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -145,7 +149,6 @@ public class FeedsFragment extends BaseFragment {
     private void initData() {
 
         mAdapter = new FeedsAdapter(getContext(), Glide.with(this));
-
 
         mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
