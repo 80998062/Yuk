@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
@@ -32,9 +33,9 @@ import timber.log.Timber;
  * Created by Sinyuk on 16/7/1.
  */
 public class FeedsFragment extends BaseFragment {
+    public static final String TAG = "FeedsFragment";
     private static final int FIRST_PAGE = 1;
-    private static final int PRELOAD_THRESHOLD = 1;
-
+    private static final int PRELOAD_THRESHOLD = 2;
     @Inject
     ShotRepository shotRepository;
     @Inject
@@ -124,10 +125,7 @@ public class FeedsFragment extends BaseFragment {
                 final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
                 boolean isBottom =
                         linearLayoutManager.findLastCompletelyVisibleItemPosition() >= recyclerView.getAdapter().getItemCount() - PRELOAD_THRESHOLD;
-                if (isBottom) {
-                    Timber.d("At Bottom");
-                    loadFeeds(mPage);
-                }
+                if (isBottom) {loadFeeds(mPage);}
             }
         });
 
@@ -152,7 +150,7 @@ public class FeedsFragment extends BaseFragment {
         mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
-//                mViewAnimator.setDisplayedChildId(mAdapter.getDataItemCount() == 0 ? R.id.layout_loading : R.id.layout_list);
+                mViewAnimator.setDisplayedChildId(mAdapter.getItemCount() == 0 ? R.id.layout_loading : R.id.layout_list);
             }
         });
 

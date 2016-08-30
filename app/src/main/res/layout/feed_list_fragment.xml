@@ -7,10 +7,12 @@
     android:inAnimation="@android:anim/slide_in_left"
     android:outAnimation="@android:anim/slide_out_right">
 
-    <include
-        layout="@layout/feed_layout_list"/>
+
     <include
         layout="@layout/feed_layout_loading"/>
+
+    <include
+        layout="@layout/feed_layout_list"/>
 
     <include
         layout="@layout/feed_layout_error"/>
