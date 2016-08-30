@@ -14,14 +14,10 @@ public class BlackMagics {
      * @param v
      * @param withLayer
      */
-    public static ViewPropertyAnimator scrollUp(SmoothProgressBar progressBar) {
+    public static ViewPropertyAnimator fadeOut(SmoothProgressBar progressBar) {
         Preconditions.checkNotNull(progressBar,"progressBar is Null");
-        final int offset = progressBar.getHeight();
-        progressBar.setTranslationY(offset);
-        progressBar.setAlpha(0.01f);
         return progressBar.animate()
-                .translationY(0)
-                .alpha(1)
+                .alpha(0)
                 .setDuration(400)
                 .setInterpolator(new FastOutSlowInInterpolator())
                 .withLayer();
@@ -32,12 +28,10 @@ public class BlackMagics {
     * @param v
     * @param withLayer
     */
-    public static ViewPropertyAnimator scrollDown(SmoothProgressBar progressBar) {
+    public static ViewPropertyAnimator fadeIn(SmoothProgressBar progressBar) {
         Preconditions.checkNotNull(progressBar,"progressBar is Null");
-        final int offset = progressBar.getHeight();
         return progressBar.animate()
-                .translationY(offset)
-                .alpha(0.01f)
+                .alpha(1f)
                 .setDuration(400)
                 .setInterpolator(new FastOutSlowInInterpolator())
                 .withLayer();
