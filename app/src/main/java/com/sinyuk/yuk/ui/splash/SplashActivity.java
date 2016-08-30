@@ -35,9 +35,9 @@ public class SplashActivity extends AppCompatActivity{
 
     private void startMainActivity() {
         Timber.d("Splash Finish");
-        Intent starter = new Intent(SplashActivity.this, BrowserActivity.class);
+        Intent starter = new Intent(SplashActivity.this, ShotsListDemo.class);
         starter.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        starter.setData(Uri.parse("http://weibo.com/163music?refer_flag=0000015010_&from=feed&loc=nickname"));
+//        starter.setData(Uri.parse("http://weibo.com/163music?refer_flag=0000015010_&from=feed&loc=nickname"));
         startActivity(starter);
         finish();
     }
