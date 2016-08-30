@@ -10,11 +10,11 @@ import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.sinyuk.yuk.R;
-import com.sinyuk.yuk.data.BaseRVAdapter;
 import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.data.shot.ShotDiffCallback;
 import com.sinyuk.yuk.utils.glide.CropCircleTransformation;
 
+import java.util.Collections;
 import java.util.List;
 
 import timber.log.Timber;
@@ -23,12 +23,13 @@ import timber.log.Timber;
  * Created by Sinyuk on 16/7/6.
  * 尽量减少这里的逻辑
  */
-public class FeedsAdapter extends BaseRVAdapter<Shot, FeedsAdapter.FeedItemViewHolder> {
+public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemViewHolder> {
     private final static int CROSS_FADE_DURATION = 1500;
     private final DrawableRequestBuilder<String> avatarBuilder;
     private final DrawableRequestBuilder<String> GIFBuilder;
     private final DrawableRequestBuilder<String> PNGBuilder;
     private boolean isAutoPlayGif = false;
+    private List<Shot> mDataSet = Collections.emptyList();
 
     public FeedsAdapter(Context context, RequestManager requestManager) {
         Timber.tag("FeedsAdapter");
@@ -37,27 +38,12 @@ public class FeedsAdapter extends BaseRVAdapter<Shot, FeedsAdapter.FeedItemViewH
         avatarBuilder = requestManager.fromString().diskCacheStrategy(DiskCacheStrategy.RESULT).dontAnimate().centerCrop().bitmapTransform(new CropCircleTransformation(context));
     }
 
-    @Override
-    public FeedItemViewHolder onCreateMyItemViewHolder(ViewGroup parent, int viewType) {
-        return new FeedItemViewHolder((FeedItemView) LayoutInflater.from(parent.getContext()).inflate(R.layout.feed_list_item, parent, false));
-    }
-
-    @Override
-    protected void onBindMyItemViewHolder(FeedItemViewHolder holder, int position) {
-        final Shot data = mDataSet.get(position);
-        if (data.isAnimated()) {
-            holder.bindTo(data, GIFBuilder, isAutoPlayGif, avatarBuilder);
-        } else {
-            holder.bindTo(data, PNGBuilder, isAutoPlayGif, avatarBuilder);
-        }
-    }
-
     // 每次传递进来全部的items
     public void addOrUpdate(List<Shot> data) {
         Timber.d("addOrUpdate : %s ", data.toString());
-        final ShotDiffCallback diffCallback = new ShotDiffCallback(mDataSet, data);
-        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback,false);
-        mDataSet = data;
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ShotDiffCallback(getData(), data), false);
+        setData(data);
+        notifyDataSetChanged();
         diffResult.dispatchUpdatesTo(this);
     }
 
@@ -65,6 +51,39 @@ public class FeedsAdapter extends BaseRVAdapter<Shot, FeedsAdapter.FeedItemViewH
         this.isAutoPlayGif = autoPlayGif;
     }
 
+    @Override
+    public FeedItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new FeedItemViewHolder((FeedItemView) LayoutInflater.from(parent.getContext()).inflate(R.layout.feed_list_item, parent, false));
+    }
+
+    @Override
+    public void onBindViewHolder(FeedItemViewHolder holder, int position) {
+
+    }
+
+    @Override
+    public void onBindViewHolder(FeedItemViewHolder holder, int position, List<Object> payloads) {
+        final Shot data = mDataSet.get(position);
+        if (data.isAnimated()) {
+            holder.bindTo(data, GIFBuilder, isAutoPlayGif, avatarBuilder);
+        } else {
+            holder.bindTo(data, PNGBuilder, isAutoPlayGif, avatarBuilder);
+        }
+        Timber.d("on bind payloads");
+    }
+
+    @Override
+    public int getItemCount() {
+        return mDataSet.size();
+    }
+
+    public List<Shot> getData() {
+        return mDataSet;
+    }
+
+    public void setData(List<Shot> data) {
+        this.mDataSet = data;
+    }
 
     public class FeedItemViewHolder extends RecyclerView.ViewHolder {
         private final FeedItemView feedItemView;
