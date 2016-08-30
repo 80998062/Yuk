@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.sinyuk.yuk.api.DribbleService;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,13 +46,16 @@ public class ShotRepository {
                 list = new LinkedList<>();
             }
             if (page == 1) {
-                if (Collections.disjoint(list, result)) {
-                    list.clear();
-                    list.addAll(result);
-                } else {
-                    result.removeAll(list);
-                    list.addAll(0, result);
-                }
+                //不保存旧数据了 只要刷新全部清除
+//                if (Collections.disjoint(list, result)) {
+//                    list.clear();
+//                    list.addAll(result);
+//                } else {
+//                    result.removeAll(list);
+//                    list.addAll(0, result);
+//                }
+                list.clear();
+                list.addAll(result);
             } else {
                 list.addAll(result);    // append to front
             }
