@@ -1,6 +1,8 @@
 package com.sinyuk.yuk.data;
 
+import android.support.v7.util.ListUpdateCallback;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -11,34 +13,35 @@ import java.util.List;
  * Created by Sinyuk on 16.1.4.
  * 有header和footer的recycleView
  */
-public abstract class BaseRVAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public abstract class BaseRVAdapter<T, VH extends RecyclerView.ViewHolder>
+        extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+        implements ListUpdateCallback {
 
     private static final int TYPE_HEADER = Integer.MAX_VALUE;
     private static final int TYPE_FOOTER = Integer.MAX_VALUE - 1;
     private static final int ITEM_MAX_TYPE = Integer.MAX_VALUE - 2;
-
+    private static final String TAG = "BaseRVAdapter";
+    protected List<T> mDataSet = Collections.emptyList();
     private RecyclerView.ViewHolder headerViewHolder;
     private RecyclerView.ViewHolder footerViewHolder;
 
-    protected List<T> mDataSet = Collections.emptyList();
-
- /*    public void setHeaderView(View header) {
-        if (headerViewHolder == null || header != headerViewHolder.itemView) {
-            headerViewHolder = new MyViewHolder(header);
-            notifyDataSetChanged();
-        }
-    }
-
-   public void setHeaderViewFullSpan(View header) {
-        if (headerViewHolder == null || header != headerViewHolder.itemView) {
-            StaggeredGridLayoutManager.LayoutParams layoutParams = new StaggeredGridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.setFullSpan(true);
-            headerViewHolder = new MyViewHolder(header);
-            headerViewHolder.itemView.setLayoutParams(layoutParams);
-            notifyDataSetChanged();
-        }
-
-    }*/
+//     public void setHeaderView(View header) {
+//        if (headerViewHolder == null || header != headerViewHolder.itemView) {
+//            headerViewHolder = new MyViewHolder(header);
+//            notifyDataSetChanged();
+//        }
+//    }
+//
+//   public void setHeaderViewFullSpan(View header) {
+//        if (headerViewHolder == null || header != headerViewHolder.itemView) {
+//            StaggeredGridLayoutManager.LayoutParams layoutParams = new StaggeredGridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//            layoutParams.setFullSpan(true);
+//            headerViewHolder = new MyViewHolder(header);
+//            headerViewHolder.itemView.setLayoutParams(layoutParams);
+//            notifyDataSetChanged();
+//        }
+//
+//    }
 
     public void setFooterView(View foot) {
         if (footerViewHolder == null || foot != footerViewHolder.itemView) {
@@ -104,16 +107,28 @@ public abstract class BaseRVAdapter<T, VH extends RecyclerView.ViewHolder> exten
         return mDataSet == null ? 0 : mDataSet.size();
     }
 
-    public void notifyMyItemInserted(int itemPosition) {
-        notifyItemInserted(itemPositionInRV(itemPosition));
+    @Override
+    public void onInserted(int position, int count) {
+        Log.d(TAG, "onInserted: " + position + " count: " + count);
+        notifyItemRangeInserted(itemPositionInRV(position), count);
     }
 
-    public void notifyMyItemRemoved(int itemPosition) {
-        notifyItemRemoved(itemPositionInRV(itemPosition));
+    @Override
+    public void onRemoved(int position, int count) {
+        Log.d(TAG, "onRemoved: " + position + " count: " + count);
+        notifyItemRangeRemoved(itemPositionInRV(position), count);
     }
 
-    public void notifyMyItemChanged(int itemPosition) {
-        notifyItemChanged(itemPositionInRV(itemPosition));
+    @Override
+    public void onMoved(int fromPosition, int toPosition) {
+        Log.d(TAG, "onMoved: " + fromPosition + " toPosition: " + toPosition);
+        notifyItemMoved(itemPositionInRV(fromPosition), itemPositionInRV(toPosition));
+    }
+
+    @Override
+    public void onChanged(int position, int count, Object payload) {
+        Log.d(TAG, "onChanged: " + position + " count: " + count);
+        notifyItemRangeChanged(itemPositionInRV(position), count, payload);
     }
 
     @Override
@@ -133,7 +148,13 @@ public abstract class BaseRVAdapter<T, VH extends RecyclerView.ViewHolder> exten
         }
     }
 
-    protected abstract void onBindMyItemViewHolder(VH holder, int position);
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
+        if (!isHeader(position) && !isFooter(position)) {
+            onBindMyItemViewHolder((VH) holder, itemPositionInData(position), (List<T>) payloads);
+        }
+    }
+
 
     @Override
     public int getItemViewType(int position) {
@@ -150,6 +171,7 @@ public abstract class BaseRVAdapter<T, VH extends RecyclerView.ViewHolder> exten
         return dataItemType;
     }
 
+
     /**
      * make sure your dataItemType < Integer.MAX_VALUE-1
      *
@@ -160,23 +182,12 @@ public abstract class BaseRVAdapter<T, VH extends RecyclerView.ViewHolder> exten
         return 0;
     }
 
-    public List<T> getDataSet() {
-        return mDataSet;
-    }
-
-/*    public void setDataSet(List<T> data) {
-        mDataSet = new ArrayList<>(data);
-        notifyDataSetChanged();
-    }
-
-    public void setData(List<T> data) {
-        final DiffUtil.Callback diffCallback = new DiffUtil.Callback (mDataSet, data);
-        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
-
-        diffResult.dispatchUpdatesTo(this);
-    }*/
-
     public abstract VH onCreateMyItemViewHolder(ViewGroup parent, int viewType);
+
+    protected abstract void onBindMyItemViewHolder(VH holder, int position);
+
+    protected abstract void onBindMyItemViewHolder(VH holder, int position, List<T> payloads);
+
 
     /**
      * ViewHolder for header and footer
