@@ -313,4 +313,8 @@ public class Shot implements Parcelable {
             return new Shot[size];
         }
     };
+
+    public boolean equalInVisual(Shot anotherShot){
+        return false;
+    }
 }

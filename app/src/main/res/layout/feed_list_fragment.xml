@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.sinyuk.yuk.utils.BetterViewAnimator
-    android:id="@+id/view_animator"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/view_animator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:inAnimation="@android:anim/slide_in_left"
@@ -9,10 +9,8 @@
 
     <include
         layout="@layout/feed_layout_list"/>
-
     <include
         layout="@layout/feed_layout_loading"/>
-
 
     <include
         layout="@layout/feed_layout_error"/>
