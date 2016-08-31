@@ -14,7 +14,7 @@ public class BlackMagics {
      * @param v
      * @param withLayer
      */
-    public static ViewPropertyAnimator fadeOut(SmoothProgressBar progressBar) {
+    public static ViewPropertyAnimator showProgressBar(SmoothProgressBar progressBar) {
         Preconditions.checkNotNull(progressBar,"progressBar is Null");
         return progressBar.animate()
                 .alpha(0)
@@ -28,7 +28,7 @@ public class BlackMagics {
     * @param v
     * @param withLayer
     */
-    public static ViewPropertyAnimator fadeIn(SmoothProgressBar progressBar) {
+    public static ViewPropertyAnimator showProgress(SmoothProgressBar progressBar) {
         Preconditions.checkNotNull(progressBar,"progressBar is Null");
         return progressBar.animate()
                 .alpha(1f)

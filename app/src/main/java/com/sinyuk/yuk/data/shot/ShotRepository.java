@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.sinyuk.yuk.api.DribbleService;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,9 +34,10 @@ public class ShotRepository {
     public Observable<List<Shot>> getShots(@NonNull String type, int page) {
         Observable<List<Shot>> cachingObservable = mDribbleService.shots(type, page);
         return cachingObservable
-                .map(insertShots(page, type))
+//                .map(insertShots(page, type))
                 .subscribeOn(Schedulers.io())
-                .doOnError(throwable -> mShotCache.remove(type))
+//                .doOnError(throwable -> mShotCache.remove(type))
+                .doOnError(Throwable::printStackTrace)
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -46,17 +48,17 @@ public class ShotRepository {
                 list = new LinkedList<>();
             }
             if (page == 1) {
-                //不保存旧数据了 只要刷新全部清除
-//                if (Collections.disjoint(list, result)) {
-//                    list.clear();
-//                    list.addAll(result);
-//                } else {
-//                    result.removeAll(list);
-//                    list.addAll(0, result);
-//                }
-                list.clear();
+                // 保存旧数据
+                if (Collections.disjoint(list, result)) {
+                    list.clear();
+                    list.addAll(result);
+                } else {
+                    result.removeAll(list);
+                    list.addAll(0, result);
+                }
+            } else {
+                list.addAll(result);
             }
-            list.addAll(result);
             mShotCache.put(type, list);
             return list;
         };

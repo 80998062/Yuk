@@ -25,7 +25,7 @@ import timber.log.Timber;
  * 尽量减少这里的逻辑
  */
 public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemViewHolder>
-        implements ListUpdateCallback {
+    /*    implements ListUpdateCallback*/ {
     private final static int CROSS_FADE_DURATION = 1500;
     private final DrawableRequestBuilder<String> avatarBuilder;
     private final DrawableRequestBuilder<String> GIFBuilder;
@@ -41,13 +41,25 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
     }
 
     // 每次传递进来全部的items
-    public void addOrUpdate(List<Shot> data) {
-        Timber.d("New data: %s size %d", data.toString(), data.size());
-        Timber.d("Old data: %s size %d", mDataSet.toString(), mDataSet.size());
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ShotDiffCallback(mDataSet, data), false);
-        this.mDataSet.clear();
-        this.mDataSet.addAll(data);
-        diffResult.dispatchUpdatesTo((ListUpdateCallback) this);
+//    public void addOrUpdate(List<Shot> data) {
+//        Timber.d("New data: %s size %d", data.toString(), data.size());
+//        Timber.d("Old data: %s size %d", mDataSet.toString(), mDataSet.size());
+//        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ShotDiffCallback(mDataSet, data), false);
+//        this.mDataSet.clear();
+//        this.mDataSet.addAll(data);
+//        diffResult.dispatchUpdatesTo((ListUpdateCallback) this);
+//    }
+
+    public void appendAll(List<Shot> items) {
+        int startPosition = mDataSet.size();
+        mDataSet.addAll(items);
+        notifyItemRangeInserted(startPosition,items.size());
+    }
+
+    public void addAll(List<Shot> items) {
+        mDataSet.clear();
+        mDataSet.addAll(items);
+        notifyDataSetChanged();
     }
 
     public void setAutoPlayGif(boolean autoPlayGif) {
@@ -83,13 +95,15 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
         return mDataSet;
     }
 
-    @Override
+
+
+ /*   @Override
     public void onInserted(int position, int count) {
         Timber.d("Data count onInserted : %d", mDataSet.size());
         Timber.d("Insert position: %d , count: %d", position, count);
         for (int i = position; i < position + count; i++) {
             notifyItemInserted(i);
-            Timber.d("insert: %d ", i);
+            Timber.d("append: %d ", i);
         }
     }
 
@@ -110,7 +124,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
         Timber.d("Data count onChanged : %d", mDataSet.size());
         Timber.d("Changed position: %d , count: %d", position, count);
         notifyItemRangeChanged(position, count, payload);
-    }
+    }*/
 
     public class FeedItemViewHolder extends RecyclerView.ViewHolder {
         private final FeedItemView feedItemView;

@@ -2,7 +2,6 @@ package com.sinyuk.yuk.ui.feeds;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -19,7 +18,6 @@ import com.sinyuk.yuk.ui.BaseFragment;
 import com.sinyuk.yuk.utils.BetterViewAnimator;
 import com.sinyuk.yuk.utils.BlackMagics;
 import com.sinyuk.yuk.utils.PrefsKeySet;
-import com.sinyuk.yuk.utils.lists.SlideInUpAnimator;
 import com.sinyuk.yukloadinglayout.YukLoadingLayout;
 
 import java.util.List;
@@ -54,14 +52,12 @@ public class FeedsFragment extends BaseFragment {
     @BindView(R.id.view_animator)
     BetterViewAnimator mViewAnimator;
     private FeedsAdapter mAdapter;
-
-
     private int mPage = FIRST_PAGE;
 
-    private final Observer<List<Shot>> addFeedsToList = new Observer<List<Shot>>() {
+    private final Observer<List<Shot>> refreshObserver = new Observer<List<Shot>>() {
         @Override
         public void onCompleted() {
-            mPage = mPage + 1;
+            mPage = FIRST_PAGE + 1;
         }
 
         @Override
@@ -71,9 +67,27 @@ public class FeedsFragment extends BaseFragment {
 
         @Override
         public void onNext(List<Shot> shots) {
-            mAdapter.addOrUpdate(shots);
+            mAdapter.addAll(shots);
         }
     };
+
+    private final Observer<List<Shot>> insertObserver = new Observer<List<Shot>>() {
+        @Override
+        public void onCompleted() {
+            mPage++;
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            handleError(e);
+        }
+
+        @Override
+        public void onNext(List<Shot> shots) {
+            mAdapter.appendAll(shots);
+        }
+    };
+
     private String mType = DribbleApi.ALL;
     private boolean isLoading;
 
@@ -117,7 +131,7 @@ public class FeedsFragment extends BaseFragment {
 
         mRecyclerView.setLayoutManager(layoutManager);
 
-//        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setHasFixedSize(true);
 
         mRecyclerView.setScrollingTouchSlop(RecyclerView.TOUCH_SLOP_PAGING);
 
@@ -138,7 +152,7 @@ public class FeedsFragment extends BaseFragment {
             }
         });
 
-        mRecyclerView.setItemAnimator(new SlideInUpAnimator(new FastOutSlowInInterpolator()));
+//        mRecyclerView.setItemAnimator(new SlideInUpAnimator(new FastOutSlowInInterpolator()));
     }
 
     private void initData() {
@@ -151,6 +165,8 @@ public class FeedsFragment extends BaseFragment {
                 mViewAnimator.setDisplayedChildId(mAdapter.getItemCount() == 0 ? R.id.layout_loading : R.id.layout_list);
             }
         });
+
+//        mAdapter.setHasStableIds(true);
 
         mRecyclerView.setAdapter(mAdapter);
 
@@ -168,7 +184,7 @@ public class FeedsFragment extends BaseFragment {
      */
     private void showLoadingProgress() {
         isLoading = true;
-        BlackMagics.fadeIn(smoothProgressBar).withStartAction(() -> {
+        BlackMagics.showProgress(smoothProgressBar).withStartAction(() -> {
             smoothProgressBar.setVisibility(View.VISIBLE);
             smoothProgressBar.progressiveStart();
         });
@@ -183,7 +199,7 @@ public class FeedsFragment extends BaseFragment {
         if (mPage == FIRST_PAGE) {// 当加载第一页时 什么都不做
             return;
         }
-        BlackMagics.fadeOut(smoothProgressBar).withEndAction(() -> {
+        BlackMagics.showProgressBar(smoothProgressBar).withEndAction(() -> {
             smoothProgressBar.setVisibility(View.GONE);
             smoothProgressBar.progressiveStop();
         });
@@ -225,16 +241,14 @@ public class FeedsFragment extends BaseFragment {
                 shotRepository.getShots(mType, page)
                         .doOnSubscribe(this::showLoadingProgress)
                         .doAfterTerminate(this::hideLoadingProgress)
-                        .subscribe(addFeedsToList));
+                        .subscribe(insertObserver));
     }
 
     private void refreshFeeds() {
         addSubscription(
                 shotRepository.getShots(mType, FIRST_PAGE)
                         .doAfterTerminate(this::hideRefreshView)
-                        .doAfterTerminate(() -> mPage = FIRST_PAGE)
-                        .subscribe(addFeedsToList));
+//                        .doAfterTerminate(() -> mPage = FIRST_PAGE)
+                        .subscribe(refreshObserver));
     }
-
-
 }
