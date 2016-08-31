@@ -55,10 +55,8 @@ public class ShotRepository {
 //                    list.addAll(0, result);
 //                }
                 list.clear();
-                list.addAll(result);
-            } else {
-                list.addAll(result);    // append to front
             }
+            list.addAll(result);
             mShotCache.put(type, list);
             return list;
         };

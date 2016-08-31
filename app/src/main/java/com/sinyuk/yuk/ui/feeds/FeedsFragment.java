@@ -117,7 +117,7 @@ public class FeedsFragment extends BaseFragment {
 
         mRecyclerView.setLayoutManager(layoutManager);
 
-        mRecyclerView.setHasFixedSize(true);
+//        mRecyclerView.setHasFixedSize(true);
 
         mRecyclerView.setScrollingTouchSlop(RecyclerView.TOUCH_SLOP_PAGING);
 
@@ -138,18 +138,8 @@ public class FeedsFragment extends BaseFragment {
             }
         });
 
-//        mRecyclerView.addOnScrollListener(new OnScrollStateListener(getContext(), (OnScrollStateListener.AppBarBehaviorListener) mContext));
-
         mRecyclerView.setItemAnimator(new SlideInUpAnimator(new FastOutSlowInInterpolator()));
     }
-
- /*   private void setupProgressBar() {
-        if (null == smoothProgressBar) {
-            final View loadingView = LayoutInflater.from(getContext()).inflate(R.layout.feed_layout_list_footer, mRecyclerView, false);
-            mAdapter.setFooterView(loadingView);
-            smoothProgressBar = (SmoothProgressBar) loadingView.findViewById(R.id.progress_bar);
-        }
-    }*/
 
     private void initData() {
 
@@ -171,8 +161,6 @@ public class FeedsFragment extends BaseFragment {
                 });
 
         refreshFeeds();
-
-//        setupProgressBar();
     }
 
     /**

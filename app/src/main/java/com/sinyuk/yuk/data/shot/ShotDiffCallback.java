@@ -56,13 +56,11 @@ public final class ShotDiffCallback extends DiffUtil.Callback {
     public int getNewListSize() {
         Log.d(TAG, "getNewListSize: " + newList.size());
         return newList.size();
-
     }
 
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
         return oldList.get(oldItemPosition).getId() == (newList.get(newItemPosition).getId());
-
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.sinyuk.yuk.ui.feeds;
 
 import android.content.Context;
 import android.support.v7.util.DiffUtil;
+import android.support.v7.util.ListUpdateCallback;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -14,7 +15,7 @@ import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.data.shot.ShotDiffCallback;
 import com.sinyuk.yuk.utils.glide.CropCircleTransformation;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import timber.log.Timber;
@@ -23,13 +24,14 @@ import timber.log.Timber;
  * Created by Sinyuk on 16/7/6.
  * 尽量减少这里的逻辑
  */
-public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemViewHolder> {
+public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemViewHolder>
+        implements ListUpdateCallback {
     private final static int CROSS_FADE_DURATION = 1500;
     private final DrawableRequestBuilder<String> avatarBuilder;
     private final DrawableRequestBuilder<String> GIFBuilder;
     private final DrawableRequestBuilder<String> PNGBuilder;
     private boolean isAutoPlayGif = false;
-    private List<Shot> mDataSet = Collections.emptyList();
+    private List<Shot> mDataSet = new ArrayList<>();
 
     public FeedsAdapter(Context context, RequestManager requestManager) {
         Timber.tag("FeedsAdapter");
@@ -40,11 +42,12 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
 
     // 每次传递进来全部的items
     public void addOrUpdate(List<Shot> data) {
-        Timber.d("addOrUpdate : %s ", data.toString());
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ShotDiffCallback(getData(), data), false);
-        setData(data);
-        notifyDataSetChanged();
-        diffResult.dispatchUpdatesTo(this);
+        Timber.d("New data: %s size %d", data.toString(), data.size());
+        Timber.d("Old data: %s size %d", mDataSet.toString(), mDataSet.size());
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ShotDiffCallback(mDataSet, data), false);
+        this.mDataSet.clear();
+        this.mDataSet.addAll(data);
+        diffResult.dispatchUpdatesTo((ListUpdateCallback) this);
     }
 
     public void setAutoPlayGif(boolean autoPlayGif) {
@@ -58,7 +61,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
 
     @Override
     public void onBindViewHolder(FeedItemViewHolder holder, int position) {
-
+        // no-op
     }
 
     @Override
@@ -69,7 +72,6 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
         } else {
             holder.bindTo(data, PNGBuilder, isAutoPlayGif, avatarBuilder);
         }
-        Timber.d("on bind payloads");
     }
 
     @Override
@@ -81,8 +83,33 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedsAdapter.FeedItemView
         return mDataSet;
     }
 
-    public void setData(List<Shot> data) {
-        this.mDataSet = data;
+    @Override
+    public void onInserted(int position, int count) {
+        Timber.d("Data count onInserted : %d", mDataSet.size());
+        Timber.d("Insert position: %d , count: %d", position, count);
+        for (int i = position; i < position + count; i++) {
+            notifyItemInserted(i);
+            Timber.d("insert: %d ", i);
+        }
+    }
+
+    @Override
+    public void onRemoved(int position, int count) {
+        for (int i = position; i < position + count; i++) {
+            notifyItemRemoved(i);
+        }
+    }
+
+    @Override
+    public void onMoved(int fromPosition, int toPosition) {
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
+    @Override
+    public void onChanged(int position, int count, Object payload) {
+        Timber.d("Data count onChanged : %d", mDataSet.size());
+        Timber.d("Changed position: %d , count: %d", position, count);
+        notifyItemRangeChanged(position, count, payload);
     }
 
     public class FeedItemViewHolder extends RecyclerView.ViewHolder {
