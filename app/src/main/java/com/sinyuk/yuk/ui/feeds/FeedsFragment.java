@@ -237,18 +237,10 @@ public class FeedsFragment extends BaseFragment {
     }
 
     private void loadFeeds(int page) {
-        addSubscription(
-                shotRepository.getShots(mType, page)
-                        .doOnSubscribe(this::showLoadingProgress)
-                        .doAfterTerminate(this::hideLoadingProgress)
-                        .subscribe(insertObserver));
+        addSubscription(shotRepository.getShots(mType, page).doOnSubscribe(this::showLoadingProgress).doAfterTerminate(this::hideLoadingProgress).subscribe(insertObserver));
     }
 
     private void refreshFeeds() {
-        addSubscription(
-                shotRepository.getShots(mType, FIRST_PAGE)
-                        .doAfterTerminate(this::hideRefreshView)
-//                        .doAfterTerminate(() -> mPage = FIRST_PAGE)
-                        .subscribe(refreshObserver));
+        addSubscription(shotRepository.getShots(mType, FIRST_PAGE).doAfterTerminate(this::hideRefreshView).subscribe(refreshObserver));
     }
 }
