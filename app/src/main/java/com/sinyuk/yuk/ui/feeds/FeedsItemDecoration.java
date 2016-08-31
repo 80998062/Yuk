@@ -18,7 +18,7 @@ public class FeedsItemDecoration extends RecyclerView.ItemDecoration {
 
     public FeedsItemDecoration(Context context) {
         marginTop = ScreenUtils.dpToPxInt(context, 8);
-        gap = ScreenUtils.dpToPxInt(context, 12);
+        gap = ScreenUtils.dpToPxInt(context, 16);
     }
 
     @Override
@@ -26,9 +26,9 @@ public class FeedsItemDecoration extends RecyclerView.ItemDecoration {
         int position = parent.getChildAdapterPosition(view); // item position
         if (position == 0) {
             outRect.top = marginTop;
-        } else {
-            outRect.top = gap;
-
         }
+
+        outRect.bottom = gap;
+
     }
 }

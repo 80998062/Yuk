@@ -16,7 +16,7 @@ import rx.Observable;
 public interface DribbleService {
 
 //    @Headers("Cache-Control: public,max-age=10,only-if-cached")
-    @GET("shots")
+    @GET("shots?per_page=5")
     Observable<List<Shot>> shots(@Query("list") String listType, @Query("page") int pageIndex);
 
     @GET("user")

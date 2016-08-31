@@ -16,9 +16,10 @@ import com.sinyuk.yuk.utils.lists.OnScrollStateListener;
 import com.yalantis.guillotine.animation.GuillotineAnimation;
 
 import butterknife.BindView;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import timber.log.Timber;
 
-public class ShotsListDemo extends BaseActivity implements OnScrollStateListener.AppBarBehaviorListener {
+public class ShotsListDemo extends BaseActivity {
     private static final long RIPPLE_DURATION = 250;
 
     @BindView(R.id.root_view)
@@ -34,7 +35,8 @@ public class ShotsListDemo extends BaseActivity implements OnScrollStateListener
     ImageView mNavigationIcon;
     @BindView(R.id.title)
     ImageView mTitle;
-
+    @BindView(R.id.progress_bar)
+    SmoothProgressBar progressBar;
 
     @Override
     protected int getContentViewID() {
@@ -55,14 +57,6 @@ public class ShotsListDemo extends BaseActivity implements OnScrollStateListener
          * 首先这时候上面那个还==0
          * 然后可以用throllteLast什么的 或者 debounce
          */
-        Timber.e("max %d ", max);
-        mAppBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                ;
-
-            }
-        });
 
         final View menuLayout = LayoutInflater.from(this).inflate(R.layout.home_menu_layout, mRootView, false);
         mRootView.addView(menuLayout);
@@ -73,21 +67,4 @@ public class ShotsListDemo extends BaseActivity implements OnScrollStateListener
                 .setClosedOnStart(true)
                 .build();
     }
-
-    @Override
-    public void onScrollDown() {
-        Timber.d("onScrollDown");
-    }
-
-    @Override
-    public void onScrollUp() {
-        Timber.d("onScrollUp");
-    }
-
-    @Override
-    public void onReachTop() {
-        Timber.d("onReachTop");
-    }
-
-
 }

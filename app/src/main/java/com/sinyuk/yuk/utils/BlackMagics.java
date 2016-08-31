@@ -9,20 +9,17 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
  * Created by Sinyuk on 16/8/15.
  */
 public class BlackMagics {
+
     /*
      * 进度条上移
      * @param v
      * @param withLayer
      */
-    public static ViewPropertyAnimator scrollUp(SmoothProgressBar progressBar) {
-        Preconditions.checkNotNull(progressBar,"progressBar is Null");
-        final int offset = progressBar.getHeight();
-        progressBar.setTranslationY(offset);
-        progressBar.setAlpha(0.01f);
+    public static ViewPropertyAnimator showProgressBar(SmoothProgressBar progressBar) {
+        Preconditions.checkNotNull(progressBar, "progressBar is Null");
         return progressBar.animate()
-                .translationY(0)
-                .alpha(1)
-                .setDuration(400)
+                .alpha(0)
+                .setDuration(250)
                 .setInterpolator(new FastOutSlowInInterpolator())
                 .withLayer();
     }
@@ -32,13 +29,11 @@ public class BlackMagics {
     * @param v
     * @param withLayer
     */
-    public static ViewPropertyAnimator scrollDown(SmoothProgressBar progressBar) {
-        Preconditions.checkNotNull(progressBar,"progressBar is Null");
-        final int offset = progressBar.getHeight();
+    public static ViewPropertyAnimator showProgress(SmoothProgressBar progressBar) {
+        Preconditions.checkNotNull(progressBar, "progressBar is Null");
         return progressBar.animate()
-                .translationY(offset)
-                .alpha(0.01f)
-                .setDuration(400)
+                .alpha(1f)
+                .setDuration(250)
                 .setInterpolator(new FastOutSlowInInterpolator())
                 .withLayer();
     }

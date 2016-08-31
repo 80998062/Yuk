@@ -10,7 +10,6 @@ import timber.log.Timber;
 public class FormatUtils {
     public static String shortenNumber(CharSequence sequence) {
         if (!TextUtils.isEmpty(sequence)) {
-            Timber.d("shortenNumber  origin : %s", sequence);
             int length = sequence.length();
             String suffix = "";
             StringBuilder sb = new StringBuilder();
@@ -40,7 +39,6 @@ public class FormatUtils {
             }
 
             sb.append(suffix);
-            Timber.d("shortenNumber  format : %s", sequence);
             return sb.toString();
         }
         return null;

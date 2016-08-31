@@ -34,9 +34,10 @@ public class ShotRepository {
     public Observable<List<Shot>> getShots(@NonNull String type, int page) {
         Observable<List<Shot>> cachingObservable = mDribbleService.shots(type, page);
         return cachingObservable
-                .map(insertShots(page, type))
+//                .map(insertShots(page, type))
                 .subscribeOn(Schedulers.io())
-                .doOnError(throwable -> handleError(type))
+//                .doOnError(throwable -> mShotCache.remove(type))
+                .doOnError(Throwable::printStackTrace)
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -46,8 +47,8 @@ public class ShotRepository {
             if (list == null) {
                 list = new LinkedList<>();
             }
-            Timber.d("Shots in cache :" + list.toString());
             if (page == 1) {
+                // 保存旧数据
                 if (Collections.disjoint(list, result)) {
                     list.clear();
                     list.addAll(result);
@@ -56,14 +57,10 @@ public class ShotRepository {
                     list.addAll(0, result);
                 }
             } else {
-                list.addAll(result);    // append to front
+                list.addAll(result);
             }
             mShotCache.put(type, list);
             return list;
         };
-    }
-
-    private void handleError(String type) {
-        mShotCache.remove(type);
     }
 }

@@ -87,7 +87,7 @@ public class ApiModule {
             if (cacheControl == null || cacheControl.contains("no-store") || cacheControl.contains("no-cache") ||
                     cacheControl.contains("must-revalidate") || cacheControl.contains("max-age=0")) {
                 return originalResponse.newBuilder()
-                        .header("Cache-Control", "public, max-age=" + 10)
+                        .header("Cache-Control", "public, max-age=" + 0)
                         .build();
             } else {
                 return originalResponse;
