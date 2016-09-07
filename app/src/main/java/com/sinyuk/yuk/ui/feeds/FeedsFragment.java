@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SnapHelper;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.RelativeLayout;
 
@@ -18,6 +20,7 @@ import com.sinyuk.yuk.ui.BaseFragment;
 import com.sinyuk.yuk.utils.BetterViewAnimator;
 import com.sinyuk.yuk.utils.BlackMagics;
 import com.sinyuk.yuk.utils.PrefsKeySet;
+import com.sinyuk.yuk.utils.lists.GravitySnapHelper;
 import com.sinyuk.yukloadinglayout.YukLoadingLayout;
 
 import java.util.List;
@@ -130,6 +133,10 @@ public class FeedsFragment extends BaseFragment {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
 
         mRecyclerView.setLayoutManager(layoutManager);
+
+        final SnapHelper snapHelperStart = new GravitySnapHelper(Gravity.TOP);
+
+        snapHelperStart.attachToRecyclerView(mRecyclerView);
 
         mRecyclerView.setHasFixedSize(true);
 

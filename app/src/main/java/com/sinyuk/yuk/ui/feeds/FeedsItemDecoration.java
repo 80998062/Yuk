@@ -12,7 +12,6 @@ import com.sinyuk.yuk.utils.ScreenUtils;
  */
 public class FeedsItemDecoration extends RecyclerView.ItemDecoration {
 
-
     private final int marginTop;
     private final int gap;
 
