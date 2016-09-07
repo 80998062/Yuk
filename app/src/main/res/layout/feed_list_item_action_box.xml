@@ -10,8 +10,8 @@
 
     <ViewStub
         android:id="@+id/rebound_stub"
-        android:layout_width="@dimen/icon_size_24"
-        android:layout_height="@dimen/icon_size_24"
+        android:layout_width="@dimen/icon_size_18"
+        android:layout_height="@dimen/icon_size_18"
         android:layout="@layout/feed_list_item_rebound"/>
 
     <ViewStub

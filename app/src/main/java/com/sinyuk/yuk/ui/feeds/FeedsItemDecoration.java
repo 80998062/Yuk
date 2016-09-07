@@ -24,10 +24,10 @@ public class FeedsItemDecoration extends RecyclerView.ItemDecoration {
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         int position = parent.getChildAdapterPosition(view); // item position
         if (position == 0) {
-            outRect.top = marginTop;
+            outRect.top = -marginTop;
         }
 
-        outRect.bottom = gap;
+//        outRect.bottom = gap;
 
     }
 }

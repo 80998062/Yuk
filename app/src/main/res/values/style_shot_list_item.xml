@@ -32,12 +32,12 @@
     </style>
 
     <style name="slm_username" parent="single_line_text">
-        <item name="android:layout_height">@dimen/icon_size_18</item>
+        <item name="android:layout_height">@dimen/icon_size_24</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/official_link_blue</item>
-        <item name="android:textSize">@dimen/material_text_body1</item>
+        <item name="android:textSize">@dimen/material_text_body2</item>
     </style>
 
     <style name="slm_type" parent="slm_username">
@@ -70,8 +70,8 @@
     </style>
 
     <style name="slm_avatar">
-        <item name="android:layout_height">@dimen/icon_size_18</item>
-        <item name="android:layout_width">@dimen/icon_size_18</item>
+        <item name="android:layout_height">@dimen/icon_size_24</item>
+        <item name="android:layout_width">@dimen/icon_size_24</item>
         <item name="android:scaleType">centerCrop</item>
     </style>
 
