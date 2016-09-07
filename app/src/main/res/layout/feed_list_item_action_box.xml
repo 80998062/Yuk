@@ -9,16 +9,14 @@
 
     <ViewStub
         android:id="@+id/rebound_stub"
-        android:layout_width="@dimen/icon_size_24"
-        android:layout_height="@dimen/icon_size_24"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout="@layout/feed_list_item_rebound"/>
 
     <ViewStub
         android:id="@+id/attachment_stub"
-        android:layout_width="@dimen/icon_size_24"
-        android:layout_height="@dimen/icon_size_24"
-        android:layout_marginLeft="@dimen/content_space_4"
-        android:layout_marginStart="@dimen/content_space_4"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout="@layout/feed_list_item_attachment"/>
 
     <Space
@@ -30,8 +28,6 @@
     <ImageView
         android:id="@+id/comment_btn"
         style="@style/slm_icon"
-        android:layout_marginEnd="@dimen/content_space_8"
-        android:layout_marginRight="@dimen/content_space_8"
         android:src="@drawable/comment_fill"/>
 
     <ImageView
