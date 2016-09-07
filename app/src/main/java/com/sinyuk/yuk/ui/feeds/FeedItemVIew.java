@@ -56,14 +56,10 @@ public class FeedItemView extends RelativeLayout {
     ViewStub mReboundStub;
     @BindView(R.id.attachment_stub)
     ViewStub mAttachmentStub;
-    @BindView(R.id.view_count)
-    TextView mViewCount;
-    @BindView(R.id.comment)
-    TextView mComment;
-    @BindView(R.id.like_icon)
-    ImageView mLikeIcon;
-    @BindView(R.id.like_number)
-    TextView mLikeNumber;
+    @BindView(R.id.comment_btn)
+    ImageView mCommentBtn;
+    @BindView(R.id.like_btn)
+    ImageView mLikeBtn;
     @BindView(R.id.card_view)
     CardView mCardView;
     @BindView(R.id.avatar)
@@ -126,15 +122,15 @@ public class FeedItemView extends RelativeLayout {
             // TODO: set onClick listener
         }
 
-        /* view count */
-        setText(mViewCount, getNumberToString(data.getViewsCount()));
-
-        /* comments */
-
-        setText(mComment, getNumberToString(data.getCommentsCount()));
-
-        /* like */        // TODO: 是否已经收藏
-        setText(mLikeNumber, getNumberToString(data.getLikesCount()));
+//        /* view count */
+//        setText(mViewCount, getNumberToString(data.getViewsCount()));
+//
+//        /* comments */
+//
+//        setText(mComment, getNumberToString(data.getCommentsCount()));
+//
+//        /* like */        // TODO: 是否已经收藏
+//        setText(mLikeNumber, getNumberToString(data.getLikesCount()));
 
         final User user = data.getUser();
 

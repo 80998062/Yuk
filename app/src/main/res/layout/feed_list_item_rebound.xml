@@ -3,6 +3,6 @@
     android:id="@+id/rebound"
     style="@style/slm_button"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="@dimen/icon_size_18"
-    android:layout_height="@dimen/icon_size_18"
+    android:layout_width="@dimen/icon_size_24"
+    android:layout_height="@dimen/icon_size_24"
     android:src="@drawable/repeal"/>
