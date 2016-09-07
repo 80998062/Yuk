@@ -201,10 +201,10 @@ public class FeedItemView extends RelativeLayout {
             if (getContext() != null) {
                 // create the transition animation - the images in the layouts
                 // of both activities are defined with android:transitionName="robot"
-                ActivityOptionsCompat options = ActivityOptionsCompat
-                        .makeSceneTransitionAnimation((Activity) getContext(), mCardView, getContext().getString(R.string.transition_shot_root));
+//                ActivityOptionsCompat options = ActivityOptionsCompat
+//                        .makeSceneTransitionAnimation((Activity) getContext(), mCardView, getContext().getString(R.string.transition_shot_root));
                 // start the new activity
-                getContext().startActivity(DetailActivity.getStartIntent(data, getContext()), options.toBundle());
+                getContext().startActivity(DetailActivity.getStartIntent(data, getContext()));
             }
 
         });
