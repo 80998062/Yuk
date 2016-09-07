@@ -2,6 +2,7 @@
     <string name="app_name">Yuk</string>
     <string name="dribbble_oauth_activity_toolbar_title">授权登录</string>
     <string name="dribble_oauth_error_message"><![CDATA[>_<||| 服务器好像来大姨妈了]]></string>
+    <string name="transition_shot_root">shot_root</string>
 
 
     <array name="iris_color_light">

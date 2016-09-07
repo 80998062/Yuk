@@ -4,11 +4,13 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.View;
@@ -199,13 +201,19 @@ public class FeedItemView extends RelativeLayout {
             return false;
         });*/
 
-        mShot.setOnClickListener(view -> {
+        mCardView.setOnClickListener(view -> {
             if (getContext() != null) {
-                getContext().startActivity(DetailActivity.getStartIntent(data, getContext()));
-                ((Activity) getContext()).overridePendingTransition(0, 0);
+                // create the transition animation - the images in the layouts
+                // of both activities are defined with android:transitionName="robot"
+                ActivityOptionsCompat options = ActivityOptionsCompat
+                        .makeSceneTransitionAnimation((Activity) getContext(), mCardView, getContext().getString(R.string.transition_shot_root));
+                // start the new activity
+                getContext().startActivity(DetailActivity.getStartIntent(data, getContext()), options.toBundle());
             }
+
         });
     }
+
 
     /**
      * set text for a text view
@@ -232,7 +240,9 @@ public class FeedItemView extends RelativeLayout {
     private GifDrawable getGifDrawableIfExisted(ImageView shot) {
         // get the image and check if it's an animated GIF
         final Drawable drawable = shot.getDrawable();
-        if (drawable == null) { return null; }
+        if (drawable == null) {
+            return null;
+        }
         GifDrawable gif = null;
         if (drawable instanceof GifDrawable) {
             gif = (GifDrawable) drawable;
