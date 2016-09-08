@@ -38,8 +38,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@null"
-                app:layout_collapseMode="pin"
-                app:navigationIcon="@drawable/dribbble_ball">
+                app:layout_collapseMode="pin">
 
                 <ImageView
                     android:id="@+id/back_btn"
@@ -73,24 +72,38 @@
             android:orientation="vertical">
 
             <include
-                layout="@layout/detail_activity_header"
+                layout="@layout/detail_activity_header"/>
+
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="1dp"
+                android:layout_marginBottom="@dimen/content_space_8"
+                android:layout_marginTop="@dimen/content_space_12"
+                android:background="@color/divider_color"/>
 
             <include
-                layout="@layout/detail_activity_social_toolbar"
+                layout="@layout/detail_activity_social_toolbar"/>
+
+
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="1dp"
+                android:layout_marginBottom="@dimen/content_space_12"
+                android:layout_marginTop="@dimen/content_space_8"
+                android:background="@color/divider_color"/>
 
             <com.sinyuk.yuk.widgets.ReadMoreTextView
                 android:id="@+id/description_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="44dp"
-                android:layout_marginRight="44dp"
                 android:textSize="@dimen/material_text_body2"
-                app:trimLength="100"
+                app:trimLength="200"
                 tools:text="@string/sample_description"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2000dp"
+                android:background="@color/official_charcoal"/>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 </android.support.design.widget.CoordinatorLayout>

@@ -1,12 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:overScrollMode="never">
 
-    <Button
-        android:id="@+id/comment_btn"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="comment"/>
-</LinearLayout>
+        android:orientation="horizontal">
+
+        <LinearLayout
+            style="@style/sd_social_button_wrapper">
+
+            <ImageView
+                android:id="@+id/like_btn"
+                style="@style/sd_social_button"
+                android:src="@drawable/dribbble_ball"/>
+
+            <com.sinyuk.yuk.widgets.FontTextView
+                android:id="@+id/likes_tv"
+                style="@style/sd_social_text"
+                android:text="12132134"/>
+        </LinearLayout>
+
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <LinearLayout
+            style="@style/sd_social_button_wrapper">
+
+            <ImageView
+                android:id="@+id/view_btn"
+                style="@style/sd_social_button"
+                android:src="@drawable/dribbble_ball"/>
+
+            <com.sinyuk.yuk.widgets.FontTextView
+                android:id="@+id/views_tv"
+                style="@style/sd_social_text"
+                android:text="views: 11"/>
+        </LinearLayout>
+
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <LinearLayout
+            style="@style/sd_social_button_wrapper">
+
+            <ImageView
+                android:id="@+id/bucket_btn"
+                style="@style/sd_social_button"
+                android:src="@drawable/dribbble_ball"/>
+
+            <com.sinyuk.yuk.widgets.FontTextView
+                android:id="@+id/buckets_tv"
+                style="@style/sd_social_text"
+                android:text="buckets_tv"/>
+        </LinearLayout>
+
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <LinearLayout
+            style="@style/sd_social_button_wrapper">
+
+            <ImageView
+                android:id="@+id/share_btn"
+                style="@style/sd_social_button"
+                android:src="@drawable/dribbble_ball"/>
+
+            <com.sinyuk.yuk.widgets.FontTextView
+                android:id="@+id/shares_tv"
+                style="@style/sd_social_text"
+                android:text="shares_tv"/>
+        </LinearLayout>
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

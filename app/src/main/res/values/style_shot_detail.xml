@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="by">"by  "</string>
+
+    <style name="sd_username">
+        <item name="android:textColor">@color/official_pro</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="sd_social_button_wrapper">
+        <item name="android:layout_marginRight">@dimen/content_space_8</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="sd_social_button">
+        <item name="android:layout_height">56dp</item>
+        <item name="android:layout_width">56dp</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
+    <style name="sd_social_text">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="font">canaro</item>
+        <item name="android:paddingTop">@dimen/content_space_8</item>
+        <item name="android:textSize">@dimen/material_text_button</item>
+    </style>
+
+
+</resources>

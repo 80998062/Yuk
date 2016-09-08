@@ -3,7 +3,7 @@
     <string name="dribbble_oauth_activity_toolbar_title">授权登录</string>
     <string name="dribble_oauth_error_message"><![CDATA[>_<||| 服务器好像来大姨妈了]]></string>
     <string name="transition_shot_root">shot_root</string>
-    <string name="sample_description">A color filter that can be used to simulate simple lighting effects. A LightingColorFilter is defined by two parameters, one used to multiply the source color (called colorMultiply) and one used to add to the source color (called colorAdd). The alpha channel is left untouched by this color filter. Given a source color RGB, the resulting R'G'B' color is computed thusly.</string>
+    <string name="sample_description">dsadsa</string>
 
 
     <array name="iris_color_light">

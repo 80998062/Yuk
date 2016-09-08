@@ -11,6 +11,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableStringBuilder;
 import android.util.TypedValue;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -32,7 +33,10 @@ import com.sinyuk.yuk.utils.StringUtils;
 import com.sinyuk.yuk.utils.ViewUtils;
 import com.sinyuk.yuk.utils.glide.CropCircleTransformation;
 import com.sinyuk.yuk.utils.glide.GlideUtils;
+import com.sinyuk.yuk.utils.spanbuilder.AndroidSpan;
+import com.sinyuk.yuk.widgets.FontTextView;
 import com.sinyuk.yuk.widgets.FourThreeImageView;
+import com.sinyuk.yuk.widgets.ReadMoreTextView;
 import com.sinyuk.yuk.widgets.TextDrawable;
 
 import butterknife.BindColor;
@@ -68,6 +72,22 @@ public class DetailActivity extends BaseActivity {
     ImageView mBackBtn;
     @BindView(R.id.like_btn)
     ImageView mLikeBtn;
+    @BindView(R.id.likes_tv)
+    FontTextView mLikesTv;
+    @BindView(R.id.view_btn)
+    ImageView mViewBtn;
+    @BindView(R.id.views_tv)
+    FontTextView mViewsTv;
+    @BindView(R.id.bucket_btn)
+    ImageView mBucketBtn;
+    @BindView(R.id.buckets_tv)
+    FontTextView mBucketsTv;
+    @BindView(R.id.share_btn)
+    ImageView mShareBtn;
+    @BindView(R.id.shares_tv)
+    FontTextView mSharesTv;
+    @BindView(R.id.description_tv)
+    ReadMoreTextView mDescriptionTv;
     private Shot mData;
 
     public static Intent getStartIntent(Shot data, Context context) {
@@ -95,7 +115,10 @@ public class DetailActivity extends BaseActivity {
         setupToolbar();
         loadShot();
         loadAuthorInformation();
+        loadSocialInformation();
     }
+
+
 
     private void setupToolbar() {
     }
@@ -126,18 +149,23 @@ public class DetailActivity extends BaseActivity {
         // use a TextDrawable as a placeholder
         final char firstLetter = username.charAt(0);
 
-        Timber.d("Author name : %s", username);
         final TextDrawable textDrawable = TextDrawable.builder()
                 .buildRound(firstLetter + "", COLOR_SLATE);
 
-        Timber.d("Avatar url : %s", mData.getUser().getAvatarUrl());
-        Glide.with(this).load(mData.getUser().getAvatarUrl())
-                .bitmapTransform(new CropCircleTransformation(this)).placeholder(textDrawable)
-                .error(textDrawable)
-                .into(mAvatar);
+        Glide.with(this).load(mData.getUser().getAvatarUrl()).bitmapTransform(new CropCircleTransformation(this)).placeholder(textDrawable).error(textDrawable).into(mAvatar);
 
-        /*username*/
-        setText(mPublishInfo, username);
+        /*username By XXX*/
+        setText(mPublishInfo, new AndroidSpan().drawRelativeSize(getString(R.string.by), 1f).drawTextAppearanceSpan(username, this, R.style.sd_username).getSpanText());
+        //title
+        setText(mTitle, StringUtils.valueOrDefault(mData.getTitle(), ""));
+
+        if (mData.getDescription() != null) {
+            mDescriptionTv.setText(mData.getDescription());
+        }
+
+    }
+
+    private void loadSocialInformation() {
     }
 
     // 加载图片
@@ -152,12 +180,15 @@ public class DetailActivity extends BaseActivity {
                 .error(R.color.colorPrimary)
                 .placeholder(R.color.white)
                 .listener(new ShotRequestListener(mShot)).into(mShot);
-
-        //title
-        mTitle.setText(StringUtils.valueOrDefault(mData.getTitle(), ""));
     }
 
     private void setText(TextView v, String text) {
+        Preconditions.checkNotNull(v);
+        Preconditions.checkNotNull(text);
+        v.setText(text);
+    }
+
+    private void setText(TextView v, SpannableStringBuilder text) {
         Preconditions.checkNotNull(v);
         Preconditions.checkNotNull(text);
         v.setText(text);

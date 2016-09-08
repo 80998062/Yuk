@@ -9,22 +9,24 @@
 
     <ImageView
         android:id="@+id/avatar"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         tools:src="@drawable/dribbble_ball"/>
 
 
-    <TextView
+    <com.sinyuk.yuk.widgets.FontTextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/content_space_8"
+        android:layout_marginTop="@dimen/content_space_8"
         android:layout_toEndOf="@+id/avatar"
         android:layout_toRightOf="@+id/avatar"
         android:includeFontPadding="false"
         android:lineSpacingExtra="1sp"
-        android:textSize="@dimen/material_text_subhead"
-        android:textStyle="bold"
+        android:textColor="@color/official_charcoal"
+        android:textSize="18sp"
+        app:font="canaro"
         tools:text="Material Design Todo List"/>
 
     <TextView
@@ -37,9 +39,9 @@
         android:layout_toEndOf="@+id/avatar"
         android:layout_toRightOf="@+id/avatar"
         android:includeFontPadding="false"
+        android:textColor="@color/official_slate"
         android:textSize="@dimen/material_text_caption2"
         tools:text="by Jordi Tambillo on May 19, 2015"/>
-
 
 
 </RelativeLayout>
