@@ -49,7 +49,7 @@ public class ReadMoreTextView extends TextView {
         this.trimCollapsedText = getResources().getString(resourceIdTrimCollapsedText);
         this.trimExpandedText = getResources().getString(resourceIdTrimExpandedText);
         this.colorClickableText = typedArray.getColor(R.styleable.ReadMoreTextView_colorClickableText,
-                ContextCompat.getColor(context, R.color.colorAccent));
+                ContextCompat.getColor(context, R.color.official_pro));
         this.showTrimExpandedText =
                 typedArray.getBoolean(R.styleable.ReadMoreTextView_showTrimExpandedText, DEFAULT_SHOW_TRIM_EXPANDED_TEXT);
         typedArray.recycle();

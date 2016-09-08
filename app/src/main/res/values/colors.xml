@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-
+    <color name="colorPrimaryDark">@color/official_pink_dk</color>
+    <color name="colorPrimary">@color/official_pink</color>
+    <color name="colorAccent">@color/official_pro</color>
     <!--official colors-->
     <!--You’re encouraged to use the official Dribbble colorswhen displaying the logo and marks. -->
     <!--When using the logo type on light backgrounds, use our charcoal color when possible. -->
     <!--Use white if displaying on dark backgrounds (as in the dribbble.com header).-->
     <eat-comment/>
-    <color name="official_pink">#ea4c89</color>
+    <color name="official_pink">#EA4C89</color>
+    <color name="official_pink_dk">#b60f5d</color>
     <color name="official_charcoal">#333333</color>
     <color name="official_link_blue">#3a8bbb</color>
     <color name="official_pro">#66cccc</color>

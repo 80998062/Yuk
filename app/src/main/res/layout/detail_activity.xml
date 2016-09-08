@@ -5,43 +5,53 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:focusableInTouchMode="true">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/official_pro"
-        android:fitsSystemWindows="true">
+        android:background="@null"
+        app:elevation="0dp">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/official_charcoal"
-            android:fitsSystemWindows="true"
             android:minHeight="?attr/actionBarSize"
-            app:contentScrim="?attr/colorPrimary"
+            app:contentScrim="@color/white"
             app:layout_scrollFlags="snap|scroll|enterAlways|enterAlwaysCollapsed"
+            app:statusBarScrim="@color/colorPrimaryDark"
             app:titleEnabled="false">
+
 
             <com.sinyuk.yuk.widgets.FourThreeImageView
                 android:id="@+id/shot"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top|center_horizontal"
-                android:fitsSystemWindows="true"
+                android:layout_height="match_parent"
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax"
                 tools:src="@drawable/sample_04"/>
+
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
-                app:navigationIcon="@drawable/dribbble_ball"/>
+                android:background="@null"
+                app:layout_collapseMode="pin">
+
+                <ImageView
+                    android:id="@+id/back_btn"
+                    style="@style/ToolbarButton"
+                    android:src="@drawable/chevron_left"/>
+
+                <ImageView
+                    android:id="@+id/like_btn"
+                    style="@style/ToolbarButton"
+                    android:layout_gravity="end"
+                    android:src="@drawable/like"/>
+            </android.support.v7.widget.Toolbar>
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>

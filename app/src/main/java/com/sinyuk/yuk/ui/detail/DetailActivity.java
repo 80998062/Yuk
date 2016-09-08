@@ -6,8 +6,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -32,6 +35,8 @@ import com.sinyuk.yuk.widgets.TextDrawable;
 
 import butterknife.BindColor;
 import butterknife.BindView;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -50,6 +55,12 @@ public class DetailActivity extends BaseActivity {
     TextView mPublishInfo;
     @BindColor(R.color.official_slate)
     int COLOR_SLATE;
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+    @BindView(R.id.collapsing_toolbar_layout)
+    CollapsingToolbarLayout mCollapsingToolbarLayout;
+    @BindView(R.id.app_bar_layout)
+    AppBarLayout mAppBarLayout;
     private Shot mData;
 
     public static Intent getStartIntent(Shot data, Context context) {
@@ -73,8 +84,37 @@ public class DetailActivity extends BaseActivity {
 
     @Override
     protected void finishInflating(Bundle savedInstanceState) {
+        setupToolbar();
         loadShot();
         loadAuthorInformation();
+    }
+
+    private void setupToolbar() {
+        mToolbar.setNavigationIcon(R.drawable.chevron_left_primary);
+        mToolbar.setNavigationOnClickListener(view -> onBackPressed());
+    }
+
+    private void setAppBarLayout() {
+        addSubscription(RxAppBarLayout.offsetChanges(mAppBarLayout)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .map(dy -> 1 - (-dy / (mAppBarLayout.getTotalScrollRange() / 1.5f)))
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(fraction -> {
+                    if (fraction < 0) { fraction = 0f; }
+                    /*mUserNameEt.setAlpha(fraction);
+                    mLocationTv.setAlpha(fraction);
+                    mAvatar.setScaleY(fraction);
+                    mAvatar.setAlpha(fraction);
+                    mAvatar.setScaleX(fraction);
+                    mAcionIv.setAlpha(fraction);
+                    mBackIv.setAlpha(fraction);
+                    if (fraction < 0.28f) {
+                        mFab.show();
+                    } else {
+                        mFab.hide();
+                    }*/
+                }));
     }
 
     // 作者信息
@@ -105,7 +145,10 @@ public class DetailActivity extends BaseActivity {
         } else {
             requestBuilder.diskCacheStrategy(DiskCacheStrategy.RESULT);
         }
-        requestBuilder.load(mData.bestQuality())/*.listener(new ShotRequestListener(mShot))*/.into(mShot);
+        requestBuilder.load(mData.bestQuality())
+                .error(R.color.colorPrimary)
+                .placeholder(R.color.white)
+                .listener(new ShotRequestListener(mShot)).into(mShot);
 
         //title
         mTitle.setText(StringUtils.valueOrDefault(mData.getTitle(), ""));
@@ -133,17 +176,19 @@ public class DetailActivity extends BaseActivity {
         @Override
         public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
             final Bitmap bitmap = GlideUtils.getBitmap(resource);
-            if (bitmap == null) { return false; }
+            if (bitmap == null) {
+                return false;
+            }
             float imageScale = (float) imageView.getHeight() / (float) bitmap.getHeight();
-            float twentyFourDip = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24,
+            float heightInDip = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 36,
                     DetailActivity.this.getResources().getDisplayMetrics());
             Palette.from(bitmap)
-                    .maximumColorCount(4)
+                    .maximumColorCount(6)
                     .clearFilters()
-                    .setRegion(0, 0, bitmap.getWidth() - 1, (int) (twentyFourDip / imageScale))
+                    .setRegion(0, 0, bitmap.getWidth() - 1, (int) (heightInDip / imageScale))
                     // - 1 to work around https://code.google.com/p/android/issues/detail?id=191013
                     .generate(palette -> {
-                        boolean isDark;
+                        boolean isDark = false;
                         @ColorUtils.Lightness int lightness = ColorUtils.isDark(palette);
                         if (lightness == ColorUtils.LIGHTNESS_UNKNOWN) {
                             isDark = ColorUtils.isDark(bitmap, bitmap.getWidth() / 2, 0);
@@ -151,15 +196,14 @@ public class DetailActivity extends BaseActivity {
                             isDark = lightness == ColorUtils.IS_DARK;
                         }
 
-                        if (!isDark) { // make back icon dark on light images
-                           /* back.setColorFilter(ContextCompat.getColor(
-                                    DribbbleShot.this, R.color.dark_icon));*/
-                        }
+                        // make back icon dark on light images
 
                         // color the status bar. Set a complementary dark color on L,
                         // light or dark color on M (with matching status bar icons)
 
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) { return; }
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                            return;
+                        }
 
                         Palette.Swatch topColor = ColorUtils.getMostPopulousSwatch(palette);
                         int statusBarColor = -1;
@@ -172,7 +216,9 @@ public class DetailActivity extends BaseActivity {
                                 ViewUtils.setLightStatusBar(imageView);
                             }
                         }
-                        if (statusBarColor == -1) { return; }
+                        if (statusBarColor == -1) {
+                            return;
+                        }
                         if (statusBarColor != getWindow().getStatusBarColor()) {
                             //imageView.setScrimColor(statusBarColor);
                             ValueAnimator statusBarColorAnim = ValueAnimator.ofArgb(getWindow
