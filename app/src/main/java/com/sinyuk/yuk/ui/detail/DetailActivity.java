@@ -105,7 +105,7 @@ public class DetailActivity extends BaseActivity {
         } else {
             requestBuilder.diskCacheStrategy(DiskCacheStrategy.RESULT);
         }
-        requestBuilder.load(mData.bestQuality()).listener(new ShotRequestListener(mShot)).into(mShot);
+        requestBuilder.load(mData.bestQuality())/*.listener(new ShotRequestListener(mShot))*/.into(mShot);
 
         //title
         mTitle.setText(StringUtils.valueOrDefault(mData.getTitle(), ""));
