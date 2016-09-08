@@ -38,7 +38,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@null"
-                app:layout_collapseMode="pin">
+                app:layout_collapseMode="pin"
+                app:navigationIcon="@drawable/dribbble_ball">
 
                 <ImageView
                     android:id="@+id/back_btn"
@@ -62,6 +63,8 @@
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/content_space_16"
+        android:paddingRight="@dimen/content_space_16"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -69,16 +72,25 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="2000dp"
-                android:background="@color/official_pink"/>
-
             <include
                 layout="@layout/detail_activity_header"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <include
+                layout="@layout/detail_activity_social_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <com.sinyuk.yuk.widgets.ReadMoreTextView
+                android:id="@+id/description_tv"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/content_space_8"/>
+                android:layout_marginLeft="44dp"
+                android:layout_marginRight="44dp"
+                android:textSize="@dimen/material_text_body2"
+                app:trimLength="100"
+                tools:text="@string/sample_description"/>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 </android.support.design.widget.CoordinatorLayout>
