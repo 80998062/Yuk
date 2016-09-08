@@ -21,10 +21,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.jakewharton.rxbinding.support.design.widget.RxAppBarLayout;
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.ui.BaseActivity;
 import com.sinyuk.yuk.utils.ColorUtils;
+import com.sinyuk.yuk.utils.MathUtils;
 import com.sinyuk.yuk.utils.Preconditions;
 import com.sinyuk.yuk.utils.StringUtils;
 import com.sinyuk.yuk.utils.ViewUtils;
@@ -35,6 +37,7 @@ import com.sinyuk.yuk.widgets.TextDrawable;
 
 import butterknife.BindColor;
 import butterknife.BindView;
+import butterknife.OnClick;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -61,6 +64,10 @@ public class DetailActivity extends BaseActivity {
     CollapsingToolbarLayout mCollapsingToolbarLayout;
     @BindView(R.id.app_bar_layout)
     AppBarLayout mAppBarLayout;
+    @BindView(R.id.back_btn)
+    ImageView mBackBtn;
+    @BindView(R.id.like_btn)
+    ImageView mLikeBtn;
     private Shot mData;
 
     public static Intent getStartIntent(Shot data, Context context) {
@@ -84,36 +91,32 @@ public class DetailActivity extends BaseActivity {
 
     @Override
     protected void finishInflating(Bundle savedInstanceState) {
+        setAppBarLayout();
         setupToolbar();
         loadShot();
         loadAuthorInformation();
     }
 
     private void setupToolbar() {
-        mToolbar.setNavigationIcon(R.drawable.chevron_left_primary);
-        mToolbar.setNavigationOnClickListener(view -> onBackPressed());
     }
 
     private void setAppBarLayout() {
         addSubscription(RxAppBarLayout.offsetChanges(mAppBarLayout)
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .map(dy -> 1 - (-dy / (mAppBarLayout.getTotalScrollRange() / 1.5f)))
+                .map(dy -> (dy / (mAppBarLayout.getTotalScrollRange() * 1.f) * (dy / (mAppBarLayout.getTotalScrollRange() * 1.f))))
+                .map(fraction -> MathUtils.constrain(0, 1, fraction))
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(fraction -> {
-                    if (fraction < 0) { fraction = 0f; }
-                    /*mUserNameEt.setAlpha(fraction);
-                    mLocationTv.setAlpha(fraction);
-                    mAvatar.setScaleY(fraction);
-                    mAvatar.setAlpha(fraction);
-                    mAvatar.setScaleX(fraction);
-                    mAcionIv.setAlpha(fraction);
-                    mBackIv.setAlpha(fraction);
-                    if (fraction < 0.28f) {
-                        mFab.show();
-                    } else {
-                        mFab.hide();
-                    }*/
+                    mBackBtn.setAlpha(fraction);
+                    mLikeBtn.setAlpha(fraction);
+                    if (fraction == 1) {
+                        mLikeBtn.setClickable(true);
+                        mBackBtn.setClickable(true);
+                    } else if (fraction == 0) {
+                        mLikeBtn.setClickable(false);
+                        mBackBtn.setClickable(false);
+                    }
                 }));
     }
 
@@ -158,6 +161,16 @@ public class DetailActivity extends BaseActivity {
         Preconditions.checkNotNull(v);
         Preconditions.checkNotNull(text);
         v.setText(text);
+    }
+
+    @OnClick(R.id.back_btn)
+    public void onClickBackButton() {
+        onBackPressed();
+    }
+
+    @OnClick(R.id.like_btn)
+    public void onClickLikeBtn() {
+
     }
 
     private class ShotRequestListener implements RequestListener<String, GlideDrawable> {

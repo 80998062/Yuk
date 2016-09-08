@@ -21,7 +21,6 @@
             android:minHeight="?attr/actionBarSize"
             app:contentScrim="@color/white"
             app:layout_scrollFlags="snap|scroll|enterAlways|enterAlwaysCollapsed"
-            app:statusBarScrim="@color/colorPrimaryDark"
             app:titleEnabled="false">
 
 
@@ -44,12 +43,16 @@
                 <ImageView
                     android:id="@+id/back_btn"
                     style="@style/ToolbarButton"
+                    android:alpha="0"
+                    android:clickable="false"
                     android:src="@drawable/chevron_left"/>
 
                 <ImageView
                     android:id="@+id/like_btn"
                     style="@style/ToolbarButton"
                     android:layout_gravity="end"
+                    android:alpha="0"
+                    android:clickable="false"
                     android:src="@drawable/like"/>
             </android.support.v7.widget.Toolbar>
 
