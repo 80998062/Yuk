@@ -14,10 +14,11 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/attachment_text_height"
         android:layout_marginBottom="@dimen/content_space_8"
-        android:drawableLeft="@drawable/link"
+        android:drawableLeft="@drawable/link_18"
         android:drawablePadding="@dimen/content_space_4"
-        android:drawableStart="@drawable/link"
+        android:drawableStart="@drawable/link_18"
         android:gravity="center_vertical"
+        android:textColor="@color/official_slate"
         android:textSize="@dimen/material_text_button"
         app:font="canaro"
         tools:text="2 Attachments"/>
