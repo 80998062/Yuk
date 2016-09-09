@@ -16,6 +16,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.DrawableRequestBuilder;
@@ -91,8 +92,13 @@ public class DetailActivity extends BaseActivity {
     FontTextView mSharesTv;
     @BindView(R.id.description_tv)
     ReadMoreTextView mDescriptionTv;
-    @BindView(R.id.attachments_container)
-    FrameLayout mAttachmentsContainer;
+    @BindView(R.id.attachments_fragment_container)
+    FrameLayout mAttachmentsFragmentContainer;
+    @BindView(R.id.attachments_fragment_wrapper)
+    LinearLayout mAttachmentsFragmentWrapper;
+    @BindView(R.id.attachment_count_tv)
+    TextView mAttachmentCountTv;
+
     private Shot mData;
 
     public static Intent getStartIntent(Shot data, Context context) {
@@ -126,7 +132,8 @@ public class DetailActivity extends BaseActivity {
 
     private void loadAttachments() {
         if (mData.getAttachmentsCount() > 0) {
-            mAttachmentsContainer.setVisibility(View.VISIBLE);
+            mAttachmentsFragmentWrapper.setVisibility(View.VISIBLE);
+            mAttachmentCountTv.setText(String.format(getString(R.string.attachment_count), mData.getAttachmentsCount()));
         }
     }
 
@@ -214,6 +221,7 @@ public class DetailActivity extends BaseActivity {
     public void onClickLikeBtn() {
 
     }
+
 
     private class ShotRequestListener implements RequestListener<String, GlideDrawable> {
         private static final float SCRIM_ADJUSTMENT = 0.075f;

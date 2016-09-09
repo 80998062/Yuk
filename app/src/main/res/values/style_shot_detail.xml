@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="by">"by  "</string>
-    <style name="attachment">%d Attachments</style>
+    <string name="attachment_count">%d Attachments</string>
 
     <style name="sd_username">
         <item name="android:textColor">@color/official_pro</item>

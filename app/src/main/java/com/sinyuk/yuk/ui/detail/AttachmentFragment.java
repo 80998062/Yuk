@@ -37,12 +37,9 @@ public class AttachmentFragment extends BaseFragment {
     private static final String KEY_COUNT = "COUNT";
     private static final String TAG = "AttachmentFragment";
 
-    @BindView(R.id.attachment_tv)
-    FontTextView mAttachmentTv;
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
-    @BindView(R.id.root_view)
-    LinearLayout mRootView;
+
     @Inject
     DribbleService dribbleService;
     private long mId;

@@ -10,6 +10,7 @@
     android:visibility="gone">
 
     <com.sinyuk.yuk.widgets.FontTextView
+        android:id="@+id/attachment_count_tv"
         android:layout_width="match_parent"
         android:layout_height="@dimen/attachment_text_height"
         android:layout_marginBottom="@dimen/content_space_8"
