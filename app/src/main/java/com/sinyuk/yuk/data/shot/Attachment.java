@@ -128,4 +128,17 @@ public class Attachment implements Parcelable {
             return new Attachment[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "Attachment{" +
+                "id=" + id +
+                ", url='" + url + '\'' +
+                ", thumbnailUrl='" + thumbnailUrl + '\'' +
+                ", size=" + size +
+                ", contentType='" + contentType + '\'' +
+                ", viewsCount=" + viewsCount +
+                ", createdAt='" + createdAt + '\'' +
+                '}';
+    }
 }

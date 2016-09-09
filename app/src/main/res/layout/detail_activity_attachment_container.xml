@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/attachments_fragment_wrapper"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/attachment_fragment_height"
+    android:orientation="vertical"
+    android:visibility="gone">
+
+    <com.sinyuk.yuk.widgets.FontTextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/attachment_text_height"
+        android:layout_marginBottom="@dimen/content_space_8"
+        android:drawableLeft="@drawable/link"
+        android:drawablePadding="@dimen/content_space_4"
+        android:drawableStart="@drawable/link"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/material_text_button"
+        app:font="canaro"
+        tools:text="2 Attachments"/>
+
+    <FrameLayout
+        android:id="@+id/attachments_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/attachment_fragment_height"
+        tools:background="#ccc"/>
+</LinearLayout>

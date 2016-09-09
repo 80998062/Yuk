@@ -1,5 +1,6 @@
 package com.sinyuk.yuk.api;
 
+import com.sinyuk.yuk.data.shot.Attachment;
 import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.data.user.User;
 
@@ -7,6 +8,7 @@ import java.util.List;
 
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
 
@@ -22,5 +24,6 @@ public interface DribbleService {
     @GET("user")
     Observable<User> getAuthenticatedUser();
 
-
+    @GET("shots/{id}/attachments")
+    Observable<List<Attachment>> attachments(@Path("id") long id);
 }

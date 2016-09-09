@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content">
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/attachment_thumbnail_height">
 
     <com.sinyuk.yuk.widgets.FourThreeImageView
-        android:layout_width="wrap_content"
+        android:id="@+id/thumbnail"
+        android:layout_width="@dimen/attachment_thumbnail_height"
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
-        tools:src="@drawable/sample_04"/>
+        tools:src="@drawable/pic_fill"/>
 </FrameLayout>

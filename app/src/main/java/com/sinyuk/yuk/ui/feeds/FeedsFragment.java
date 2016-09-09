@@ -134,9 +134,9 @@ public class FeedsFragment extends BaseFragment {
 
         mRecyclerView.setLayoutManager(layoutManager);
 
-       /* final SnapHelper snapHelperStart = new GravitySnapHelper(Gravity.TOP);
+        final SnapHelper snapHelperStart = new GravitySnapHelper(Gravity.TOP);
 
-        snapHelperStart.attachToRecyclerView(mRecyclerView);*/
+        snapHelperStart.attachToRecyclerView(mRecyclerView);
 
         mRecyclerView.setHasFixedSize(true);
 

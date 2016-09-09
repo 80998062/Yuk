@@ -97,13 +97,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/material_text_body2"
-                app:trimLength="200"
-                tools:text="@string/sample_description"/>
+                app:trimLength="200"/>
 
-            <FrameLayout
-                android:id="@+id/attachments_container"
+            <include
+                layout="@layout/detail_activity_attachment_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="@dimen/attachment_fragment_height"
+                android:layout_marginTop="@dimen/content_space_8"/>
+
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2000dp"

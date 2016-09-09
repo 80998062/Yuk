@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="by">"by  "</string>
+    <style name="attachment">%d Attachments</style>
 
     <style name="sd_username">
         <item name="android:textColor">@color/official_pro</item>
@@ -30,4 +31,7 @@
     </style>
 
 
+    <dimen name="attachment_thumbnail_height">120dp</dimen>
+    <dimen name="attachment_text_height">24dp</dimen>
+    <dimen name="attachment_fragment_height">144dp</dimen>
 </resources>

@@ -1,12 +1,21 @@
 package com.sinyuk.yuk.ui.home;
 
+import android.widget.TextView;
+
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.ui.BaseFragment;
+import com.sinyuk.yuk.ui.oauth.DribbleOauthActivity;
+
+import butterknife.BindView;
+import butterknife.OnClick;
 
 /**
  * Created by Sinyuk on 16/8/20.
  */
-public class GuillotineMenu extends BaseFragment{
+public class GuillotineMenu extends BaseFragment {
+    @BindView(R.id.fake_login)
+    TextView mFakeLogin;
+
     @Override
     protected void beforeInflate() {
 
@@ -20,5 +29,10 @@ public class GuillotineMenu extends BaseFragment{
     @Override
     protected void finishInflate() {
 
+    }
+
+    @OnClick(R.id.fake_login)
+    public void onClick() {
+        getContext().startActivity(DribbleOauthActivity.getAuthIntent(getContext()));
     }
 }

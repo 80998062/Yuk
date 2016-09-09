@@ -13,6 +13,8 @@ import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
 import android.util.TypedValue;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -50,6 +52,7 @@ import timber.log.Timber;
  * Created by Sinyuk on 16/8/20.
  */
 public class DetailActivity extends BaseActivity {
+    public static final String TAG = "DetailActivity";
     private static final String SHOT_DATA = "shot_data";
     private static final int CROSS_FADE_DURATION = 1000;
     @BindView(R.id.shot)
@@ -88,6 +91,8 @@ public class DetailActivity extends BaseActivity {
     FontTextView mSharesTv;
     @BindView(R.id.description_tv)
     ReadMoreTextView mDescriptionTv;
+    @BindView(R.id.attachments_container)
+    FrameLayout mAttachmentsContainer;
     private Shot mData;
 
     public static Intent getStartIntent(Shot data, Context context) {
@@ -106,7 +111,7 @@ public class DetailActivity extends BaseActivity {
     @Override
     protected void beforeInflating() {
         mData = getIntent().getExtras().getParcelable(SHOT_DATA);
-        Timber.tag("DetailActivity");
+        Timber.tag(TAG);
     }
 
     @Override
@@ -116,8 +121,14 @@ public class DetailActivity extends BaseActivity {
         loadShot();
         loadAuthorInformation();
         loadSocialInformation();
+        loadAttachments();
     }
 
+    private void loadAttachments() {
+        if (mData.getAttachmentsCount() > 0) {
+            mAttachmentsContainer.setVisibility(View.VISIBLE);
+        }
+    }
 
 
     private void setupToolbar() {
