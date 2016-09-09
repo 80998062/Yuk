@@ -8,13 +8,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,6 +33,8 @@ import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.ui.BaseActivity;
 import com.sinyuk.yuk.utils.ActivityUtils;
 import com.sinyuk.yuk.utils.ColorUtils;
+import com.sinyuk.yuk.utils.DribbbleUtils;
+import com.sinyuk.yuk.utils.HtmlUtils;
 import com.sinyuk.yuk.utils.MathUtils;
 import com.sinyuk.yuk.utils.Preconditions;
 import com.sinyuk.yuk.utils.StringUtils;
@@ -92,7 +96,7 @@ public class DetailActivity extends BaseActivity {
     @BindView(R.id.shares_tv)
     FontTextView mSharesTv;
     @BindView(R.id.description_tv)
-    ReadMoreTextView mDescriptionTv;
+    TextView mDescriptionTv;
     @BindView(R.id.attachments_fragment_wrapper)
     LinearLayout mAttachmentsFragmentWrapper;
     @BindView(R.id.attachment_count_tv)
@@ -179,8 +183,15 @@ public class DetailActivity extends BaseActivity {
         //title
         setText(mTitle, StringUtils.valueOrDefault(mData.getTitle(), ""));
 
-        if (mData.getDescription() != null) {
-            mDescriptionTv.setText(mData.getDescription());
+        if (!TextUtils.isEmpty(mData.getDescription())) {
+            final Spanned descText =
+                    DribbbleUtils.parseDribbbleHtml(mData.getDescription(),
+                            ContextCompat.getColorStateList(this, R.color.dribbble_links),
+                            ContextCompat.getColor(this, R.color.colorPrimaryLt));
+
+            HtmlUtils.setTextWithNiceLinks(mDescriptionTv, descText);
+        } else {
+            mDescriptionTv.setVisibility(View.GONE);
         }
 
     }

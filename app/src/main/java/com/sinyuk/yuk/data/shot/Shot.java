@@ -2,7 +2,6 @@ package com.sinyuk.yuk.data.shot;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.Spanned;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
@@ -14,7 +13,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -22,6 +20,17 @@ import java.util.Locale;
  */
 public class Shot implements Parcelable {
 
+    public static final Creator<Shot> CREATOR = new Creator<Shot>() {
+        @Override
+        public Shot createFromParcel(Parcel source) {
+            return new Shot(source);
+        }
+
+        @Override
+        public Shot[] newArray(int size) {
+            return new Shot[size];
+        }
+    };
     @SerializedName("id")
     private final int id;
     @SerializedName("title")
@@ -107,8 +116,38 @@ public class Shot implements Parcelable {
         this.team = team;
     }
 
+    protected Shot(Parcel in) {
+        this.id = in.readInt();
+        this.title = in.readString();
+        this.description = in.readString();
+        this.width = in.readInt();
+        this.height = in.readInt();
+        this.images = in.readParcelable(Images.class.getClassLoader());
+        this.viewsCount = in.readInt();
+        this.likesCount = in.readInt();
+        this.commentsCount = in.readInt();
+        this.attachmentsCount = in.readInt();
+        this.reboundsCount = in.readInt();
+        this.bucketsCount = in.readInt();
+        this.createdAt = in.readString();
+        this.updatedAt = in.readString();
+        this.htmlUrl = in.readString();
+        this.attachmentsUrl = in.readString();
+        this.bucketsUrl = in.readString();
+        this.commentsUrl = in.readString();
+        this.likesUrl = in.readString();
+        this.projectsUrl = in.readString();
+        this.reboundsUrl = in.readString();
+        this.animated = in.readByte() != 0;
+        this.tags = in.createStringArrayList();
+        this.user = in.readParcelable(User.class.getClassLoader());
+        this.team = in.readParcelable(Team.class.getClassLoader());
+    }
+
     private String checkNotNull(String str, String placeholder) {
-        if (TextUtils.isEmpty(str)) {str = placeholder;}
+        if (TextUtils.isEmpty(str)) {
+            str = placeholder;
+        }
         return str;
     }
 
@@ -129,7 +168,6 @@ public class Shot implements Parcelable {
         }
         return null;
     }
-
 
     public int getId() {
         return id;
@@ -239,7 +277,6 @@ public class Shot implements Parcelable {
         this.hasFadedIn = hasFadedIn;
     }
 
-
     @Override
     public int describeContents() {
         return 0;
@@ -274,47 +311,7 @@ public class Shot implements Parcelable {
         dest.writeParcelable(this.team, flags);
     }
 
-    protected Shot(Parcel in) {
-        this.id = in.readInt();
-        this.title = in.readString();
-        this.description = in.readString();
-        this.width = in.readInt();
-        this.height = in.readInt();
-        this.images = in.readParcelable(Images.class.getClassLoader());
-        this.viewsCount = in.readInt();
-        this.likesCount = in.readInt();
-        this.commentsCount = in.readInt();
-        this.attachmentsCount = in.readInt();
-        this.reboundsCount = in.readInt();
-        this.bucketsCount = in.readInt();
-        this.createdAt = in.readString();
-        this.updatedAt = in.readString();
-        this.htmlUrl = in.readString();
-        this.attachmentsUrl = in.readString();
-        this.bucketsUrl = in.readString();
-        this.commentsUrl = in.readString();
-        this.likesUrl = in.readString();
-        this.projectsUrl = in.readString();
-        this.reboundsUrl = in.readString();
-        this.animated = in.readByte() != 0;
-        this.tags = in.createStringArrayList();
-        this.user = in.readParcelable(User.class.getClassLoader());
-        this.team = in.readParcelable(Team.class.getClassLoader());
-    }
-
-    public static final Creator<Shot> CREATOR = new Creator<Shot>() {
-        @Override
-        public Shot createFromParcel(Parcel source) {
-            return new Shot(source);
-        }
-
-        @Override
-        public Shot[] newArray(int size) {
-            return new Shot[size];
-        }
-    };
-
-    public boolean equalInVisual(Shot anotherShot){
+    public boolean equalInVisual(Shot anotherShot) {
         return false;
     }
 }

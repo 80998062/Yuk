@@ -76,4 +76,5 @@ dependencies {
     releaseCompile rootProject.ext.dependencies["leakcanary-no-op"]
     testCompile rootProject.ext.dependencies["leakcanary-no-op"]
     compile project(':guillotinemenu')
+    compile project(':bypass')
 }

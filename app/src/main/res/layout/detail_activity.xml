@@ -92,12 +92,11 @@
                 android:layout_marginTop="@dimen/content_space_8"
                 android:background="@color/divider_color"/>
 
-            <com.sinyuk.yuk.widgets.ReadMoreTextView
+            <TextView
                 android:id="@+id/description_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/material_text_body2"
-                app:trimLength="200"/>
+                android:textSize="@dimen/material_text_body2"/>
 
             <include
                 layout="@layout/detail_activity_attachment_container"
