@@ -29,6 +29,7 @@ import com.jakewharton.rxbinding.support.design.widget.RxAppBarLayout;
 import com.sinyuk.yuk.R;
 import com.sinyuk.yuk.data.shot.Shot;
 import com.sinyuk.yuk.ui.BaseActivity;
+import com.sinyuk.yuk.utils.ActivityUtils;
 import com.sinyuk.yuk.utils.ColorUtils;
 import com.sinyuk.yuk.utils.MathUtils;
 import com.sinyuk.yuk.utils.Preconditions;
@@ -92,8 +93,6 @@ public class DetailActivity extends BaseActivity {
     FontTextView mSharesTv;
     @BindView(R.id.description_tv)
     ReadMoreTextView mDescriptionTv;
-    @BindView(R.id.attachments_fragment_container)
-    FrameLayout mAttachmentsFragmentContainer;
     @BindView(R.id.attachments_fragment_wrapper)
     LinearLayout mAttachmentsFragmentWrapper;
     @BindView(R.id.attachment_count_tv)
@@ -127,13 +126,16 @@ public class DetailActivity extends BaseActivity {
         loadShot();
         loadAuthorInformation();
         loadSocialInformation();
-        loadAttachments();
+        loadAttachments(savedInstanceState);
     }
 
-    private void loadAttachments() {
+    private void loadAttachments(Bundle savedInstanceState) {
         if (mData.getAttachmentsCount() > 0) {
             mAttachmentsFragmentWrapper.setVisibility(View.VISIBLE);
             mAttachmentCountTv.setText(String.format(getString(R.string.attachment_count), mData.getAttachmentsCount()));
+            if (savedInstanceState == null) {
+                ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), AttachmentFragment.newInstance(mData.getId()), R.id.attachments_fragment_container);
+            }
         }
     }
 

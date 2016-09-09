@@ -23,7 +23,7 @@ import com.sinyuk.yuk.utils.lists.GravitySnapHelper;
 import com.sinyuk.yuk.utils.lists.SlideInUpAnimator;
 import com.sinyuk.yuk.widgets.FourThreeImageView;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -31,8 +31,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
+import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -49,7 +49,7 @@ public class AttachmentFragment extends BaseFragment {
     DribbleService dribbleService;
     private long mId;
     private AttachmentAdapter mAdapter;
-    private List<Attachment> mAttachmentList = Collections.emptyList();
+    private List<Attachment> mAttachmentList = new ArrayList<>();
 
     public static AttachmentFragment newInstance(long id) {
         Bundle args = new Bundle();
@@ -95,8 +95,23 @@ public class AttachmentFragment extends BaseFragment {
     private void loadAttachments() {
         dribbleService.attachments(mId).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .flatMap(Observable::from)
-                .doOnError(Throwable::printStackTrace)
-                .subscribe(mAdapter);
+                .subscribe(new Observer<Attachment>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(Attachment attachment) {
+                        mAttachmentList.add(attachment);
+                        mAdapter.notifyItemInserted(mAttachmentList.size() - 1);
+                    }
+                });
     }
 
     private void initRecyclerView() {
@@ -121,8 +136,7 @@ public class AttachmentFragment extends BaseFragment {
 
     }
 
-    private class AttachmentAdapter extends RecyclerView.Adapter<AttachmentAdapter.AttachmentViewHolder>
-            implements Action1<Attachment> {
+    public class AttachmentAdapter extends RecyclerView.Adapter<AttachmentAdapter.AttachmentViewHolder> {
 
 
         @Override
@@ -150,14 +164,9 @@ public class AttachmentFragment extends BaseFragment {
 
         @Override
         public int getItemCount() {
-            return mAttachmentList.size();
+            return mAttachmentList == null ? 0 : mAttachmentList.size();
         }
 
-        @Override
-        public void call(Attachment attachment) {
-            mAttachmentList.add(attachment);
-            notifyItemInserted(mAttachmentList.size() - 1);
-        }
 
         public class AttachmentViewHolder extends RecyclerView.ViewHolder {
             @BindView(R.id.thumbnail)
