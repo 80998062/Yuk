@@ -19,6 +19,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.DrawableRequestBuilder;
@@ -44,7 +45,6 @@ import com.sinyuk.yuk.utils.glide.GlideUtils;
 import com.sinyuk.yuk.utils.spanbuilder.AndroidSpan;
 import com.sinyuk.yuk.widgets.FontTextView;
 import com.sinyuk.yuk.widgets.FourThreeImageView;
-import com.sinyuk.yuk.widgets.ReadMoreTextView;
 import com.sinyuk.yuk.widgets.TextDrawable;
 
 import butterknife.BindColor;
@@ -77,12 +77,16 @@ public class DetailActivity extends BaseActivity {
     CollapsingToolbarLayout mCollapsingToolbarLayout;
     @BindView(R.id.app_bar_layout)
     AppBarLayout mAppBarLayout;
+    @BindView(R.id.toolbar_title_tv)
+    FontTextView mToolbarTitle;
     @BindView(R.id.back_btn)
     ImageView mBackBtn;
-    @BindView(R.id.like_btn)
-    ImageView mLikeBtn;
+    @BindView(R.id.search_btn)
+    ImageView mSearchBtn;
     @BindView(R.id.likes_tv)
     FontTextView mLikesTv;
+    @BindView(R.id.header)
+    RelativeLayout mHeader;
     @BindView(R.id.view_btn)
     ImageView mViewBtn;
     @BindView(R.id.views_tv)
@@ -150,20 +154,23 @@ public class DetailActivity extends BaseActivity {
     private void setAppBarLayout() {
         addSubscription(RxAppBarLayout.offsetChanges(mAppBarLayout)
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .map(dy -> (dy / (mAppBarLayout.getTotalScrollRange() * 1.f) * (dy / (mAppBarLayout.getTotalScrollRange() * 1.f))))
+                .map(dy -> Math.abs(dy / (mAppBarLayout.getTotalScrollRange() * 1.f)))
                 .map(fraction -> MathUtils.constrain(0, 1, fraction))
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(fraction -> {
-                    mBackBtn.setAlpha(fraction);
-                    mLikeBtn.setAlpha(fraction);
-                    if (fraction == 1) {
-                        mLikeBtn.setClickable(true);
-                        mBackBtn.setClickable(true);
-                    } else if (fraction == 0) {
-                        mLikeBtn.setClickable(false);
-                        mBackBtn.setClickable(false);
+                    if (fraction > 0 && fraction < 1) {
+                        mToolbar.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+                        mHeader.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+                    } else {
+                        mToolbar.setLayerType(View.LAYER_TYPE_NONE, null);
+                        mHeader.setLayerType(View.LAYER_TYPE_NONE, null);
                     }
+
+                    mHeader.setAlpha((float) Math.sqrt(1 - fraction));
+                    mToolbar.setAlpha(fraction * fraction);
+                    mSearchBtn.setClickable(fraction == 1);
+                    mBackBtn.setClickable(fraction == 1);
                 }));
     }
 
@@ -181,7 +188,10 @@ public class DetailActivity extends BaseActivity {
         /*username By XXX*/
         setText(mPublishInfo, new AndroidSpan().drawRelativeSize(getString(R.string.by), 1f).drawTextAppearanceSpan(username, this, R.style.sd_username).getSpanText());
         //title
-        setText(mTitle, StringUtils.valueOrDefault(mData.getTitle(), ""));
+        if (!TextUtils.isEmpty(mData.getTitle())) {
+            setText(mTitle, mData.getTitle());
+            setText(mToolbarTitle, mData.getTitle());
+        }
 
         if (!TextUtils.isEmpty(mData.getDescription())) {
             final Spanned descText =
@@ -261,7 +271,7 @@ public class DetailActivity extends BaseActivity {
             Palette.from(bitmap)
                     .maximumColorCount(6)
                     .clearFilters()
-                    .setRegion(0, 0, bitmap.getWidth() - 1, (int) (heightInDip / imageScale))
+                    .setRegion(0, 0, bitmap.getWidth() / 2, (int) (heightInDip / imageScale))
                     // - 1 to work around https://code.google.com/p/android/issues/detail?id=191013
                     .generate(palette -> {
                         boolean isDark = false;
@@ -282,6 +292,7 @@ public class DetailActivity extends BaseActivity {
                         }
 
                         Palette.Swatch topColor = ColorUtils.getMostPopulousSwatch(palette);
+
                         int statusBarColor = -1;
                         if (topColor != null &&
                                 (isDark || Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)) {
@@ -294,6 +305,18 @@ public class DetailActivity extends BaseActivity {
                         }
                         if (statusBarColor == -1) {
                             return;
+                        }
+
+                        int themeColor = -1;
+                        if (isDark) {
+                            themeColor = ColorUtils.lighter(topColor.getRgb(), 0.15f);
+                        } else {
+                            themeColor = ColorUtils.darker(topColor.getRgb(), 0.45f);
+                        }
+                        if (themeColor != -1) {
+                            mSearchBtn.setColorFilter(themeColor);
+                            mBackBtn.setColorFilter(themeColor);
+                            mToolbarTitle.setTextColor(themeColor);
                         }
                         if (statusBarColor != getWindow().getStatusBarColor()) {
                             //imageView.setScrimColor(statusBarColor);

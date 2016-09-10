@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/header"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="@dimen/content_space_8">
@@ -25,7 +26,7 @@
         android:includeFontPadding="false"
         android:lineSpacingExtra="1sp"
         android:textColor="@color/official_charcoal"
-        android:textSize="18sp"
+        android:textSize="20dp"
         app:font="canaro"
         tools:text="Material Design Todo List"/>
 

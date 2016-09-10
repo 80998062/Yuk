@@ -23,37 +23,61 @@
             app:layout_scrollFlags="snap|scroll|enterAlways|enterAlwaysCollapsed"
             app:titleEnabled="false">
 
-
-            <com.sinyuk.yuk.widgets.FourThreeImageView
-                android:id="@+id/shot"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                app:layout_collapseMode="parallax"
-                tools:src="@drawable/sample_04"/>
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
+                <com.sinyuk.yuk.widgets.FourThreeImageView
+                    android:id="@+id/shot"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    app:layout_collapseMode="parallax"
+                    tools:src="@drawable/sample_04"/>
+
+                <include
+                    layout="@layout/detail_activity_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/content_space_16"
+                    android:layout_marginRight="@dimen/content_space_16"/>
+            </LinearLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                android:alpha="0"
                 android:background="@null"
+                app:contentInsetStart="0dp"
                 app:layout_collapseMode="pin">
 
                 <ImageView
                     android:id="@+id/back_btn"
                     style="@style/ToolbarButton"
-                    android:alpha="0"
                     android:clickable="false"
-                    android:src="@drawable/chevron_left"/>
+                    android:src="@drawable/chevron_left_primary"/>
+
+                <com.sinyuk.yuk.widgets.FontTextView
+                    android:id="@+id/toolbar_title_tv"
+                    style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/content_space_16"
+                    android:layout_marginRight="72dp"
+                    android:ellipsize="marquee"
+                    android:maxLines="1"
+                    android:textColor="@color/colorPrimary"
+                    app:font="canaro"
+                    tools:text="Titldsadsadfdsfdsfdsfdsfdsfdsfdssfdssadsadsadsadsadsae"/>
 
                 <ImageView
-                    android:id="@+id/like_btn"
+                    android:id="@+id/search_btn"
                     style="@style/ToolbarButton"
                     android:layout_gravity="end"
-                    android:alpha="0"
                     android:clickable="false"
-                    android:src="@drawable/like"/>
+                    android:src="@drawable/pic_fill"/>
             </android.support.v7.widget.Toolbar>
 
         </android.support.design.widget.CollapsingToolbarLayout>
@@ -71,14 +95,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <include
-                layout="@layout/detail_activity_header"/>
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginBottom="@dimen/content_space_8"
-                android:layout_marginTop="@dimen/content_space_12"
+                android:layout_marginBottom="@dimen/content_space_4"
+                android:layout_marginTop="@dimen/content_space_8"
                 android:background="@color/divider_color"/>
 
             <include
@@ -88,21 +109,21 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginBottom="@dimen/content_space_12"
-                android:layout_marginTop="@dimen/content_space_8"
+                android:layout_marginBottom="@dimen/content_space_8"
+                android:layout_marginTop="@dimen/content_space_4"
                 android:background="@color/divider_color"/>
 
             <TextView
                 android:id="@+id/description_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/content_space_8"
                 android:textSize="@dimen/material_text_body2"/>
 
             <include
                 layout="@layout/detail_activity_attachment_container"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/attachment_fragment_height"
-                android:layout_marginTop="@dimen/content_space_8"/>
+                android:layout_height="@dimen/attachment_fragment_height"/>
 
 
             <View

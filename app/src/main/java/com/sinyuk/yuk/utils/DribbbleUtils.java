@@ -33,7 +33,7 @@ public class DribbbleUtils {
                 int end = ssb.getSpanEnd(urlSpan);
                 ssb.removeSpan(urlSpan);
                 HttpUrl url = HttpUrl.parse(urlSpan.getURL());
-                long playerId = -1l;
+                long playerId = -1L;
                 String playerUsername = null;
                 try {
                     playerId = Long.parseLong(url.pathSegments().get(0));

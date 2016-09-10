@@ -21,7 +21,9 @@ public class ColorUtils {
     public static final int IS_LIGHT = 0;
     public static final int IS_DARK = 1;
     public static final int LIGHTNESS_UNKNOWN = 2;
-    private ColorUtils() { }
+
+    private ColorUtils() {
+    }
 
     /**
      * Set the alpha component of {@code color} to be {@code alpha}.
@@ -67,7 +69,9 @@ public class ColorUtils {
     @Lightness
     int isDark(Palette palette) {
         Palette.Swatch mostPopulous = getMostPopulousSwatch(palette);
-        if (mostPopulous == null) { return LIGHTNESS_UNKNOWN; }
+        if (mostPopulous == null) {
+            return LIGHTNESS_UNKNOWN;
+        }
         return isDark(mostPopulous.getHsl()) ? IS_DARK : IS_LIGHT;
     }
 
@@ -159,6 +163,36 @@ public class ColorUtils {
     int scrimify(@ColorInt int color,
                  @FloatRange(from = 0f, to = 1f) float lightnessMultiplier) {
         return scrimify(color, isDark(color), lightnessMultiplier);
+    }
+
+    /**
+     * Lightens a color by a given factor.
+     *
+     * @param color  The color to lighten
+     * @param factor The factor to lighten the color. 0 will make the color unchanged. 1 will make the
+     *               color white.
+     * @return lighter version of the specified color.
+     */
+    public static int lighter(int color, @FloatRange(from = 0f, to = 1f) float factor) {
+        int red = (int) ((Color.red(color) * (1 - factor) / 255 + factor) * 255);
+        int green = (int) ((Color.green(color) * (1 - factor) / 255 + factor) * 255);
+        int blue = (int) ((Color.blue(color) * (1 - factor) / 255 + factor) * 255);
+        return Color.argb(Color.alpha(color), red, green, blue);
+    }
+
+    /**
+     * Returns darker version of specified <code>color</code>.
+     */
+    public static int darker(int color, @FloatRange(from = 0f, to = 1f) float factor) {
+        int a = Color.alpha(color);
+        int r = Color.red(color);
+        int g = Color.green(color);
+        int b = Color.blue(color);
+
+        return Color.argb(a,
+                Math.max((int) (r * factor), 0),
+                Math.max((int) (g * factor), 0),
+                Math.max((int) (b * factor), 0));
     }
 
     @Retention(RetentionPolicy.SOURCE)
