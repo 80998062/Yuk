@@ -22,10 +22,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.DrawableRequestBuilder;
+import com.bumptech.glide.GenericRequestBuilder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.load.model.StreamEncoder;
+import com.bumptech.glide.load.model.stream.StreamStringLoader;
+import com.bumptech.glide.load.resource.file.FileToStreamDecoder;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.jakewharton.rxbinding.support.design.widget.RxAppBarLayout;
@@ -41,15 +43,19 @@ import com.sinyuk.yuk.utils.Preconditions;
 import com.sinyuk.yuk.utils.StringUtils;
 import com.sinyuk.yuk.utils.ViewUtils;
 import com.sinyuk.yuk.utils.glide.CropCircleTransformation;
-import com.sinyuk.yuk.utils.glide.GlideUtils;
+import com.sinyuk.yuk.utils.glide.GifDrawableByteTranscoder;
+import com.sinyuk.yuk.utils.glide.StreamByteArrayResourceDecoder;
 import com.sinyuk.yuk.utils.spanbuilder.AndroidSpan;
 import com.sinyuk.yuk.widgets.FontTextView;
-import com.sinyuk.yuk.widgets.FourThreeImageView;
+import com.sinyuk.yuk.widgets.FourThreeGifImageView;
 import com.sinyuk.yuk.widgets.TextDrawable;
+
+import java.io.InputStream;
 
 import butterknife.BindColor;
 import butterknife.BindView;
 import butterknife.OnClick;
+import pl.droidsonroids.gif.GifDrawable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -61,8 +67,20 @@ public class DetailActivity extends BaseActivity {
     public static final String TAG = "DetailActivity";
     private static final String SHOT_DATA = "shot_data";
     private static final int CROSS_FADE_DURATION = 1000;
+    // make this a field and initialize it once (this is good in list adapters or when used a lot)
+    private final GenericRequestBuilder<String, InputStream, byte[], GifDrawable> gifManager = Glide
+            .with(this)
+            .using(new StreamStringLoader(this), InputStream.class)
+            .from(String.class) // change this if you have a different model like a File and use StreamFileLoader above
+            .as(byte[].class)
+            .transcode(new GifDrawableByteTranscoder(), GifDrawable.class) // pass it on
+            .diskCacheStrategy(DiskCacheStrategy.SOURCE) // cache original
+            .decoder(new StreamByteArrayResourceDecoder())  // load original
+            .sourceEncoder(new StreamEncoder())
+            .cacheDecoder(new FileToStreamDecoder<>(new StreamByteArrayResourceDecoder()));
+
     @BindView(R.id.shot)
-    FourThreeImageView mShot;
+    FourThreeGifImageView mShot;
     @BindView(R.id.avatar)
     ImageView mAvatar;
     @BindView(R.id.title)
@@ -105,7 +123,6 @@ public class DetailActivity extends BaseActivity {
     LinearLayout mAttachmentsFragmentWrapper;
     @BindView(R.id.attachment_count_tv)
     TextView mAttachmentCountTv;
-
     private Shot mData;
 
     public static Intent getStartIntent(Shot data, Context context) {
@@ -211,16 +228,14 @@ public class DetailActivity extends BaseActivity {
 
     // 加载图片
     private void loadShot() {
-        DrawableRequestBuilder<String> requestBuilder = Glide.with(this).fromString().crossFade(CROSS_FADE_DURATION).centerCrop();
+        GenericRequestBuilder<String, InputStream, byte[], GifDrawable> builder;
         if (mData.isAnimated()) {
-            requestBuilder.diskCacheStrategy(DiskCacheStrategy.SOURCE);
+            builder = gifManager.clone().diskCacheStrategy(DiskCacheStrategy.SOURCE);
         } else {
-            requestBuilder.diskCacheStrategy(DiskCacheStrategy.RESULT);
+            builder = gifManager.clone().diskCacheStrategy(DiskCacheStrategy.RESULT);
+
         }
-        requestBuilder.load(mData.bestQuality())
-                .error(R.color.colorPrimary)
-                .placeholder(R.color.white)
-                .listener(new ShotRequestListener(mShot)).into(mShot);
+        builder.load(mData.bestQuality()).error(R.color.colorPrimary).placeholder(R.color.white).listener(new ShotRequestListener(mShot)).into(mShot);
     }
 
     private void setText(TextView v, String text) {
@@ -246,22 +261,22 @@ public class DetailActivity extends BaseActivity {
     }
 
 
-    private class ShotRequestListener implements RequestListener<String, GlideDrawable> {
+    private class ShotRequestListener implements RequestListener<String, GifDrawable> {
         private static final float SCRIM_ADJUSTMENT = 0.075f;
-        private final ImageView imageView;
+        private final FourThreeGifImageView imageView;
 
-        public ShotRequestListener(ImageView imageView) {
+        public ShotRequestListener(FourThreeGifImageView imageView) {
             this.imageView = imageView;
         }
 
         @Override
-        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+        public boolean onException(Exception e, String model, Target<GifDrawable> target, boolean isFirstResource) {
             return false;
         }
 
         @Override
-        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-            final Bitmap bitmap = GlideUtils.getBitmap(resource);
+        public boolean onResourceReady(GifDrawable resource, String model, Target<GifDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+            final Bitmap bitmap = resource.getCurrentFrame();
             if (bitmap == null) {
                 return false;
             }
@@ -330,6 +345,9 @@ public class DetailActivity extends BaseActivity {
                             statusBarColorAnim.start();
                         }
                     });
+//            if (imageView.getDrawable() != null) {
+//                ((GifDrawable) imageView.getDrawable()).start();
+//            }
             return false;
         }
     }
