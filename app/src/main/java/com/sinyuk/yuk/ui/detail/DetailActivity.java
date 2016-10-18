@@ -27,6 +27,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.model.StreamEncoder;
 import com.bumptech.glide.load.model.stream.StreamStringLoader;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.load.resource.file.FileToStreamDecoder;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -44,6 +45,7 @@ import com.sinyuk.yuk.utils.StringUtils;
 import com.sinyuk.yuk.utils.ViewUtils;
 import com.sinyuk.yuk.utils.glide.CropCircleTransformation;
 import com.sinyuk.yuk.utils.glide.GifDrawableByteTranscoder;
+import com.sinyuk.yuk.utils.glide.GlideUtils;
 import com.sinyuk.yuk.utils.glide.StreamByteArrayResourceDecoder;
 import com.sinyuk.yuk.utils.spanbuilder.AndroidSpan;
 import com.sinyuk.yuk.widgets.FontTextView;
@@ -67,18 +69,7 @@ public class DetailActivity extends BaseActivity {
     public static final String TAG = "DetailActivity";
     private static final String SHOT_DATA = "shot_data";
     private static final int CROSS_FADE_DURATION = 1000;
-    // make this a field and initialize it once (this is good in list adapters or when used a lot)
-    private final GenericRequestBuilder<String, InputStream, byte[], GifDrawable> gifManager = Glide
-            .with(this)
-            .using(new StreamStringLoader(this), InputStream.class)
-            .from(String.class) // change this if you have a different model like a File and use StreamFileLoader above
-            .as(byte[].class)
-            .transcode(new GifDrawableByteTranscoder(), GifDrawable.class) // pass it on
-            .diskCacheStrategy(DiskCacheStrategy.SOURCE) // cache original
-            .decoder(new StreamByteArrayResourceDecoder())  // load original
-            .sourceEncoder(new StreamEncoder())
-            .cacheDecoder(new FileToStreamDecoder<>(new StreamByteArrayResourceDecoder()));
-
+    private static final float SCRIM_ADJUSTMENT = 0.075f;
     @BindView(R.id.shot)
     FourThreeGifImageView mShot;
     @BindView(R.id.avatar)
@@ -123,6 +114,8 @@ public class DetailActivity extends BaseActivity {
     LinearLayout mAttachmentsFragmentWrapper;
     @BindView(R.id.attachment_count_tv)
     TextView mAttachmentCountTv;
+    // make this a field and initialize it once (this is good in list adapters or when used a lot)
+    private GenericRequestBuilder<String, InputStream, byte[], GifDrawable> gifManager;
     private Shot mData;
 
     public static Intent getStartIntent(Shot data, Context context) {
@@ -141,6 +134,16 @@ public class DetailActivity extends BaseActivity {
     @Override
     protected void beforeInflating() {
         mData = getIntent().getExtras().getParcelable(SHOT_DATA);
+        gifManager = Glide
+                .with(this)
+                .using(new StreamStringLoader(this), InputStream.class)
+                .from(String.class) // change this if you have a different model like a File and use StreamFileLoader above
+                .as(byte[].class)
+                .transcode(new GifDrawableByteTranscoder(), GifDrawable.class) // pass it on
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE) // cache original
+                .decoder(new StreamByteArrayResourceDecoder())  // load original
+                .sourceEncoder(new StreamEncoder())
+                .cacheDecoder(new FileToStreamDecoder<>(new StreamByteArrayResourceDecoder()));
         Timber.tag(TAG);
     }
 
@@ -184,6 +187,13 @@ public class DetailActivity extends BaseActivity {
                         mHeader.setLayerType(View.LAYER_TYPE_NONE, null);
                     }
 
+                    if (mShot.getDrawable() instanceof GifDrawable) {
+                        if (fraction > 0 && ((GifDrawable) mShot.getDrawable()).isRunning()) {
+                            ((GifDrawable) mShot.getDrawable()).pause();
+                        } else if (fraction == 0) {
+                            ((GifDrawable) mShot.getDrawable()).start();
+                        }
+                    }
                     mHeader.setAlpha((float) Math.sqrt(1 - fraction));
                     mToolbar.setAlpha(fraction * fraction);
                     mSearchBtn.setClickable(fraction == 1);
@@ -228,14 +238,11 @@ public class DetailActivity extends BaseActivity {
 
     // 加载图片
     private void loadShot() {
-        GenericRequestBuilder<String, InputStream, byte[], GifDrawable> builder;
         if (mData.isAnimated()) {
-            builder = gifManager.clone().diskCacheStrategy(DiskCacheStrategy.SOURCE);
+            gifManager.load(mData.bestQuality()).error(R.color.colorPrimary).placeholder(R.color.white).listener(new GifRequestListener()).into(mShot);
         } else {
-            builder = gifManager.clone().diskCacheStrategy(DiskCacheStrategy.RESULT);
-
+            Glide.with(this).load(mData.bestQuality()).diskCacheStrategy(DiskCacheStrategy.RESULT).error(R.color.colorPrimary).placeholder(R.color.white).listener(new BitmapRequestListener()).into(mShot);
         }
-        builder.load(mData.bestQuality()).error(R.color.colorPrimary).placeholder(R.color.white).listener(new ShotRequestListener(mShot)).into(mShot);
     }
 
     private void setText(TextView v, String text) {
@@ -260,14 +267,75 @@ public class DetailActivity extends BaseActivity {
 
     }
 
+    private void beautify(final Bitmap bitmap) {
+        float imageScale = (float) mShot.getHeight() / (float) bitmap.getHeight();
+        float heightInDip = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 36,
+                DetailActivity.this.getResources().getDisplayMetrics());
+        Palette.from(bitmap)
+                .maximumColorCount(6)
+                .clearFilters()
+                .setRegion(0, 0, bitmap.getWidth() / 2, (int) (heightInDip / imageScale))
+                // - 1 to work around https://code.google.com/p/android/issues/detail?id=191013
+                .generate(palette -> {
+                    boolean isDark = false;
+                    @ColorUtils.Lightness int lightness = ColorUtils.isDark(palette);
+                    if (lightness == ColorUtils.LIGHTNESS_UNKNOWN) {
+                        isDark = ColorUtils.isDark(bitmap, bitmap.getWidth() / 2, 0);
+                    } else {
+                        isDark = lightness == ColorUtils.IS_DARK;
+                    }
 
-    private class ShotRequestListener implements RequestListener<String, GifDrawable> {
-        private static final float SCRIM_ADJUSTMENT = 0.075f;
-        private final FourThreeGifImageView imageView;
+                    // make back icon dark on light images
 
-        public ShotRequestListener(FourThreeGifImageView imageView) {
-            this.imageView = imageView;
-        }
+                    // color the status bar. Set a complementary dark color on L,
+                    // light or dark color on M (with matching status bar icons)
+
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                        return;
+                    }
+
+                    Palette.Swatch topColor = ColorUtils.getMostPopulousSwatch(palette);
+
+                    int statusBarColor = -1;
+                    if (topColor != null &&
+                            (isDark || Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)) {
+                        statusBarColor = ColorUtils.scrimify(topColor.getRgb(),
+                                isDark, SCRIM_ADJUSTMENT);
+                        // set a light status bar on M+
+                        if (!isDark && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            ViewUtils.setLightStatusBar(mShot);
+                        }
+                    }
+                    if (statusBarColor == -1) {
+                        return;
+                    }
+
+                    int themeColor = -1;
+                    if (isDark) {
+                        themeColor = ColorUtils.lighter(topColor.getRgb(), 0.15f);
+                    } else {
+                        themeColor = ColorUtils.darker(topColor.getRgb(), 0.45f);
+                    }
+                    if (themeColor != -1) {
+                        mSearchBtn.setColorFilter(themeColor);
+                        mBackBtn.setColorFilter(themeColor);
+                        mToolbarTitle.setTextColor(themeColor);
+                    }
+                    if (statusBarColor != getWindow().getStatusBarColor()) {
+                        //imageView.setScrimColor(statusBarColor);
+                        ValueAnimator statusBarColorAnim = ValueAnimator.ofArgb(getWindow
+                                ().getStatusBarColor(), statusBarColor);
+                        statusBarColorAnim.addUpdateListener
+                                (animation -> getWindow().setStatusBarColor(
+                                        (int) animation.getAnimatedValue()));
+                        statusBarColorAnim.setDuration(1000);
+                        statusBarColorAnim.setInterpolator(new FastOutSlowInInterpolator());
+                        statusBarColorAnim.start();
+                    }
+                });
+    }
+
+    private class GifRequestListener implements RequestListener<String, GifDrawable> {
 
         @Override
         public boolean onException(Exception e, String model, Target<GifDrawable> target, boolean isFirstResource) {
@@ -276,78 +344,25 @@ public class DetailActivity extends BaseActivity {
 
         @Override
         public boolean onResourceReady(GifDrawable resource, String model, Target<GifDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-            final Bitmap bitmap = resource.getCurrentFrame();
-            if (bitmap == null) {
-                return false;
+            if (resource.getCurrentFrame() != null) {
+                beautify(resource.getCurrentFrame());
             }
-            float imageScale = (float) imageView.getHeight() / (float) bitmap.getHeight();
-            float heightInDip = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 36,
-                    DetailActivity.this.getResources().getDisplayMetrics());
-            Palette.from(bitmap)
-                    .maximumColorCount(6)
-                    .clearFilters()
-                    .setRegion(0, 0, bitmap.getWidth() / 2, (int) (heightInDip / imageScale))
-                    // - 1 to work around https://code.google.com/p/android/issues/detail?id=191013
-                    .generate(palette -> {
-                        boolean isDark = false;
-                        @ColorUtils.Lightness int lightness = ColorUtils.isDark(palette);
-                        if (lightness == ColorUtils.LIGHTNESS_UNKNOWN) {
-                            isDark = ColorUtils.isDark(bitmap, bitmap.getWidth() / 2, 0);
-                        } else {
-                            isDark = lightness == ColorUtils.IS_DARK;
-                        }
+            return false;
+        }
+    }
 
-                        // make back icon dark on light images
+    private class BitmapRequestListener implements RequestListener<String, GlideDrawable> {
 
-                        // color the status bar. Set a complementary dark color on L,
-                        // light or dark color on M (with matching status bar icons)
+        @Override
+        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+            return false;
+        }
 
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                            return;
-                        }
-
-                        Palette.Swatch topColor = ColorUtils.getMostPopulousSwatch(palette);
-
-                        int statusBarColor = -1;
-                        if (topColor != null &&
-                                (isDark || Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)) {
-                            statusBarColor = ColorUtils.scrimify(topColor.getRgb(),
-                                    isDark, SCRIM_ADJUSTMENT);
-                            // set a light status bar on M+
-                            if (!isDark && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                ViewUtils.setLightStatusBar(imageView);
-                            }
-                        }
-                        if (statusBarColor == -1) {
-                            return;
-                        }
-
-                        int themeColor = -1;
-                        if (isDark) {
-                            themeColor = ColorUtils.lighter(topColor.getRgb(), 0.15f);
-                        } else {
-                            themeColor = ColorUtils.darker(topColor.getRgb(), 0.45f);
-                        }
-                        if (themeColor != -1) {
-                            mSearchBtn.setColorFilter(themeColor);
-                            mBackBtn.setColorFilter(themeColor);
-                            mToolbarTitle.setTextColor(themeColor);
-                        }
-                        if (statusBarColor != getWindow().getStatusBarColor()) {
-                            //imageView.setScrimColor(statusBarColor);
-                            ValueAnimator statusBarColorAnim = ValueAnimator.ofArgb(getWindow
-                                    ().getStatusBarColor(), statusBarColor);
-                            statusBarColorAnim.addUpdateListener
-                                    (animation -> getWindow().setStatusBarColor(
-                                            (int) animation.getAnimatedValue()));
-                            statusBarColorAnim.setDuration(1000);
-                            statusBarColorAnim.setInterpolator(new FastOutSlowInInterpolator());
-                            statusBarColorAnim.start();
-                        }
-                    });
-//            if (imageView.getDrawable() != null) {
-//                ((GifDrawable) imageView.getDrawable()).start();
-//            }
+        @Override
+        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+            if (GlideUtils.getBitmap(resource) != null) {
+                beautify(GlideUtils.getBitmap(resource));
+            }
             return false;
         }
     }

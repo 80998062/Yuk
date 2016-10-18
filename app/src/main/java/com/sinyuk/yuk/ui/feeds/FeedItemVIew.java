@@ -102,7 +102,7 @@ public class FeedItemView extends RelativeLayout {
 
         /*加载图片*/
         shotBuilder.load(data.bestQuality())
-                /*.listener(new ShotRequestListener(data))*/
+                /*.listener(new GifRequestListener(data))*/
                 .into(new DribbbleTarget(mShot, isAutoPlayGif));
 
         /* rebound */
