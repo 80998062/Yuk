@@ -1,6 +1,6 @@
 ## Yuk
 
-Recently I am working on  a Dribbble client on Android;
+Recently I am working on  a Dribbble client on Android,still under heavy development;
 
 ## sreenshot
 
